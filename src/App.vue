@@ -1,9 +1,12 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div id="app">
+    <nav>
+      <router-link to="/games">Games</router-link>
+      <router-link to="/teams">Teams</router-link>
+      <router-link to="/players">Players</router-link>
+    </nav>
+    <router-view/>
+  </div>
 </template>
 
 <style lang="scss">
@@ -16,11 +19,12 @@
 }
 
 nav {
-  padding: 30px;
+  padding: 1rem;
 
   a {
     font-weight: bold;
-    color: #2c3e50;
+    color: blue#2c3e50;
+    margin: 0 10px;
 
     &.router-link-exact-active {
       color: #42b983;

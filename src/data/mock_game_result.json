@@ -1,0 +1,557 @@
+[
+    {
+        "id": 4142,
+        "date": "2023-05-15T18:30:00",
+        "date_gmt": "2023-05-15T22:30:00",
+        "guid": {
+            "rendered": "https://lbaoutaouais.com/?post_type=sp_event&#038;p=4142"
+        },
+        "modified": "2023-07-10T10:37:56",
+        "modified_gmt": "2023-07-10T14:37:56",
+        "slug": "4142",
+        "status": "publish",
+        "type": "sp_event",
+        "link": "https://lbaoutaouais.com/partie/4142/",
+        "title": {
+            "rendered": "Jeans v Molles"
+        },
+        "content": {
+            "rendered": "",
+            "protected": false
+        },
+        "excerpt": {
+            "rendered": "",
+            "protected": false
+        },
+        "author": 2,
+        "featured_media": 0,
+        "template": "",
+        "format": "league",
+        "leagues": [
+            8
+        ],
+        "seasons": [
+            67
+        ],
+        "venues": [
+            28
+        ],
+        "teams": [
+            406,
+            355
+        ],
+        "main_results": [
+            "10",
+            "19"
+        ],
+        "outcome": {
+            "406": "loss",
+            "355": "win"
+        },
+        "winner": 355,
+        "mode": "team",
+        "day": "",
+        "minutes": "60",
+        "players": [
+            0,
+            2693,
+            411,
+            408,
+            410,
+            412,
+            1263,
+            409,
+            1261,
+            1262,
+            1862,
+            751,
+            0,
+            3817,
+            3024,
+            365,
+            364,
+            1764,
+            361,
+            357,
+            366,
+            596,
+            371,
+            451
+        ],
+        "offense": [],
+        "defense": [],
+        "staff": [
+            0,
+            0
+        ],
+        "results": {
+            "406": {
+                "one": "5",
+                "two": "0",
+                "three": "2",
+                "four": "1",
+                "five": "2",
+                "six": "0",
+                "seven": "0",
+                "r": "10",
+                "h": "19",
+                "e": "2",
+                "estwo": "1",
+                "outcome": [
+                    "loss"
+                ]
+            },
+            "355": {
+                "one": "5",
+                "two": "2",
+                "three": "2",
+                "four": "5",
+                "five": "5",
+                "six": "0",
+                "seven": "",
+                "r": "19",
+                "h": "26",
+                "e": "1",
+                "estwo": "1",
+                "outcome": [
+                    "win"
+                ]
+            },
+            "0": {
+                "one": "1",
+                "two": "2",
+                "three": "3",
+                "four": "4",
+                "five": "5",
+                "six": "6",
+                "seven": "7",
+                "r": "R",
+                "h": "H",
+                "e": "E",
+                "estwo": "ES"
+            }
+        },
+        "performance": {
+            "406": {
+                "0": {
+                    "ab": "",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "",
+                    "pp": "",
+                    "rab": ""
+                },
+                "409": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "1",
+                    "twob": "2",
+                    "threeb": "",
+                    "cc": "1",
+                    "cs": "4",
+                    "p": "2",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "410": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "1",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "1",
+                    "p": "2",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "411": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "3",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "2",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "1262": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "2",
+                    "p": "1",
+                    "pp": "2",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "408": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "3",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "2",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "1862": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "1",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "",
+                    "pp": "3",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "1263": {
+                    "number": "",
+                    "ab": "1",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "751": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "412": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "1",
+                    "twob": "1",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "2",
+                    "p": "",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "1261": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "1",
+                    "cs": "1",
+                    "p": "1",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "2693": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                }
+            },
+            "355": {
+                "0": {
+                    "ab": "",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "",
+                    "pp": "",
+                    "rab": ""
+                },
+                "366": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "2",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "4",
+                    "p": "3",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "451": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "2",
+                    "p": "2",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "371": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "2",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "4",
+                    "p": "2",
+                    "pp": "4",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "1764": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "2",
+                    "p": "1",
+                    "pp": "2",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "364": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "1",
+                    "twob": "1",
+                    "threeb": "",
+                    "cc": "1",
+                    "cs": "3",
+                    "p": "3",
+                    "pp": "4",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "365": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "2",
+                    "twob": "1",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "3",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "596": {
+                    "number": "",
+                    "ab": "4",
+                    "oneb": "1",
+                    "twob": "2",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "",
+                    "pp": "2",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "3024": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "3",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "3",
+                    "p": "1",
+                    "pp": "2",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "361": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "1",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "1",
+                    "p": "2",
+                    "pp": "1",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "3817": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "",
+                    "p": "1",
+                    "pp": "",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                },
+                "357": {
+                    "number": "",
+                    "ab": "3",
+                    "oneb": "1",
+                    "twob": "",
+                    "threeb": "",
+                    "cc": "",
+                    "cs": "1",
+                    "p": "1",
+                    "pp": "2",
+                    "rab": "",
+                    "status": "lineup",
+                    "sub": "0",
+                    "position": 0
+                }
+            },
+            "0": {
+                "ab": "AB",
+                "oneb": "1B",
+                "twob": "2B",
+                "threeb": "3B",
+                "cc": "CC",
+                "cs": "CS",
+                "p": "P",
+                "pp": "PP",
+                "rab": "RAB"
+            }
+        },
+        "jetpack_sharing_enabled": true,
+        "_links": {
+            "self": [
+                {
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4142"
+                }
+            ],
+            "collection": [
+                {
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/events"
+                }
+            ],
+            "about": [
+                {
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/types/sp_event"
+                }
+            ],
+            "author": [
+                {
+                    "embeddable": true,
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/users/2"
+                }
+            ],
+            "wp:attachment": [
+                {
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/media?parent=4142"
+                }
+            ],
+            "wp:term": [
+                {
+                    "taxonomy": "sp_league",
+                    "embeddable": true,
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/leagues?post=4142"
+                },
+                {
+                    "taxonomy": "sp_season",
+                    "embeddable": true,
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/seasons?post=4142"
+                },
+                {
+                    "taxonomy": "sp_venue",
+                    "embeddable": true,
+                    "href": "https://lbaoutaouais.com/wp-json/wp/v2/venues?post=4142"
+                }
+            ],
+            "curies": [
+                {
+                    "name": "wp",
+                    "href": "https://api.w.org/{rel}",
+                    "templated": true
+                }
+            ]
+        }
+    }
+]

@@ -1,20 +1,60 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
 
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: function () {
+      return import("@/views/Homepage.vue")
+    }
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
+    path: '/games',
+    name: 'games',
     component: function () {
-      return import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+      return import("@/views/Games.vue")
+    }
+  },
+  {
+    path: '/teams/:teamId',
+    name: 'teamView',
+    component: function () {
+      return import("@/views/TeamView.vue")
+    }
+  },
+  {
+    path: '/teams',
+    name: 'teams',
+    component: function () {
+      return import("@/views/Teams.vue")
+    }
+  },
+  {
+    path: '/game/:gameId',
+    name: 'inGame',
+    component: function () {
+      return import("@/views/InGame.vue")
+    }
+  },
+  {
+    path: '/players',
+    name: 'players',
+    component: function () {
+      return import("@/views/Players.vue")
+    }
+  },
+  {
+    path: '/players/:playerId',
+    name: 'playerView',
+    component: function () {
+      return import("@/views/PlayerView.vue")
+    }
+  },
+  {
+    path: '/standings',
+    name: 'standings',
+    component: function () {
+      return import("@/views/Standings.vue")
     }
   }
 ]

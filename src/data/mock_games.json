@@ -1,0 +1,27 @@
+[
+    {
+        "id": 1,
+        "teamAway": 1,
+        "teamHome": 2
+    },
+    {
+        "id": 2,
+        "teamAway": 3,
+        "teamHome": 4
+    },
+    {
+        "id": 3,
+        "teamAway": 2,
+        "teamHome": 3
+    },
+    {
+        "id": 4,
+        "teamAway": 4,
+        "teamHome": 1
+    },
+    {
+        "id": 5,
+        "teamAway": 3,
+        "teamHome": 1
+    }
+]
