@@ -126,6 +126,22 @@
                 </div>
             </div>
         </div>
+        <Modal
+            v-show="isModalVisible"
+            @close="closeModal"
+            >
+            <template v-slot:header>
+                This is a new modal header.
+            </template>
+
+            <template v-slot:body>
+                This is a new modal body.
+            </template>
+
+            <template v-slot:footer>
+                This is a new modal footer.
+            </template>
+        </Modal>
     </div>
 </template>
 <script>
@@ -178,6 +194,7 @@ export default {
 
             awayNumber: $settings.awayNumber,
             homeNumber: $settings.homeNumber,
+            isModalVisible: false,
         }
     },
     methods: {
@@ -187,7 +204,7 @@ export default {
             this.$store.dispatch("initialize")
         },
         editPlayer(player,list) {
-
+            this.isModalVisible=true
         },
         removePlayer(player,list) {
             const playerIndex = list.findIndex(p => p.id === player.id)
@@ -282,6 +299,9 @@ export default {
             if(this.activePlayerBox && !this.editMode) {
                 this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
             }
+        },
+        closeModal() {
+            this.isModalVisible = false
         }
 
     },
