@@ -25,12 +25,12 @@
                         :disabled="!editMode"
                     >
                         <tr v-for="(player, $index) in players.away" :key="$index">
+                            <td>{{ player.assignedNumber }}</td>
                             <td class="player-buttom-container">
-                                <button class="player-remove-button" @click="removePlayer(player)">X</button>
+                                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player,players.away)">X</button>
                                 <span v-html="player.name"></span>
-                                <button class="player-swap-button" @click="editPlayer(player)">SWAP</button>
+                                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player,players.away)">SWAP</button>
                             </td>
-                            <td><span @click="editPlayer(player)" v-html="player.name"></span></td>
                             <td
                                 v-for="inning in innings"
                                 :key="inning"
@@ -43,8 +43,7 @@
                         </tr>
                     </draggable>
                     <tr class="unclickable" v-if="editMode">
-                        <td><button @click="addPlayer(players.away)">Add Player</button></td>
-                        <td v-for="inning in innings" :key="inning"></td>
+                        <td :colspan="numberOfInnings+2"><button @click="addPlayer(players.away)">Add Player</button></td>
                     </tr>
                 </table>
             </div>
@@ -68,11 +67,11 @@
                         :disabled="!editMode"
                     >
                         <tr v-for="(player, $index) in players.home" :key="$index">
-                            <td>{{ player.number }}</td>
+                            <td>{{ player.assignedNumber }}</td>
                             <td class="player-buttom-container">
-                                <button class="player-remove-button" @click="removePlayer(player)">X</button>
+                                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player,players.home)">X</button>
                                 <span v-html="player.name"></span>
-                                <button class="player-swap-button" @click="editPlayer(player)">SWAP</button>
+                                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player,players.home)">SWAP</button>
                             </td>
                             <td
                                 v-for="inning in innings"
@@ -97,8 +96,7 @@
         </div>
         <div class="action-buttons" v-if="!this.editMode">
             <div class="leftside">
-                <button class="editButton" @click="setOutcome('BB')">BB</button>
-                <button class="editButton" @click="setOutcome('K')">K</button>
+     
                 <button class="editButton" @click="setOutcome('1B')">1B</button>
                 <button class="editButton" @click="setOutcome('2B')">2B</button>
                 <button class="editButton" @click="setOutcome('3B')">3B</button>
@@ -106,6 +104,9 @@
                 <button class="editButton" @click="setOutcome('HR')">HR</button>
                 <button class="editButton" @click="setOutcome('FC')">FC</button>
                 <button class="editButton" @click="setOutcome('SAC')">SAC</button>
+                <button class="editButton" @click="setOutcome('BB')">BB</button>
+                <button class="editButton" @click="setOutcome('K')">K</button>
+                <button class="editButton" @click="setOutcome('E')">E</button>
             </div>
             <div class="midside">
                 <button class="editButton" @click="setAtBase('first')">First Base</button>
@@ -156,6 +157,7 @@ export default {
     },
     data() {
         return {
+            assignedNumberIndex: 0,
             innings: $settings.websiteConfig.innings,
             players: {
                 home: [],
@@ -173,6 +175,9 @@ export default {
             id: 0,
             editMode: false,
             gameId: null,
+
+            awayNumber: $settings.awayNumber,
+            homeNumber: $settings.homeNumber,
         }
     },
     methods: {
@@ -181,11 +186,13 @@ export default {
             teamPlayers.push(new PlayerInGame({id: this.id,name: `Joueur ${this.id}`}))
             this.$store.dispatch("initialize")
         },
-        editPlayer(player) {
+        editPlayer(player,list) {
 
         },
-        removePlayer(player) {
-            
+        removePlayer(player,list) {
+            const playerIndex = list.findIndex(p => p.id === player.id)
+            if(playerIndex !== -1)
+                list.splice(playerIndex,1)
         },
         setActiveOutcome(id) {
             if(this.active.outcomeBox !== id && !this.editMode) {
@@ -213,6 +220,7 @@ export default {
                 if(this.activePlayerBox.atBatResult === outcome) {
                     this.activePlayerBox.atBatResult = null
                     this.activePlayerBox.putOut = false
+                    this.activePlayerBox.countAsHR = false
                 }
                 else {
                     this.activePlayerBox.atBatResult = outcome
@@ -228,11 +236,12 @@ export default {
                             break
                         case "4B":
                             this.activePlayerBox.onBasePosition = "point"
-                            this.activePlayerBox.rbiBy = this.activePlayer?.id
+                            this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
                             break
                         case "HR":
                             this.activePlayerBox.onBasePosition = "point"
-                            this.activePlayerBox.rbiBy = this.activePlayer?.id
+                            this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
+                            this.activePlayerBox.countAsHR = true
                             break
                         case "BB":
                             this.activePlayerBox.onBasePosition = "first"
@@ -242,6 +251,9 @@ export default {
                             this.activePlayerBox.onBasePosition = "empty"
                             break
                         case "FC":
+                            this.activePlayerBox.onBasePosition = "first"
+                            break
+                        case "E":
                             this.activePlayerBox.onBasePosition = "first"
                             break
                         case "SAC":
@@ -281,11 +293,13 @@ export default {
             this.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
             this.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
 
+            this.assignedNumberIndex = 0
             this.players.away = this.$store.getters.getPlayersInTeam(this.teams.away.id)
-                .map(p => new PlayerInGame({...p},{name: p.title.rendered}))
+                .map(p => new PlayerInGame({...p,assignedNumber: p.number.length !== 0 ? p.number : this.awayNumber[this.assignedNumberIndex++]}))
+            this.assignedNumberIndex = 0
             this.players.home = this.$store.getters.getPlayersInTeam(this.teams.home.id)
-                .map(p => new PlayerInGame({...p},{name: p.title.rendered}))
-            console.log(this.teams.away, this.teams.home)
+                .map(p => new PlayerInGame({...p,assignedNumber: p.number.length !== 0? p.number : this.homeNumber[this.assignedNumberIndex++]}))
+            console.log(this.players.away)
         }
     },
 }

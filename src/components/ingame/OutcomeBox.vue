@@ -1,5 +1,8 @@
 <template>
     <div class="box">
+        <div class="field-countHR" v-if="countAsHR">
+            *
+        </div>
         <div class="field-onbase" :class="{'isPutOut': isPutOut}">
             <img :src="fieldImage"/>
         </div>
@@ -25,6 +28,9 @@ export default {
         },
         atBatOutcome() {
             return this.outcome?.atBatResult || ""
+        },
+        countAsHR() {
+            return this.outcome?.countAsHR || false
         },
         rbiResult() {
             return this.outcome?.rbiBy || ""
@@ -63,12 +69,13 @@ export default {
         margin: 0.7rem auto;
         &.rbi-result {
             color: black;
+            text-transform: uppercase;
         }
         &.out-result {
             color: red;
         }
     }
-    
+
     .field-onbase {
         img {
             width: 35px;
@@ -82,6 +89,13 @@ export default {
         position: absolute;
         bottom: -1.5rem;
         right: -1.5rem;
+    }
+    .field-countHR {
+        font-weight: bold;
+        position: absolute;
+        top: -0.25rem;
+        left: 0rem;
+        font-size: 30px;
     }
 }
 

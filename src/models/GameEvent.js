@@ -3,53 +3,21 @@ import $settings from "@/data/settings.json"
 
 
 const defaultGameEvent = {
-    id: null,
-    date: "",
-    date_gmt: "",
-    guid: {
-        rendered: ""
-    },
-    modified: "",
-    modified_gmt: "",
-    slug: "",
-    status: "",
-    type: "",
-    link: "",
-    title: {
-        rendered: ""
-    },
-    content: {
-        rendered: "",
-        protected: false
-    },
-    excerpt: {
-        rendered: "",
-        protected: false
-    },
-    author: 2,
-    featured_media: 0,
-    template: "",
-    format: "",
-    leagues: [],
-    seasons: [],
-    venues: [],
+
     // "teams" example
     // [12, 15]
     // Away team, Home team
     teams: [],
+    // final score ["4","2"]
     main_results: [],
+    // win loss {"405": "win", 566: "loss"}
     outcome: {},
+    // winner : 405
     winner: null,
-    mode: "",
-    day: "",
-    minutes: "",
     // "players" example
     // [0 , 1, 2, 3 , 4 , 0 , 1, 2, 3,... ]
     // Add 0 to seperate away and home players
     players: [],
-    offense: [],
-    defense: [],
-    staff: [],
     // "results" example
     // {[team_id] : {[stats]}}
     results: {
@@ -159,59 +127,6 @@ const defaultGameEvent = {
         //     },...
         // },
     },
-    jetpack_sharing_enabled: true,
-    _links: {
-        self: [
-            {
-                href: ""
-            }
-        ],
-        collection: [
-            {
-                href: ""
-            }
-        ],
-        about: [
-            {
-                href: ""
-            }
-        ],
-        author: [
-            {
-                embeddable: true,
-                href: ""
-            }
-        ],
-        "wp:attachmen": [
-            {
-                href: ""
-            }
-        ],
-        "wp:term": [
-            {
-                taxonomy: "",
-                embeddable: true,
-                href: ""
-            },
-            {
-                taxonomy: "",
-                embeddable: true,
-                href: ""
-            },
-            {
-                taxonomy: "",
-                embeddable: true,
-                href: ""
-            }
-        ],
-        curies: [
-            {
-                name: "wp",
-                href: "",
-                templated: true
-            }
-        ]
-    }
 }
 export class GameEvent {
     constructor(properties) {

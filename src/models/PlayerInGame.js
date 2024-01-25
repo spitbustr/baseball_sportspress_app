@@ -5,6 +5,7 @@ import $settings from "@/data/settings.json"
 export default class PlayerInGame {
     constructor(properties) {
         this.outcome = clone(Array($settings.websiteConfig.innings.length).fill(clone(new InGameResults())))
+        console.log(properties)
         Object.assign(this, clone(properties))
     }
 
@@ -18,6 +19,7 @@ const defaultInGameResults = {
     putOut: false,
     rbiBy: null,
     inningEnd: null,
+    countAsHR: false,
 }
 export class InGameResults {
     constructor(properties) {

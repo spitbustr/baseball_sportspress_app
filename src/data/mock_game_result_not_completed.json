@@ -1,0 +1,179 @@
+{
+    "id": 4372,
+    "date": "2024-02-02T11:00:47",
+    "date_gmt": "2024-02-02T16:00:47",
+    "guid": {
+        "rendered": "https://lbaoutaouais.com/?post_type=sp_event&#038;p=4372",
+        "raw": "https://lbaoutaouais.com/?post_type=sp_event&#038;p=4372"
+    },
+    "modified": "2024-01-24T14:16:30",
+    "modified_gmt": "2024-01-24T19:16:30",
+    "password": "",
+    "slug": "les-cocos-v-buveurs-designes",
+    "status": "future",
+    "type": "sp_event",
+    "link": "https://lbaoutaouais.com/?post_type=sp_event&p=4372",
+    "title": {
+        "raw": "Les Cocos v Buveurs Désignés",
+        "rendered": "Les Cocos v Buveurs Désignés"
+    },
+    "content": {
+        "raw": "",
+        "rendered": "",
+        "protected": false,
+        "block_version": 0
+    },
+    "excerpt": {
+        "raw": "",
+        "rendered": "",
+        "protected": false
+    },
+    "author": 2,
+    "featured_media": 0,
+    "template": "",
+    "format": "league",
+    "leagues": [
+        8
+    ],
+    "seasons": [
+        69
+    ],
+    "venues": [
+        28
+    ],
+    "permalink_template": "https://lbaoutaouais.com/partie/%pagename%/",
+    "generated_slug": "les-cocos-v-buveurs-designes",
+    "teams": [
+        294,
+        234
+    ],
+    "mode": "team",
+    "day": "",
+    "minutes": "60",
+    "players": [
+        0,
+        0
+    ],
+    "offense": [],
+    "defense": [],
+    "staff": [
+        0,
+        0
+    ],
+    "results": {
+        "294": [],
+        "234": [],
+        "0": []
+    },
+    "performance": [
+        {
+            "ab": "AB",
+            "oneb": "1B",
+            "twob": "2B",
+            "threeb": "3B",
+            "cc": "CC",
+            "cs": "CS",
+            "p": "P",
+            "pp": "PP",
+            "rab": "RAB"
+        }
+    ],
+    "jetpack_sharing_enabled": true,
+    "_links": {
+        "self": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "collection": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events"
+            }
+        ],
+        "about": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/types/sp_event"
+            }
+        ],
+        "author": [
+            {
+                "embeddable": true,
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/users/2"
+            }
+        ],
+        "wp:attachment": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/media?parent=4372"
+            }
+        ],
+        "wp:term": [
+            {
+                "taxonomy": "sp_league",
+                "embeddable": true,
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/leagues?post=4372"
+            },
+            {
+                "taxonomy": "sp_season",
+                "embeddable": true,
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/seasons?post=4372"
+            },
+            {
+                "taxonomy": "sp_venue",
+                "embeddable": true,
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/venues?post=4372"
+            }
+        ],
+        "wp:action-publish": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-unfiltered-html": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-assign-author": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-create-leagues": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-assign-leagues": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-create-seasons": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-assign-seasons": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-create-venues": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "wp:action-assign-venues": [
+            {
+                "href": "https://lbaoutaouais.com/wp-json/wp/v2/events/4372"
+            }
+        ],
+        "curies": [
+            {
+                "name": "wp",
+                "href": "https://api.w.org/{rel}",
+                "templated": true
+            }
+        ]
+    }
+}
