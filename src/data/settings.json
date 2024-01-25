@@ -19,6 +19,6 @@
     },
 
     "scoresheetAPI": {
-        "url": "http://shawnboivin.com/baseballAPI/api/data/"
+        "url": "http://shawnboivin.com/baseballAPI/api/data"
     }
 }

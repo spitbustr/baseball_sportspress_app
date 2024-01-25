@@ -24,9 +24,8 @@
         // Access the properties
         $data->gameId = !empty($json_data->gameId) ? $json_data->gameId : "";
         $data->jsonObject = !empty($json_data->jsonObject) ? $json_data->jsonObject : "";
-        $data->id = !empty($json_data->id) ? $json_data->id : "";
 
-        if(!empty($data->id)) {
+        if(!empty($data->gameId)) {
             if ($scoresheet->updateById($data)) {
                 http_response_code(200);
                 echo json_encode(array("message" => "Item updated successfully."));

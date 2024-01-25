@@ -4,7 +4,7 @@ import $settings from "@/data/settings.json"
 
 export default class PlayerInGame {
   constructor(properties) {
-    this.outcome = properties?.outcome ?? clone(Array($settings.websiteConfig.innings.length).fill(clone(new InGameResults())))
+    this.outcome = properties?.outcome ?? clone(Array($settings.websiteConfig.innings.length+1).fill(clone(new InGameResults())))
     Object.assign(this, clone(properties))
   }
 

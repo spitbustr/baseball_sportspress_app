@@ -74,7 +74,7 @@
         }
 
         function updateById($newData) {
-            $query = "UPDATE " . $this->table_name . " SET jsonObject = :jsonObject, gameId = :gameId WHERE id = :id";
+            $query = "UPDATE " . $this->table_name . " SET jsonObject = :jsonObject WHERE gameId = :gameId";
             $stmt = $this->conn->prepare($query);
             // Bind parameters
             // Create temporary variables to store casted values
@@ -83,7 +83,6 @@
 
             $stmt->bindParam(':jsonObject',$jsonObject);
             $stmt->bindParam(':gameId', $gameId);
-            $stmt->bindParam(':id', $newData->id);
 
             if ($stmt->execute()) {
                 echo json_encode(array("message" => "Worked"));

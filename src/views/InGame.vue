@@ -1,13 +1,13 @@
 <template>
   <div>
     <div>
-      Game {{ scoresheet.game.id }}
+      Game {{ game.id }}
     </div>
 
     <div :class="{ 'editMode': editMode }" class="tables-container">
       <div>
         <div>
-          {{ scoresheet.teams.away.title.rendered }}
+          {{ teams.away.title.rendered }}
         </div>
         <table>
           <thead>
@@ -39,7 +39,7 @@
       </div>
       <div>
         <div>
-          {{ scoresheet.teams.home.title.rendered }}
+          {{ teams.home.title.rendered }}
         </div>
         <table>
           <thead>
@@ -174,14 +174,18 @@ export default {
           home: [],
           away: []
         },
-        teams: {
-          away: null,
+        teams:  {
           home: null,
+          away: null
         },
         gameId: null,
-        game: null,
-      },
 
+      },
+      teams:  {
+        home: null,
+        away: null
+      },
+      game: null,
       id: 0,
       editMode: false,
       inputSearchPlayer: [],
@@ -193,6 +197,7 @@ export default {
         player: null,
         outcomeBox: null
       },
+      hasContentInDB: false,
     }
   },
   methods: {
@@ -282,7 +287,6 @@ export default {
         }
         ScoresheetAPIService.saveData(this.scoresheet)
       }
-      ScoresheetAPIService.saveData(this.scoresheet)
     },
     setPutOut() {
       if (this.activePlayerBox && !this.editMode) {
@@ -344,25 +348,34 @@ export default {
   async created() {
     this.scoresheet.gameId = this.$route?.params?.gameId
     if (this.scoresheet.gameId) {
-      this.scoresheet.game = this.$store.getters.getGame(this.scoresheet.gameId)
+      this.game = this.$store.getters.getGame(this.scoresheet.gameId)
       this.scoresheet.innings = $settings.websiteConfig.innings
-      this.scoresheet.teams.away = this.$store.getters.getTeam(this.scoresheet.game?.teams[0])
-      this.scoresheet.teams.home = this.$store.getters.getTeam(this.scoresheet.game?.teams[1])
+      this.scoresheet.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
+      this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
+      this.teams.away = this.scoresheet.teams.away
+      this.teams.home = this.scoresheet.teams.home
       this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}`}))
       this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` }))
     }
-    await ScoresheetAPIService.loadData(this.scoresheet.gameId).then(result => {
-      const obj = JSON.parse(result.jsonObject)
-      console.log(obj)
-      obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
-      obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
-      this.scoresheet = obj
+    await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
+      this.hasContentInDB = result?.data?.id
     })
-    .catch(error => {
-      console.log(error)
-    })
+    if(this.hasContentInDB) {
+      await ScoresheetAPIService.loadData(this.$route?.params?.gameId).then(result => {
+        const obj = JSON.parse(result.jsonObject)
+        obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
+        obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
+        this.scoresheet.players = obj.players
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    }
+    else {
+      await ScoresheetAPIService.createData(this.scoresheet)
+    }
   },
 }
 </script>
