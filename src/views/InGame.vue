@@ -65,8 +65,7 @@
             </tr>
           </draggable>
           <tr class="unclickable" v-if="editMode">
-            <td><button @click="addPlayer(players.home)">Add Player</button></td>
-            <td v-for="inning in innings" :key="inning"></td>
+            <td :colspan="numberOfInnings + 2"><button @click="addPlayer(players.home)">Add Player</button></td>
           </tr>
         </table>
       </div>
@@ -101,26 +100,26 @@
         </div>
         <div class="rbi-input">
           <label id="rbi-input">RBI</label>
-          <input for="rbi-input" type="text" size="5" v-model="rbiValue" ref="rbiValue" />
+          <input for="rbi-input" type="text" size="5" v-model="rbiValue" />
           <button class="editButton" @click="setRBI()">Save RBI</button>
         </div>
       </div>
     </div>
     <Modal v-show="isModalVisible" @close="closeModal" >
       <template v-slot:header>
-        Change {{ selectedPlayer.name }}
+        Replace {{ selectedPlayer.name }} by
       </template>
       <template v-slot:body>
         <div>
-          <div>
-            RECHERCHE: 
+          <div class="search-section">
+            SEARCH: 
             <input 
               ype="text"
               @input="inputUpdate"
               :value="inputSearchPlayer"/>
           </div>
-          <div class="player-replace-list" v-for="player in searchPlayers" :key="player.id">
-            <div @click="openReplacePlayer(player)" :class="{'selected': replacementPlayer.id === player.id}">{{ player.title.rendered }}</div>
+          <div class="player-replace-list" v-for="player in allAvailablePlayers" :key="player.id">
+            <div @click="selectReplacementPlayer(player)" :class="{'selected': replacementPlayer.id === player.id}">{{ player.title.rendered }}</div>
           </div>
         </div>
       </template>
@@ -136,6 +135,8 @@
 import PlayerInGame from "@/models/PlayerInGame"
 import $settings from "@/data/settings.json"
 
+import GameDataService from "@/services/GameDataService"
+
 import { VueDraggableNext } from 'vue-draggable-next'
 
 export default {
@@ -145,6 +146,12 @@ export default {
   computed: {
     allPlayers() {
       return this.$store.getters.getAllPlayers
+    },
+    allAvailablePlayers() {
+      return this.allPlayers
+        .filter(player => this.players.home.map(p => p.id).indexOf(player.id) === -1)
+        .filter(player => this.players.away.map(p => p.id).indexOf(player.id) === -1)
+        .filter(player => this.inputSearchPlayer?.length ? player.title?.rendered.toLowerCase()?.indexOf(this.inputSearchPlayer.toLowerCase()) !== -1: true)
     },
     activeBox() {
       return this.active?.outcomeBox?.split("_")
@@ -179,20 +186,21 @@ export default {
       editMode: false,
       gameId: null,
 
+      inputSearchPlayer: [],
       isModalVisible: false,
       selectedPlayer: {name: "Peanuts"},
-      searchPlayers: [],
       replacementPlayer: {id:null},
+      rbiValue: null,
     }
   },
   methods: {
     addPlayer(teamPlayers) {
-      const player = this.allPlayers[0]
-      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${this.id++}` }))
+      const player = this.allAvailablePlayers[0]
+      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
     },
     editPlayer(player, list) {
       this.isModalVisible = true
-      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number :  `P${this.id++}`  })
+      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number :  `P${++this.id}`  })
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
@@ -275,12 +283,11 @@ export default {
     },
     setRBI() {
       if (this.activePlayerBox && !this.editMode) {
-        this.activePlayerBox.rbiBy = this.rbiValue || this.$refs.rbiValue.value;
-        if (this.rbiValue || this.$refs.rbiValue.value) {
+        this.activePlayerBox.rbiBy = this.rbiValue;
+        if (this.rbiValue) {
           this.activePlayerBox.onBasePosition = "point"
         }
         this.rbiValue = null
-        this.$refs.rbiValue.value = null
       }
     },
     setInningEnd() {
@@ -293,15 +300,9 @@ export default {
     },
     inputUpdate(event) {
       this.inputSearchPlayer = event.target.value
-      if(this.inputSearchPlayer !== "") {
-        this.searchPlayers = this.allPlayers.filter(player => player.title?.rendered.toLowerCase()?.indexOf(event.target.value.toLowerCase()) !== -1)
-      }
-      else {
-        this.searchPlayers = this.allPlayers
-      }
     },
-    openReplacePlayer(player) {
-      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number :  `P${this.id++}`})
+    selectReplacementPlayer(player) {
+      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number :  `P${++this.id}`})
     },
     replacePlayer() {
       if(this.replacementPlayer?.id){
@@ -321,14 +322,11 @@ export default {
           this.players.away.splice(awayIndex,1,this.replacementPlayer)
 
         }
-        console.log(homeIndex, awayIndex,this.players.home,this.selectedPlayer, this.replacementPlayer.id)
         this.replacementPlayer = {id:null}
         this.inputSearchPlayer = ""
         this.selectedPlayer = {name:null}
-        this.searchPlayers = this.allPlayers
-    
       }
-    }
+    },
 
   },
   created() {
@@ -340,11 +338,10 @@ export default {
       this.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
 
       this.players.away = this.$store.getters.getPlayersInTeam(this.teams.away.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${this.id++}`}))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}`}))
       this.players.home = this.$store.getters.getPlayersInTeam(this.teams.home.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${this.id++}` }))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` }))
     }
-    this.searchPlayers = this.allPlayers
   },
 }
 </script>
@@ -502,7 +499,10 @@ table {
     opacity: 0.75;
     cursor: pointer;
   }
-  
+}
+.search-section {
+  position: absolute;
+  top: 0;
 }
 
 </style>

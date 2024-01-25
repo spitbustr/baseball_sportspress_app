@@ -108,6 +108,7 @@ export default {
 .modal-body {
   position: relative;
   padding: 20px 10px;
+  height: 100%;
 }
 
 .btn-close {
