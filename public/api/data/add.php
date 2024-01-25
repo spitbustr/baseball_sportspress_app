@@ -13,17 +13,19 @@ $scoresheet = new Scoresheet($db);
 // Check the request method
 $method = $_SERVER['REQUEST_METHOD'];
 if ($method === "POST") {
-    // Use $_POST to get form data
-    $data = array(
-        "gameId" => isset($_POST["gameId"]) ? $_POST["gameId"] : "",
-        "jsonObject" => isset($_POST["jsonObject"]) ? $_POST["jsonObject"] : ""
-    );
+    // Initialize $data as an object
+    $data = new stdClass();
+    $input_data = file_get_contents('php://input');
+    // Decode the JSON data
+    $json_data = json_decode($input_data);
 
-    if (!empty($data["gameId"])) {
-        $scoresheet->gameId = $data["gameId"];
-        $scoresheet->jsonObject = $data["jsonObject"];
-
-        if ($scoresheet->add()) {
+    // Access the properties
+    $data->gameId = !empty($json_data->gameId) ? $json_data->gameId : "";
+    $data->jsonObject = !empty($json_data->jsonObject) ? $json_data->jsonObject : "";
+    $data->id = !empty($json_data->id) ? $json_data->id : "";
+    echo json_encode(array("message" => $json_data));
+    if (!empty($data->gameId)) {
+        if ($scoresheet->add($data)) {
             http_response_code(200);
             echo json_encode(array("message" => "Item added"));
         } else {

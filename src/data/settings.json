@@ -1,6 +1,6 @@
 {
 
-    "api": {
+    "sportspressApi": {
         "teams": "/wp-json/sportspress/v2/teams",
         "players":  "/wp-json/sportspress/v2/players",
         "games":  "/wp-json/sportspress/v2/calendars",
@@ -16,5 +16,9 @@
         "currentSeasonSlug": "saison-2022",
         "innings": [1,2,3,4,5,6,7,8],
         "season": 67
+    },
+
+    "scoresheetAPI": {
+        "url": "http://shawnboivin.com/baseballAPI/api/data/"
     }
 }

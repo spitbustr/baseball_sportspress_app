@@ -15,11 +15,17 @@
     // Check the request method
     $method = $_SERVER['REQUEST_METHOD'];
     if($method === "POST") {
+        // Initialize $data as an object
         $data = new stdClass();
+        $input_data = file_get_contents('php://input');
+        // Decode the JSON data
+        $json_data = json_decode($input_data);
 
-        $data->gameId = !empty($_POST["gameId"]) ? $_POST["gameId"] : "";
-        $data->jsonObject = !empty($_POST["jsonObject"]) ? $_POST["jsonObject"] : "";
-        $data->id = !empty($_POST["id"]) ? $_POST["id"] : "";
+        // Access the properties
+        $data->gameId = !empty($json_data->gameId) ? $json_data->gameId : "";
+        $data->jsonObject = !empty($json_data->jsonObject) ? $json_data->jsonObject : "";
+        $data->id = !empty($json_data->id) ? $json_data->id : "";
+
         if(!empty($data->id)) {
             if ($scoresheet->updateById($data)) {
                 http_response_code(200);

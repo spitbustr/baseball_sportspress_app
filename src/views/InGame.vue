@@ -1,32 +1,32 @@
 <template>
   <div>
     <div>
-      Game {{ game.id }}
+      Game {{ scoresheet.game.id }}
     </div>
 
     <div :class="{ 'editMode': editMode }" class="tables-container">
       <div>
         <div>
-          {{ teams.away.title.rendered }}
+          {{ scoresheet.teams.away.title.rendered }}
         </div>
         <table>
           <thead>
             <tr>
               <th>#</th>
               <th>Player</th>
-              <th v-for="inning in innings" :key="inning">{{ inning }}</th>
+              <th v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
             </tr>
           </thead>
-          <draggable tag="tbody" :list="players.away" :options="{ animation: 150, group: 'players' }" ghost-class="ghost"
+          <draggable tag="tbody" :list="scoresheet.players.away" :options="{ animation: 150, group: 'players' }" ghost-class="ghost"
             :disabled="!editMode">
-            <tr v-for="(player, $index) in players.away" :key="$index">
+            <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
               <td>{{ player.assignedNumber }}</td>
               <td class="player-buttom-container">
-                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, players.away)">X</button>
+                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, scoresheet.players.away)">X</button>
                 <span v-html="player.name"></span>
-                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, players.away)">SWAP</button>
+                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, scoresheet.players.away)">SWAP</button>
               </td>
-              <td v-for="inning in innings" :key="inning" @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
+              <td v-for="inning in scoresheet.innings" :key="inning" @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
                 :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }" class="ingame-outcome-box">
                 <OutcomeBox :outcome="player.outcome[inning]"></OutcomeBox>
               </td>
@@ -39,26 +39,26 @@
       </div>
       <div>
         <div>
-          {{ teams.home.title.rendered }}
+          {{ scoresheet.teams.home.title.rendered }}
         </div>
         <table>
           <thead>
             <tr>
               <th>#</th>
               <th>Player</th>
-              <th v-for="inning in innings" :key="inning">{{ inning }}</th>
+              <th v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
             </tr>
           </thead>
-          <draggable tag="tbody" :list="players.home" :options="{ animation: 150, group: 'players' }" ghost-class="ghost"
+          <draggable tag="tbody" :list="scoresheet.players.home" :options="{ animation: 150, group: 'players' }" ghost-class="ghost"
             :disabled="!editMode">
-            <tr v-for="(player, $index) in players.home" :key="$index">
+            <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
               <td>{{ player.assignedNumber }}</td>
               <td class="player-buttom-container">
-                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, players.home)">X</button>
+                <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, scoresheet.players.home)">X</button>
                 <span v-html="player.name"></span>
-                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, players.home)">SWAP</button>
+                <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, scoresheet.players.home)">SWAP</button>
               </td>
-              <td v-for="inning in innings" :key="inning" @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
+              <td v-for="inning in scoresheet.innings" :key="inning" @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
                 :class="{ active: active.outcomeBox === `outcome_home_${$index}_${inning}` }" class="ingame-outcome-box">
                 <OutcomeBox :outcome="player.outcome[inning]"></OutcomeBox>
               </td>
@@ -135,7 +135,7 @@
 import PlayerInGame from "@/models/PlayerInGame"
 import $settings from "@/data/settings.json"
 
-import GameDataService from "@/services/GameDataService"
+import ScoresheetAPIService from "@/services/ScoresheetAPIService"
 
 import { VueDraggableNext } from 'vue-draggable-next'
 
@@ -149,15 +149,15 @@ export default {
     },
     allAvailablePlayers() {
       return this.allPlayers
-        .filter(player => this.players.home.map(p => p.id).indexOf(player.id) === -1)
-        .filter(player => this.players.away.map(p => p.id).indexOf(player.id) === -1)
+        .filter(player => this.scoresheet.players.home.map(p => p.id).indexOf(player.id) === -1)
+        .filter(player => this.scoresheet.players.away.map(p => p.id).indexOf(player.id) === -1)
         .filter(player => this.inputSearchPlayer?.length ? player.title?.rendered.toLowerCase()?.indexOf(this.inputSearchPlayer.toLowerCase()) !== -1: true)
     },
     activeBox() {
       return this.active?.outcomeBox?.split("_")
     },
     activePlayer() {
-      return this.players?.[this.activeBox?.[1]]?.[this.activeBox?.[2]] || null
+      return this.scoresheet.players?.[this.activeBox?.[1]]?.[this.activeBox?.[2]] || null
     },
     activePlayerBox() {
       return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
@@ -168,35 +168,38 @@ export default {
   },
   data() {
     return {
-      innings: $settings.websiteConfig.innings,
-      players: {
-        home: [],
-        away: []
+      scoresheet: {
+        innings: null,
+        players: {
+          home: [],
+          away: []
+        },
+        teams: {
+          away: null,
+          home: null,
+        },
+        gameId: null,
+        game: null,
       },
-      active: {
-        player: null,
-        outcomeBox: null
-      },
-      game: null,
-      teams: {
-        away: null,
-        home: null,
-      },
+
       id: 0,
       editMode: false,
-      gameId: null,
-
       inputSearchPlayer: [],
       isModalVisible: false,
       selectedPlayer: {name: "Peanuts"},
       replacementPlayer: {id:null},
       rbiValue: null,
+      active: {
+        player: null,
+        outcomeBox: null
+      },
     }
   },
   methods: {
     addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
       teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
+      ScoresheetAPIService.saveData(this.scoresheet)
     },
     editPlayer(player, list) {
       this.isModalVisible = true
@@ -204,8 +207,10 @@ export default {
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
-      if (playerIndex !== -1)
+      if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
+        ScoresheetAPIService.saveData(this.scoresheet)
+      }
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
@@ -218,13 +223,14 @@ export default {
     setAtBase(base) {
       if (this.activePlayerBox && !this.editMode) {
         const activeBox = this.active.outcomeBox?.split("_")
-        const activePlayer = this.players[activeBox[1]]?.[activeBox[2]]
+        const activePlayer = this.scoresheet.players[activeBox[1]]?.[activeBox[2]]
         if (this.activePlayerBox.onBasePosition === base) {
           this.activePlayerBox.onBasePosition = null
         }
         else {
           this.activePlayerBox.onBasePosition = base
         }
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
 
     },
@@ -274,11 +280,14 @@ export default {
               break
           }
         }
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
+      ScoresheetAPIService.saveData(this.scoresheet)
     },
     setPutOut() {
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.putOut = !this.activePlayerBox.putOut
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
     },
     setRBI() {
@@ -288,11 +297,13 @@ export default {
           this.activePlayerBox.onBasePosition = "point"
         }
         this.rbiValue = null
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
     },
     setInningEnd() {
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
     },
     closeModal() {
@@ -307,41 +318,51 @@ export default {
     replacePlayer() {
       if(this.replacementPlayer?.id){
         this.isModalVisible = false
-        const homeIndex = this.players.home.findIndex(p => {
+        const homeIndex = this.scoresheet.players.home.findIndex(p => {
           return p.id == this.selectedPlayer.id
         })
-        const awayIndex = this.players.away.findIndex(p => {
+        const awayIndex = this.scoresheet.players.away.findIndex(p => {
           return p.id == this.selectedPlayer.id
         })
 
 
         if(homeIndex !== -1) {
-          this.players.home.splice(homeIndex,1,this.replacementPlayer)
+          this.scoresheet.players.home.splice(homeIndex,1,this.replacementPlayer)
         }
         if(awayIndex !== -1) {
-          this.players.away.splice(awayIndex,1,this.replacementPlayer)
+          this.scoresheet.players.away.splice(awayIndex,1,this.replacementPlayer)
 
         }
         this.replacementPlayer = {id:null}
         this.inputSearchPlayer = ""
         this.selectedPlayer = {name:null}
+        ScoresheetAPIService.saveData(this.scoresheet)
       }
     },
 
   },
-  created() {
-    this.gameId = this.$route?.params?.gameId
-    if (this.gameId) {
-      this.game = this.$store.getters.getGame(this.gameId)
-
-      this.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
-      this.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
-
-      this.players.away = this.$store.getters.getPlayersInTeam(this.teams.away.id)
+  async created() {
+    this.scoresheet.gameId = this.$route?.params?.gameId
+    if (this.scoresheet.gameId) {
+      this.scoresheet.game = this.$store.getters.getGame(this.scoresheet.gameId)
+      this.scoresheet.innings = $settings.websiteConfig.innings
+      this.scoresheet.teams.away = this.$store.getters.getTeam(this.scoresheet.game?.teams[0])
+      this.scoresheet.teams.home = this.$store.getters.getTeam(this.scoresheet.game?.teams[1])
+      this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}`}))
-      this.players.home = this.$store.getters.getPlayersInTeam(this.teams.home.id)
+      this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` }))
     }
+    await ScoresheetAPIService.loadData(this.scoresheet.gameId).then(result => {
+      const obj = JSON.parse(result.jsonObject)
+      console.log(obj)
+      obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
+      obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
+      this.scoresheet = obj
+    })
+    .catch(error => {
+      console.log(error)
+    })
   },
 }
 </script>

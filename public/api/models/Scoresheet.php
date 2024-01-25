@@ -36,14 +36,18 @@
             return $stmt;
         }
 
-        function add(){
+        function add($newData){
             $query = "INSERT INTO " . $this->table_name . " (gameId, jsonObject) VALUES (:gameId, :jsonObject)";
 
             // prepare query
             $stmt = $this->conn->prepare($query);
-            // bind values
-            $stmt->bindParam(":gameId", $this->gameId);
-            $stmt->bindParam(":jsonObject", $this->jsonObject);
+            // Bind parameters
+            // Create temporary variables to store casted values
+            $jsonObject = (string)json_encode($newData->jsonObject);
+            $gameId = (string)$newData->gameId;
+
+            $stmt->bindParam(":gameId", $gameId);
+            $stmt->bindParam(":jsonObject", $jsonObject);
             // execute query
             if($stmt->execute()){
                 $this->conn = null;
@@ -73,13 +77,19 @@
             $query = "UPDATE " . $this->table_name . " SET jsonObject = :jsonObject, gameId = :gameId WHERE id = :id";
             $stmt = $this->conn->prepare($query);
             // Bind parameters
-            $stmt->bindParam(':jsonObject', $newData->jsonObject);
-            $stmt->bindParam(':gameId', $newData->gameId);
+            // Create temporary variables to store casted values
+            $jsonObject = (string)json_encode($newData->jsonObject);
+            $gameId = (string)$newData->gameId;
+
+            $stmt->bindParam(':jsonObject',$jsonObject);
+            $stmt->bindParam(':gameId', $gameId);
             $stmt->bindParam(':id', $newData->id);
 
             if ($stmt->execute()) {
+                echo json_encode(array("message" => "Worked"));
                 return true;
             } else {
+                echo json_encode(array("message" => "Error"));
                 return false;
             }
         }
