@@ -88,6 +88,9 @@ export default createStore({
       return state.data.players
         .filter(p => p.current_teams.flat().indexOf(+teamId) !== -1 && p?.title?.rendered.indexOf("(R)") === -1)
     },
+    getAllPlayers: (state) => {
+      return state.data.players
+    },
     getGame: (state) => (gameId) => {
       return state.data.games.find(g => g.id == +gameId)
     },
