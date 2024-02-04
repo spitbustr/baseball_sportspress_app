@@ -1,7 +1,34 @@
 import {clone} from "@/scripts/utilities"
 import $settings from "@/data/settings.json"
 
-
+const defaultTableResults = {
+    "0": {
+        one: "1",
+        two: "2",
+        three: "3",
+        four: "4",
+        five: "5",
+        six: "6",
+        seven: "7",
+        r: "R",
+        h: "H",
+        e: "E",
+        estwo: "ES"
+    }
+}
+const defaultTablePerformances = {
+    "0": {
+        ab: "",
+        oneb: "",
+        twob: "",
+        threeb: "",
+        cc: "",
+        cs: "",
+        p: "",
+        pp: "",
+        rab: ""
+    },
+}
 const defaultGameEvent = {
 
     // "teams" example
@@ -128,14 +155,74 @@ const defaultGameEvent = {
         // },
     },
 }
-export class GameEvent {
+export default class GameEvent {
     constructor(properties) {
         Object.assign(this, clone(defaultGameEvent), clone(properties))
+    }
+
+    prepareData(payload) {
+        console.log(payload)
+        this.teams = [payload.teams.away.id, payload.teams.away.id]
+        this.performance = this.generatePerformanceData(payload)
+        this.results = this.generateResultsData(payload)
+        this.players = this.generatePlayersData(payload)
+        this.main_results =  [payload.scores.away.runs[0],payload.scores.home.runs[0]],
+        this.outcome = this.generateOutcome(payload),
+        this.winner =  this.generateWinner(payload)
+    }
+    generatePerformanceData(payload) {
+        const performance = []
+    }
+    generateResultsData(payload) {
+
+        let results = {}
+        results[`"${payload.teams.away.id}"`] = {
+            one: payload.scores.away.runs[1],
+            two: payload.scores.away.runs[2],
+            three: payload.scores.away.runs[2],
+            four: payload.scores.away.runs[2],
+            five: payload.scores.away.runs[2],
+            six: payload.scores.away.runs[2],
+            seven: payload.scores.away.runs[2],
+            r: payload.scores.away.runs[0],
+            h: payload.scores.away.hits,
+            e: payload.scores.away.errors,
+            estwo: payload.scores.away.estwo,
+            outcome: [
+                payload.scores.away.outcome
+            ]
+        }
+        results[`"${payload.teams.home.id}"`] = {
+            one: payload.scores.home.runs[1],
+            two: payload.scores.home.runs[2],
+            three: payload.scores.home.runs[2],
+            four: payload.scores.home.runs[2],
+            five: payload.scores.home.runs[2],
+            six: payload.scores.home.runs[2],
+            seven: payload.scores.home.runs[2],
+            r: payload.scores.home.runs[0],
+            h: payload.scores.home.hits,
+            e: payload.scores.home.errors,
+            estwo: payload.scores.home.estwo,
+            outcome: [
+                payload.scores.home.outcome
+            ]
+        }
+        results["0"] = defaultTableResults
+        return results
+    }
+    generatePlayersData(payload) {
+        const players = []
+        players.push(0)
+        payload.players.away.forEach(player => {
+            players.push(player.id)
+        })
+        players.push(0)
+        payload.players.home.forEach(player => {
+            players.push(player.id)
+        })
+        return players
     }
 }
 
-export class Performance {
-    constructor(properties) {
-        Object.assign(this, clone(defaultGameEvent), clone(properties))
-    }
-}
+

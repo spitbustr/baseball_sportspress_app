@@ -1,4 +1,5 @@
 import axios from "axios"
+import { clone } from "@/scripts/utilities"
 import $settings from "@/data/settings.json"
 
 export default class ScoresheetAPIService {
@@ -47,9 +48,8 @@ export default class ScoresheetAPIService {
     }
     static shirinkObject(obj) {
         const payload = JSON.parse(JSON.stringify(obj))
-        console.log(payload)
-        const teamHome = payload.teams.home.id
-        const teamAway = payload.teams.away.id
+        const teamHome = clone(payload.teams.home.id)
+        const teamAway = clone(payload.teams.away.id)
         payload.teams = {
             home: teamHome,
             away: teamAway,
@@ -62,7 +62,8 @@ export default class ScoresheetAPIService {
                 number: p.number,
                 title: {
                     rendered: p.title.rendered
-                }
+                },
+                team: teamHome,
             }
         })
         payload.players.away = payload.players.away.map(p => {
@@ -73,7 +74,8 @@ export default class ScoresheetAPIService {
                 number: p.number,
                 title: {
                     rendered: p.title.rendered
-                }
+                },
+                team: teamHome,
             }
         })
         return payload

@@ -3,7 +3,7 @@
     <div>
       Game {{ game.id }}
     </div>
-
+    <button @click="sendDataToWebsite">SEND DATA</button>
     <div :class="{ 'editMode': editMode }" class="tables-container">
       <div>
         <div>
@@ -112,8 +112,8 @@
       <template v-slot:body>
         <div>
           <div class="search-section">
-            SEARCH: 
-            <input 
+            SEARCH:
+            <input
               ype="text"
               @input="inputUpdate"
               :value="inputSearchPlayer"/>
@@ -133,8 +133,9 @@
 </template>
 <script>
 import PlayerInGame from "@/models/PlayerInGame"
+import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
-
+import {removeAccents} from "@/scripts/utilities"
 import ScoresheetAPIService from "@/services/ScoresheetAPIService"
 
 import { VueDraggableNext } from 'vue-draggable-next'
@@ -151,7 +152,7 @@ export default {
       return this.allPlayers
         .filter(player => this.scoresheet.players.home.map(p => p.id).indexOf(player.id) === -1)
         .filter(player => this.scoresheet.players.away.map(p => p.id).indexOf(player.id) === -1)
-        .filter(player => this.inputSearchPlayer?.length ? player.title?.rendered.toLowerCase()?.indexOf(this.inputSearchPlayer.toLowerCase()) !== -1: true)
+        .filter(player => this.inputSearchPlayer?.length ? removeAccents(player.title?.rendered.toLowerCase())?.indexOf(removeAccents(this.inputSearchPlayer.toLowerCase())) !== -1: true)
     },
     activeBox() {
       return this.active?.outcomeBox?.split("_")
@@ -186,6 +187,7 @@ export default {
         away: null
       },
       game: null,
+      gameEvent: new GameEvent(),
       id: 0,
       editMode: false,
       inputSearchPlayer: [],
@@ -309,6 +311,9 @@ export default {
         this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
         ScoresheetAPIService.saveData(this.scoresheet)
       }
+    },
+    sendDataToWebsite() {
+      this.gameEvent.prepareData(this.scoresheet)
     },
     closeModal() {
       this.isModalVisible = false
