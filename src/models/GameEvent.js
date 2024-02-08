@@ -169,6 +169,7 @@ export default class GameEvent {
         this.main_results =  [payload.scores.away.runs[0],payload.scores.home.runs[0]],
         this.outcome = this.generateOutcome(payload),
         this.winner =  this.generateWinner(payload)
+        console.log(this)
     }
     generatePerformanceData(payload) {
         const performance = []
@@ -177,35 +178,41 @@ export default class GameEvent {
 
         let results = {}
         results[`"${payload.teams.away.id}"`] = {
-            one: payload.scores.away.runs[1],
-            two: payload.scores.away.runs[2],
-            three: payload.scores.away.runs[2],
-            four: payload.scores.away.runs[2],
-            five: payload.scores.away.runs[2],
-            six: payload.scores.away.runs[2],
-            seven: payload.scores.away.runs[2],
-            r: payload.scores.away.runs[0],
-            h: payload.scores.away.hits,
-            e: payload.scores.away.errors,
-            estwo: payload.scores.away.estwo,
+            one: payload.scores.away?.runs?.[1],
+            two: payload.scores.away?.runs?.[2],
+            three: payload.scores.away?.runs?.[3],
+            four: payload.scores.away?.runs?.[4],
+            five: payload.scores.away?.runs?.[5],
+            six: payload.scores.away?.runs?.[6],
+            seven: payload.scores.away?.runs?.[7],
+            eight: payload.scores.away?.runs?.[8],
+            nine: payload.scores.away?.runs?.[9],
+            ten: payload.scores.away?.runs?.[10],
+            r: payload.scores.away?.runs?.[0],
+            h: payload.scores.away?.hits,
+            e: payload.scores.away?.errors,
+            estwo: payload.scores.away?.estwo,
             outcome: [
-                payload.scores.away.outcome
+                payload.scores.away?.outcome
             ]
         }
         results[`"${payload.teams.home.id}"`] = {
-            one: payload.scores.home.runs[1],
-            two: payload.scores.home.runs[2],
-            three: payload.scores.home.runs[2],
-            four: payload.scores.home.runs[2],
-            five: payload.scores.home.runs[2],
-            six: payload.scores.home.runs[2],
-            seven: payload.scores.home.runs[2],
-            r: payload.scores.home.runs[0],
-            h: payload.scores.home.hits,
-            e: payload.scores.home.errors,
-            estwo: payload.scores.home.estwo,
+            one: payload.scores.home?.runs?.[1],
+            two: payload.scores.home?.runs?.[2],
+            three: payload.scores.home?.runs?.[3],
+            four: payload.scores.home?.runs?.[4],
+            five: payload.scores.home?.runs?.[5],
+            six: payload.scores.home?.runs?.[6],
+            seven: payload.scores.home.runs?.[7],
+            eight: payload.scores.home?.runs?.[8],
+            nine: payload.scores.home?.runs?.[9],
+            ten: payload.scores.home?.runs?.[10],
+            r: payload.scores.home?.runs?.[0],
+            h: payload.scores.home?.hits,
+            e: payload.scores.home?.errors,
+            estwo: payload.scores.home?.estwo,
             outcome: [
-                payload.scores.home.outcome
+                payload.scores.home?.outcome
             ]
         }
         results["0"] = defaultTableResults
@@ -222,6 +229,15 @@ export default class GameEvent {
             players.push(player.id)
         })
         return players
+    }
+    generateScores(payload) {
+        console.log(payload)
+    }
+    generateOutcome(payload) {
+
+    }
+    generateWinner(payload) {
+
     }
 }
 

@@ -105,7 +105,7 @@
         </div>
       </div>
     </div>
-    <Modal v-show="isModalVisible" @close="closeModal" >
+    <Modal v-show="isPlayerModalVisible" @close="closeModal" >
       <template v-slot:header>
         Replace {{ selectedPlayer.name }} by
       </template>
@@ -126,6 +126,21 @@
       <template v-slot:footer>
         <div class="player-replace-footer">
           <button @click="replacePlayer">ACCEPTER</button>
+        </div>
+      </template>
+    </Modal>
+    <Modal v-show="isOutcomeModalVisible" @close="closeModal" >
+      <template v-slot:header>
+        {{ selectedBatterOrder }} - Inning <b>{{ selectedInning }}</b>
+      </template>
+      <template v-slot:body>
+        <div>
+          <OutcomeBoxModal :selectedScoreBox="selectedOutcomeBox"></OutcomeBoxModal>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="acceptOutcomePlayer">ACCEPTER</button>
         </div>
       </template>
     </Modal>
@@ -166,6 +181,12 @@ export default {
     numberOfInnings() {
       return $settings.websiteConfig.innings.length
     },
+    selectedInning() {
+      return this.activeBox?.[3]
+    },
+    selectedBatterOrder() {
+      return this.scoresheet.players?.[this.activeBox?.[1]]?.[this.activeBox?.[2]]?.name
+    },
   },
   data() {
     return {
@@ -180,6 +201,22 @@ export default {
           away: null
         },
         gameId: null,
+        scores: {
+          away: {
+            runs: [],
+            errors: 0,
+            estwo: 0,
+            hits: 0,
+            outcome: "",
+          },
+          home: {
+            runs: [],
+            errors: 0,
+            estwo: 0,
+            hits: 0,
+            outcome: "",
+          }
+        }
 
       },
       teams:  {
@@ -191,8 +228,12 @@ export default {
       id: 0,
       editMode: false,
       inputSearchPlayer: [],
-      isModalVisible: false,
+
+      isOutcomeModalVisible: false,
+      isPlayerModalVisible: false,
+
       selectedPlayer: {name: "Peanuts"},
+      selectedOutcomeBox: {name: "Peanuts"},
       replacementPlayer: {id:null},
       rbiValue: null,
       active: {
@@ -206,22 +247,26 @@ export default {
     addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
       teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
-      ScoresheetAPIService.saveData(this.scoresheet)
+      this.updateData()
     },
     editPlayer(player, list) {
-      this.isModalVisible = true
+      this.isPlayerModalVisible = true
       this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number :  `P${++this.id}`  })
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
         this.active.outcomeBox = id
+      }
+      else if(!this.editMode) {
+        this.selectedOutcomeBox = this.activePlayerBox
+        this.isOutcomeModalVisible = true
       }
     },
     toggleEditMode() {
@@ -229,15 +274,13 @@ export default {
     },
     setAtBase(base) {
       if (this.activePlayerBox && !this.editMode) {
-        const activeBox = this.active.outcomeBox?.split("_")
-        const activePlayer = this.scoresheet.players[activeBox[1]]?.[activeBox[2]]
         if (this.activePlayerBox.onBasePosition === base) {
           this.activePlayerBox.onBasePosition = null
         }
         else {
           this.activePlayerBox.onBasePosition = base
         }
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
 
     },
@@ -287,13 +330,13 @@ export default {
               break
           }
         }
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
     setPutOut() {
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.putOut = !this.activePlayerBox.putOut
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
     setRBI() {
@@ -303,20 +346,21 @@ export default {
           this.activePlayerBox.onBasePosition = "point"
         }
         this.rbiValue = null
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
     setInningEnd() {
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
     sendDataToWebsite() {
       this.gameEvent.prepareData(this.scoresheet)
     },
     closeModal() {
-      this.isModalVisible = false
+      this.isPlayerModalVisible = false
+      this.isOutcomeModalVisible = false
     },
     inputUpdate(event) {
       this.inputSearchPlayer = event.target.value
@@ -326,7 +370,7 @@ export default {
     },
     replacePlayer() {
       if(this.replacementPlayer?.id){
-        this.isModalVisible = false
+        this.isPlayerModalVisible = false
         const homeIndex = this.scoresheet.players.home.findIndex(p => {
           return p.id == this.selectedPlayer.id
         })
@@ -345,9 +389,13 @@ export default {
         this.replacementPlayer = {id:null}
         this.inputSearchPlayer = ""
         this.selectedPlayer = {name:null}
-        ScoresheetAPIService.saveData(this.scoresheet)
+        this.updateData()
       }
     },
+    updateData() {
+      this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
+      ScoresheetAPIService.saveData(this.scoresheet)
+    }
 
   },
   async created() {
