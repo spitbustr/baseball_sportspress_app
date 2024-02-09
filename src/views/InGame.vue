@@ -134,7 +134,7 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div class="player-replace-footer">
+        <div class="outcome-save-button">
           <button @click="saveOutcome">Save</button>
         </div>
       </template>
@@ -270,7 +270,7 @@ export default {
     },
 
     sendDataToWebsite() {
-      // this.gameEvent.prepareData(this.scoresheet)
+      this.gameEvent.prepareData(this.scoresheet)
     },
     closeModal() {
       this.isPlayerModalVisible = false
@@ -313,8 +313,7 @@ export default {
     },
     updateData() {
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
-      console.log("SCORE",this.scoresheet.scores)
-      // ScoresheetAPIService.saveData(this.scoresheet)
+      ScoresheetAPIService.saveData(this.scoresheet)
     },
     updateOutcomeBox(value) {
       this.working_selectedOutcomeBox = value
@@ -487,6 +486,7 @@ export default {
       height: 100%;
     }
   }
+
   .player-button-container {
     position: relative;
 
@@ -523,5 +523,12 @@ export default {
     margin: 1rem auto;
   }
 
+}
+.outcome-save-button {
+  button {
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+  }
 }
 </style>
