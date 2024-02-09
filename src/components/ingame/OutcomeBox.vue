@@ -13,7 +13,7 @@
       O
     </div>
     <div class="center-field rbi-result" v-if="rbiResult && !isPutOut">
-      {{ rbiResult }}
+      {{ rbiPlayer }}
     </div>
     <div class="inning-end" v-if="inningEnd">
       <img :src="inningEndImage" />
@@ -32,6 +32,9 @@ export default {
     countAsHR() {
       return this.outcome?.countAsHR || false
     },
+    rbiPlayer() {
+      return this.players?.find(p => p.id === this.outcome?.rbiBy)?.assignedNumber
+    },
     rbiResult() {
       return this.outcome?.rbiBy || ""
     },
@@ -47,6 +50,7 @@ export default {
   },
   props: {
     outcome: Object,
+    players: Array,
   },
 }
 </script>

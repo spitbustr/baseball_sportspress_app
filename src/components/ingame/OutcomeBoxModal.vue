@@ -26,6 +26,13 @@
             <button :class="{'active': playerAt('second')}" @click="setAtBase('second')" class="base second-base">2</button>
             <button :class="{'active': playerAt('first')}"  @click="setAtBase('first')" class="base first-base">1</button>
             <button :class="{'active': playerAt('point')}" @click="setAtBase('point')" class="base home-plate">H</button>
+            <div :class="[{'out': activePlayerBox?.putOut }]" class="outcome-rbi-out">{{ activePlayerBox?.putOut ? "O": rbiPlayer(activePlayerBox?.rbiBy) ?? "" }}</div>
+            <div v-if=" activePlayerBox?.onBasePosition === 'point'">
+              <select class="rbi-button" v-model="activePlayerBox.rbiBy">
+                <option :value="null">NO RBI</option>
+                <option v-for="player in players" :value="player.id" :key="player.id">{{ player.name }}</option>
+              </select>
+            </div>
           </div>
         </div>
       </div>
@@ -97,13 +104,13 @@ export default {
               break
             case "4B":
               this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
+              this.activePlayerBox.rbiBy = this.activePlayer?.id
               this.activePlayerBox.countAsHR = false
               this.activePlayerBox.putOut = false
               break
             case "HR":
               this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
+              this.activePlayerBox.rbiBy = this.activePlayer?.id
               this.activePlayerBox.countAsHR = true
               this.activePlayerBox.putOut = false
               break
@@ -149,14 +156,11 @@ export default {
         this.updateData()
       }
     },
-    setRBI() {
+    setRBI(rbi) {
+      console.log(rbi)
       this.activePlayerBox = clone(this.selectedOutcomeBox)
       if (this.activePlayerBox && !this.editMode) {
-        this.activePlayerBox.rbiBy = this.rbiValue;
-        if (this.rbiValue) {
-          this.activePlayerBox.onBasePosition = "point"
-        }
-        this.rbiValue = null
+        this.activePlayerBox.rbiBy = rbi
         this.updateData()
       }
     },
@@ -172,8 +176,10 @@ export default {
       this.activePlayerBox[propety] = value
       this.$emit("updateOutcome",this.activePlayerBox)
     },
+    rbiPlayer(id) {
+      return this.players?.find(p => p.id === id)?.assignedNumber
+    },
     playerAt(position) {
-      console.log(position, this.activePlayerBox?.onBasePosition)
       if(this.activePlayerBox?.onBasePosition === "first" ) {
         if(position === "first") {
           return true
@@ -200,6 +206,8 @@ export default {
   props: {
     selectedOutcomeBox: Object,
     isOutcomeModalVisible: Boolean,
+    activePlayer: Object,
+    players: Array,
   },
   watch: {
     isOutcomeModalVisible(value) {
@@ -249,17 +257,35 @@ export default {
 
   .second-base {
     top: 1.25rem;
-    left: 4.25rem;
+    left: 5.25rem;
   }
 
   .first-base {
     top: 5.25rem;
-    left: 8.5rem;
+    left: 10.5rem;
   }
 
   .home-plate {
     top: 9.25rem;
-    left: 4.25rem;
+    left: 5.25rem;
+  }
+  .outcome-rbi-out {
+    position: absolute;
+    top: 5.5rem;
+    left: 5rem;
+    font-weight: bold;
+    font-size: 2rem;
+    text-align: center;
+    width: 5.5rem;
+    &.out {
+      color: red;
+    }
+  }
+  .rbi-button {
+    position: absolute;
+    top: 12.5rem;
+    left: 1rem;
+    padding: 0.5rem 0.25rem;
   }
 
 </style>

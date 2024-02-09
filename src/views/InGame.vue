@@ -28,7 +28,7 @@
               </td>
               <td v-for="inning in scoresheet.innings" :key="inning" @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
                 :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }" class="ingame-outcome-box">
-                <OutcomeBox :outcome="player.outcome[inning]"></OutcomeBox>
+                <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
               </td>
             </tr>
           </draggable>
@@ -60,7 +60,7 @@
               </td>
               <td v-for="inning in scoresheet.innings" :key="inning" @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
                 :class="{ active: active.outcomeBox === `outcome_home_${$index}_${inning}` }" class="ingame-outcome-box">
-                <OutcomeBox :outcome="player.outcome[inning]"></OutcomeBox>
+                <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
               </td>
             </tr>
           </draggable>
@@ -106,7 +106,9 @@
           <OutcomeBoxModal
             :selectedOutcomeBox="working_selectedOutcomeBox"
             @updateOutcome="updateOutcomeBox($event)"
-            :isOutcomeModalVisible="isOutcomeModalVisible"></OutcomeBoxModal>
+            :activePlayer="activePlayer"
+            :isOutcomeModalVisible="isOutcomeModalVisible"
+            :players="scoresheet.players?.[this.activeBox?.[1]]"></OutcomeBoxModal>
         </div>
       </template>
       <template v-slot:footer>
