@@ -101,6 +101,16 @@
                 "name": "Put Out",
                 "value": "putOut"
             }
+        ],
+        "isConsideredAtBat": [
+          "1B",
+          "2B",
+          "3B",
+          "4B",
+          "HR",
+          "K",
+          "FC",
+          "E"
         ]
     }
 }

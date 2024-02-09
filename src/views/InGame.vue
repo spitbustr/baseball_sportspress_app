@@ -269,7 +269,7 @@ export default {
       this.editMode = !this.editMode
     },
 
-    sendDataToWebsite() {
+    async sendDataToWebsite() {
       this.gameEvent.prepareData(this.scoresheet)
     },
     closeModal() {

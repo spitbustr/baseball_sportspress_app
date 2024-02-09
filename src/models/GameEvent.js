@@ -1,180 +1,76 @@
 import {clone} from "@/scripts/utilities"
 import $settings from "@/data/settings.json"
+import SportspressAPIService from "@/services/SportspressAPIService"
 
-const defaultTableResults = {
-    "0": {
-        one: "1",
-        two: "2",
-        three: "3",
-        four: "4",
-        five: "5",
-        six: "6",
-        seven: "7",
-        r: "R",
-        h: "H",
-        e: "E",
-        estwo: "ES"
-    }
-}
-const defaultTablePerformances = {
-    "0": {
-        ab: "",
-        oneb: "",
-        twob: "",
-        threeb: "",
-        cc: "",
-        cs: "",
-        p: "",
-        pp: "",
-        rab: ""
-    },
-}
 const defaultGameEvent = {
-
-    // "teams" example
-    // [12, 15]
-    // Away team, Home team
-    teams: [],
-    // final score ["4","2"]
-    main_results: [],
-    // win loss {"405": "win", 566: "loss"}
-    outcome: {},
-    // winner : 405
-    winner: null,
-    // "players" example
-    // [0 , 1, 2, 3 , 4 , 0 , 1, 2, 3,... ]
-    // Add 0 to seperate away and home players
     players: [],
-    // "results" example
-    // {[team_id] : {[stats]}}
-    results: {
-        // "406": {
-        //     one: "5",
-        //     two: "0",
-        //     three: "2",
-        //     four: "1",
-        //     five: "2",
-        //     six: "0",
-        //     seven: "0",
-        //     r: "10",
-        //     h: "19",
-        //     e: "2",
-        //     estwo: "1",
-        //     outcome: [
-        //         "loss"
-        //     ]
-        // },
-        // "355": {
-        //     one: "5",
-        //     two: "2",
-        //     three: "2",
-        //     four: "5",
-        //     five: "5",
-        //     six: "0",
-        //     seven: "",
-        //     r: "19",
-        //     h: "26",
-        //     e: "1",
-        //     estwo: "1",
-        //     outcome: [
-        //         "win"
-        //     ]
-        // },
-        // "0": {
-        //     one: "1",
-        //     two: "2",
-        //     three: "3",
-        //     four: "4",
-        //     five: "5",
-        //     six: "6",
-        //     seven: "7",
-        //     r: "R",
-        //     h: "H",
-        //     e: "E",
-        //     estwo: "ES"
-        // }
-    },
-    // "performance" example
-    // {[player_id] : {[stats]}}
-    performance: {
-        // "406": {
-        //     "0": {
-        //         ab: "",
-        //         oneb: "",
-        //         twob: "",
-        //         threeb: "",
-        //         cc: "",
-        //         cs: "",
-        //         p: "",
-        //         pp: "",
-        //         rab: ""
-        //     },
-        //     "409": {
-        //         number: "",
-        //         ab: "4",
-        //         oneb: "1",
-        //         twob: "2",
-        //         threeb: "",
-        //         cc: "1",
-        //         cs: "4",
-        //         p: "2",
-        //         pp: "1",
-        //         rab: "",
-        //         status: "lineup",
-        //         sub: "0",
-        //         position: 0
-        //     },...
-        // },
-        // "296": {
-        //     "0": {
-        //         ab: "",
-        //         oneb: "",
-        //         twob: "",
-        //         threeb: "",
-        //         cc: "",
-        //         cs: "",
-        //         p: "",
-        //         pp: "",
-        //         rab: ""
-        //     },
-        //     "256": {
-        //         number: "",
-        //         ab: "4",
-        //         oneb: "1",
-        //         twob: "2",
-        //         threeb: "",
-        //         cc: "1",
-        //         cs: "4",
-        //         p: "2",
-        //         pp: "1",
-        //         rab: "",
-        //         status: "lineup",
-        //         sub: "0",
-        //         position: 0
-        //     },...
-        // },
-    },
+    results: {},
+    performance: {},
+    main_results: []
 }
 export default class GameEvent {
     constructor(properties) {
         Object.assign(this, clone(defaultGameEvent), clone(properties))
     }
 
-    prepareData(payload) {
-        this.teams = [payload.teams.away.id, payload.teams.away.id]
-        this.performance = this.generatePerformanceData(payload)
+    async prepareData(payload) {
+        this.id = payload.gameId
         this.results = this.generateResultsData(payload)
         this.players = this.generatePlayersData(payload)
-        this.main_results =  [payload.scores.away.runs[0],payload.scores.home.runs[0]],
-        this.outcome = this.generateOutcome(payload),
-        this.winner =  this.generateWinner(payload)
+        this.main_results = [
+            payload.scores.away?.runs?.[0],
+            payload.scores.home?.runs?.[0]
+        ]
+        this.generatePerformanceData(payload)
+        await SportspressAPIService.sendData(this)
         console.log(this)
     }
+    gernerateTeamPerformance(teamId, stance,payload) {
+        this.performance[teamId] = {}
+        payload.players[stance].forEach(player => {
+            this.performance[teamId][player.id] = {
+                number: player.number,
+                ab: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                     return total+(this.isConsideredAtBat(res) ? 1: 0)
+                },0),
+                oneb: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(res === "1B" ? 1: 0)
+                },0),
+                twob: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(res === "2B" ? 1: 0)
+                },0),
+                threeb: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(res === "3B" ? 1: 0)
+                },0),
+                cc: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(res === "4B" || res === "HR" ? 1: 0)
+                },0),
+                cs: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(this.isConsideredHit(res) ? 1: 0)
+                },0),
+                p: player.outcome.map(o => o.rbiBy).reduce((total,res) => {
+                    return total+(res ? 1: 0)
+                },0),
+                pp: payload?.players?.[stance]
+                    .map(p => p.outcome)
+                    .flat()
+                    .map(o => o.rbiBy)
+                    .filter(o => o === player.id)?.length,
+                rab: player?.outcome.map(o => o.atBatResult).reduce((total,res) => {
+                    return total+(res === "K" ? 1: 0)
+                },0),
+                status: "lineup",
+                sub: "0",
+                position: 0
+            }
+        })
+    }
     generatePerformanceData(payload) {
-        const performance = []
+        this.performance = {}
+        this.gernerateTeamPerformance(payload.teams.away.id, "away",payload)
+        this.gernerateTeamPerformance(payload.teams.home.id, "home",payload)
     }
     generateResultsData(payload) {
-
         let results = {}
         results[`"${payload.teams.away.id}"`] = {
             one: payload.scores.away?.runs?.[1] ?? 0,
@@ -214,7 +110,6 @@ export default class GameEvent {
                 payload.scores.home?.outcome
             ]
         }
-        results["0"] = defaultTableResults
         return results
     }
     generatePlayersData(payload) {
@@ -233,13 +128,21 @@ export default class GameEvent {
         const score = {
             away: {
                 runs: [],
+                hits: 0,
+                errors: 0,
+                estwo: 1
             },
             home: {
                 runs: [],
+                hits: 0,
+                errors: 0,
+                estwo: 1
             },
         }
         payload.players.away.forEach(player => {
             player.outcome.forEach((outcome,index)=> {
+                score.away.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
                 score.away.runs[index] = score.away.runs?.[index] ? score.away.runs[index] : 0
                 if(index !== 0) {
                     score.away.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
@@ -251,6 +154,8 @@ export default class GameEvent {
         })
         payload.players.home.forEach(player => {
             player.outcome.forEach((outcome,index)=> {
+                score.home.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
                 score.home.runs[index] = score.home.runs?.[index] ? score.home.runs[index] : 0
                 if(index !== 0) {
                     score.home.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
@@ -267,6 +172,12 @@ export default class GameEvent {
     }
     generateWinner(payload) {
 
+    }
+    isConsideredAtBat(result) {
+        return $settings.stats.isConsideredAtBat.indexOf(result) !== -1
+    }
+    isConsideredHit(result) {
+        return ["1B","2B","3B","4B","HR"].indexOf(result) !== -1
     }
 }
 

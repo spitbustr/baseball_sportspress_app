@@ -1,8 +1,15 @@
 import axios from "axios"
 import $settings from "@/data/settings.json"
+const configUrl = "/api/config/config.ini"
+
 
 export default class SportspressAPIService {
-
+  static async loadConfig() {
+    const ini = require('ini')
+    const response = await axios.get(configUrl)
+    const configData = ini.parse(response.data)
+    return configData;
+  }
   static async getCalendar() {
     const list = []
     await axios.get(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.calendars}?slug=${$settings.websiteConfig.currentSeasonSlug}`)
@@ -40,5 +47,20 @@ export default class SportspressAPIService {
       })
     }
     return list.flat()
+  }
+  static async sendData(payload) {
+    let token = null
+    await this.loadConfig().then(result => {
+      token = result.API_token.api_token
+    })
+    const headers = {
+      "Authorization": `Basic ${token}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    }
+    await axios.post(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
+    .then(res => {
+        console.log(res)
+    })
   }
 }
