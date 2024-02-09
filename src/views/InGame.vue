@@ -42,7 +42,7 @@
           <draggable tag="tbody" :list="scoresheet.players.away" :options="{ animation: 150, group: 'players' }" ghost-class="ghost"
             :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
-              <td>{{ player.assignedNumber }}</td>
+              <td>{{ player.assignedNumber }} - {{ player.id }}</td>
               <td class="player-button-container">
                 <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, scoresheet.players.away)">X</button>
                 <span v-html="player.name"></span>
@@ -350,7 +350,7 @@ export default {
       })
     }
     else {
-      // await ScoresheetAPIService.createData(this.scoresheet)
+      await ScoresheetAPIService.createData(this.scoresheet)
     }
     this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
   },

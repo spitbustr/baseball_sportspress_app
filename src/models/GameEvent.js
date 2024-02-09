@@ -22,8 +22,8 @@ export default class GameEvent {
             payload.scores.home?.runs?.[0]
         ]
         this.generatePerformanceData(payload)
+        console.log(this.performance)
         await SportspressAPIService.sendData(this)
-        console.log(this)
     }
     gernerateTeamPerformance(teamId, stance,payload) {
         this.performance[teamId] = {}
@@ -72,42 +72,44 @@ export default class GameEvent {
     }
     generateResultsData(payload) {
         let results = {}
-        results[`"${payload.teams.away.id}"`] = {
-            one: payload.scores.away?.runs?.[1] ?? 0,
-            two: payload.scores.away?.runs?.[2] ?? 0,
-            three: payload.scores.away?.runs?.[3] ?? 0,
-            four: payload.scores.away?.runs?.[4] ?? 0,
-            five: payload.scores.away?.runs?.[5] ?? 0,
-            six: payload.scores.away?.runs?.[6] ?? 0,
-            seven: payload.scores.away?.runs?.[7] ?? 0,
-            eight: payload.scores.away?.runs?.[8] ?? 0,
-            nine: payload.scores.away?.runs?.[9] ?? 0,
-            ten: payload.scores.away?.runs?.[10] ?? 0,
-            r: payload.scores.away?.runs?.[0] ?? 0,
-            h: payload.scores.away?.hits ?? 0,
-            e: payload.scores.away?.errors ?? 0,
-            estwo: payload.scores.away?.estwo ?? 0,
+        results[payload.teams.away.id] = {
+            one: (payload.scores.away?.runs?.[1] ?? 0).toString(),
+            two: (payload.scores.away?.runs?.[2] ?? 0).toString(),
+            three: (payload.scores.away?.runs?.[3] ?? 0).toString(),
+            four: (payload.scores.away?.runs?.[4] ?? 0).toString(),
+            five: (payload.scores.away?.runs?.[5] ?? 0).toString(),
+            six: (payload.scores.away?.runs?.[6] ?? 0).toString(),
+            seven: (payload.scores.away?.runs?.[7] ?? 0).toString(),
+            eight: (payload.scores.away?.runs?.[8] ?? 0).toString(),
+            nine: (payload.scores.away?.runs?.[9] ?? 0).toString(),
+            r: (payload.scores.away?.runs?.[0] ?? 0).toString(),
+            h: (payload.scores.away?.hits ?? 0).toString(),
+            e: (payload.scores.away?.errors ?? 0).toString(),
+            estwo: (payload.scores.away?.estwo?? 0).toString(),
             outcome: [
-                payload.scores.away?.outcome
+                payload.scores.away?.runs?.[0] > payload.scores.home?.runs?.[0]
+                ? "win"
+                : "loss"
             ]
         }
-        results[`"${payload.teams.home.id}"`] = {
-            one: payload.scores.home?.runs?.[1] ?? 0,
-            two: payload.scores.home?.runs?.[2] ?? 0,
-            three: payload.scores.home?.runs?.[3] ?? 0,
-            four: payload.scores.home?.runs?.[4] ?? 0,
-            five: payload.scores.home?.runs?.[5] ?? 0,
-            six: payload.scores.home?.runs?.[6] ?? 0,
-            seven: payload.scores.home.runs?.[7] ?? 0,
-            eight: payload.scores.home?.runs?.[8] ?? 0,
-            nine: payload.scores.home?.runs?.[9] ?? 0,
-            ten: payload.scores.home?.runs?.[10] ?? 0,
-            r: payload.scores.home?.runs?.[0] ?? 0,
-            h: payload.scores.home?.hits ?? 0,
-            e: payload.scores.home?.errors ?? 0,
-            estwo: payload.scores.home?.estwo ?? 0,
+        results[payload.teams.home.id] = {
+            one: (payload.scores.home?.runs?.[1] ?? 0).toString(),
+            two: (payload.scores.home?.runs?.[2] ?? 0).toString(),
+            three: (payload.scores.home?.runs?.[3] ?? 0).toString(),
+            four: (payload.scores.home?.runs?.[4] ?? 0).toString(),
+            five: (payload.scores.home?.runs?.[5] ?? 0).toString(),
+            six: (payload.scores.home?.runs?.[6] ?? 0).toString(),
+            seven: (payload.scores.home?.runs?.[7] ?? 0).toString(),
+            eight: (payload.scores.home?.runs?.[8] ?? 0).toString(),
+            nine: (payload.scores.home?.runs?.[9] ?? 0).toString(),
+            r: (payload.scores.home?.runs?.[0] ?? 0).toString(),
+            h: (payload.scores.home?.hits ?? 0).toString(),
+            e: (payload.scores.home?.errors ?? 0).toString(),
+            estwo: (payload.scores.home?.estwo?? 0).toString(),
             outcome: [
-                payload.scores.home?.outcome
+                payload.scores.away?.runs?.[0] < payload.scores.home?.runs?.[0]
+                    ? "win"
+                    : "loss"
             ]
         }
         return results
