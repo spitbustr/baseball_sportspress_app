@@ -33,7 +33,7 @@
             </tr>
           </draggable>
           <tr class="unclickable" v-if="editMode">
-            <td :colspan="numberOfInnings + 2"><button @click="addPlayer(players.away)">Add Player</button></td>
+            <td :colspan="numberOfInnings + 2" class="add-player-button"><button @click="addPlayer(scoresheet.players.away)">Add Player</button></td>
           </tr>
         </table>
       </div>
@@ -65,7 +65,7 @@
             </tr>
           </draggable>
           <tr class="unclickable" v-if="editMode">
-            <td :colspan="numberOfInnings + 2"><button @click="addPlayer(players.home)">Add Player</button></td>
+            <td :colspan="numberOfInnings + 2" class="add-player-button"><button @click="addPlayer(scoresheet.players.home)">Add Player</button></td>
           </tr>
         </table>
       </div>
@@ -412,7 +412,12 @@ table {
     }
   }
 }
-
+.add-player-button {
+  button {
+    width: 100%;
+    padding: 1rem;
+  }
+}
 .ingame-outcome-box {
   padding: 2px 0 0;
 }
@@ -450,7 +455,7 @@ table {
   margin-bottom: 8rem;
 }
 .player-replace-list {
-  padding: 0.15rem;
+  padding: 0.35rem;
   cursor: pointer;
   .selected{
     background: lime;

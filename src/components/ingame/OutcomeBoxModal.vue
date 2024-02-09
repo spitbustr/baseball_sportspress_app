@@ -33,6 +33,9 @@
                 <option v-for="player in players" :value="player.id" :key="player.id">{{ player.name }}</option>
               </select>
             </div>
+            <div v-if=" activePlayerBox?.countAsHR">
+              <div class="count-as-hr">*</div>
+            </div>
           </div>
         </div>
       </div>
@@ -286,6 +289,12 @@ export default {
     top: 12.5rem;
     left: 1rem;
     padding: 0.5rem 0.25rem;
+  }
+  .count-as-hr {
+    font-size: 6rem;
+    position: absolute;
+    top: 0.5rem;
+    left: 1rem;
   }
 
 </style>
