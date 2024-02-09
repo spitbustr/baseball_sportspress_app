@@ -161,7 +161,6 @@ export default class GameEvent {
     }
 
     prepareData(payload) {
-        console.log(payload)
         this.teams = [payload.teams.away.id, payload.teams.away.id]
         this.performance = this.generatePerformanceData(payload)
         this.results = this.generateResultsData(payload)
@@ -169,7 +168,6 @@ export default class GameEvent {
         this.main_results =  [payload.scores.away.runs[0],payload.scores.home.runs[0]],
         this.outcome = this.generateOutcome(payload),
         this.winner =  this.generateWinner(payload)
-        console.log(this)
     }
     generatePerformanceData(payload) {
         const performance = []
@@ -230,8 +228,38 @@ export default class GameEvent {
         })
         return players
     }
-    generateScores(payload) {
-        console.log(payload)
+    generateScore(payload) {
+        const score = {
+            away: {
+                runs: [],
+            },
+            home: {
+                runs: [],
+            },
+        }
+        payload.players.away.forEach(player => {
+            player.outcome.forEach((outcome,index)=> {
+                score.away.runs[index] = score.away.runs?.[index] ? score.away.runs[index] : 0
+                if(index !== 0) {
+                    score.away.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
+                }
+            })
+        })
+        score.away.runs[0] = score.away.runs.reduce((total,current) => {
+            return total + current
+        })
+        payload.players.home.forEach(player => {
+            player.outcome.forEach((outcome,index)=> {
+                score.home.runs[index] = score.home.runs?.[index] ? score.home.runs[index] : 0
+                if(index !== 0) {
+                    score.home.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
+                }
+            })
+        })
+        score.home.runs[0] = score.home.runs.reduce((total,current) => {
+            return total + current
+        })
+        return score
     }
     generateOutcome(payload) {
 

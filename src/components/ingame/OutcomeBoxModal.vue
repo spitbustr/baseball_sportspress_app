@@ -68,9 +68,12 @@ export default {
       if (this.activePlayerBox && !this.editMode) {
         if (this.activePlayerBox.onBasePosition === base) {
           this.activePlayerBox.onBasePosition = null
+          this.activePlayerBox.rbiBy = null
         }
         else {
           this.activePlayerBox.onBasePosition = base
+          if(this.activePlayerBox.onBasePosition !== "point")
+            this.activePlayerBox.rbiBy = null
         }
         this.updateData()
       }
@@ -160,7 +163,6 @@ export default {
       }
     },
     setRBI(rbi) {
-      console.log(rbi)
       this.activePlayerBox = clone(this.selectedOutcomeBox)
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.rbiBy = rbi
@@ -293,8 +295,9 @@ export default {
   .count-as-hr {
     font-size: 6rem;
     position: absolute;
-    top: 0.5rem;
+    top: 1.5rem;
     left: 1rem;
+    line-height: 1rem;
   }
 
 </style>

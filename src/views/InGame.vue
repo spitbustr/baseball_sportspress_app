@@ -3,9 +3,31 @@
     <div>
       Game {{ game.id }}
     </div>
+    <div>
+      <div>SCORES</div>
+      <div class="scoresheet-results-scores">
+        <table valign="center">
+          <tr>
+            <td>Teams</td>
+            <td v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</td>
+            <td>Total</td>
+          </tr>
+          <tr>
+            <td>{{teams.away.title.rendered}}</td>
+            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0}}</td>
+            <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
+          </tr>
+          <tr>
+            <td>{{teams.home.title.rendered}}</td>
+            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</td>
+            <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
     <button @click="sendDataToWebsite">SEND DATA</button>
-    <div :class="{ 'editMode': editMode }" class="tables-container">
-      <div>
+    <div :class="{ 'editMode': editMode }" class="tables-container scoresheet">
+      <div class="scoresheet-table">
         <div>
           {{ teams.away.title.rendered }}
         </div>
@@ -21,7 +43,7 @@
             :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
               <td>{{ player.assignedNumber }}</td>
-              <td class="player-buttom-container">
+              <td class="player-button-container">
                 <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, scoresheet.players.away)">X</button>
                 <span v-html="player.name"></span>
                 <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, scoresheet.players.away)">SWAP</button>
@@ -37,7 +59,7 @@
           </tr>
         </table>
       </div>
-      <div>
+      <div  class="scoresheet-table">
         <div>
           {{ teams.home.title.rendered }}
         </div>
@@ -53,7 +75,7 @@
             :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
               <td>{{ player.assignedNumber }}</td>
-              <td class="player-buttom-container">
+              <td class="player-button-container">
                 <button v-if="editMode" class="player-remove-button" @click="removePlayer(player, scoresheet.players.home)">X</button>
                 <span v-html="player.name"></span>
                 <button v-if="editMode" class="player-swap-button" @click="editPlayer(player, scoresheet.players.home)">SWAP</button>
@@ -290,8 +312,9 @@ export default {
       this.updateData()
     },
     updateData() {
-      // this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
-      ScoresheetAPIService.saveData(this.scoresheet)
+      this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
+      console.log("SCORE",this.scoresheet.scores)
+      // ScoresheetAPIService.saveData(this.scoresheet)
     },
     updateOutcomeBox(value) {
       this.working_selectedOutcomeBox = value
@@ -328,80 +351,65 @@ export default {
       })
     }
     else {
-      await ScoresheetAPIService.createData(this.scoresheet)
+      // await ScoresheetAPIService.createData(this.scoresheet)
     }
+    this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
   },
 }
 </script>
 <style lang="scss" scoped>
-table,
-td,
-th {
-  border-collapse: collapse;
-  border: 1px solid #000000;
+.tables-container {
+  display: flex;
+  justify-content: center;
 }
-
-table {
-  margin: 1rem 10px;
-
-  tr {
-    &:nth-child(even) {
-      td {
-        background: #F8F8FF;
-      }
-    }
-
-    &:nth-child(odd) {
-      td {
-        background: #F5F5F5;
-      }
-    }
-
-    th {
-      padding: 0rem 1.25rem;
-      background: darkgray;
-
-      &:nth-child(1) {
-        max-width: 1rem;
-        padding: 0.25rem 1rem;
-      }
-    }
-
-    td {
-      &:nth-child(1) {
-        padding: 0 1rem;
-      }
-
-      &:nth-child(2) {
-        min-width: 8rem;
-      }
-
-      padding: 0rem 1rem;
-
-      &.active {
-        background: lightgreen;
-      }
-    }
-
-    &.unclickable {
-      td {
-        background: lightgray;
-      }
-    }
+.scoresheet-table {
+  table,
+  td,
+  th {
+    border-collapse: collapse;
+    border: 1px solid #000000;
   }
-}
 
-.editMode {
   table {
+    margin: 1rem 10px;
+
     tr {
-      &.ghost {
+      &:nth-child(even) {
         td {
-          background: pink;
+          background: #F8F8FF;
+        }
+      }
+
+      &:nth-child(odd) {
+        td {
+          background: #F5F5F5;
+        }
+      }
+
+      th {
+        padding: 0rem 1.25rem;
+        background: darkgray;
+
+        &:nth-child(1) {
+          max-width: 1rem;
+          padding: 0.25rem 1rem;
         }
       }
 
       td {
-        background: lightblue;
+        &:nth-child(1) {
+          padding: 0 1rem;
+        }
+
+        &:nth-child(2) {
+          min-width: 8rem;
+        }
+
+        padding: 0rem 1rem;
+
+        &.active {
+          background: lightgreen;
+        }
       }
 
       &.unclickable {
@@ -411,91 +419,109 @@ table {
       }
     }
   }
-}
-.add-player-button {
-  button {
+
+  .editMode {
+    table {
+      tr {
+        &.ghost {
+          td {
+            background: pink;
+          }
+        }
+
+        td {
+          background: lightblue;
+        }
+
+        &.unclickable {
+          td {
+            background: lightgray;
+          }
+        }
+      }
+    }
+  }
+  .add-player-button {
+    button {
+      width: 100%;
+      padding: 1rem;
+    }
+  }
+  .ingame-outcome-box {
+    padding: 2px 0 0;
+  }
+
+  .action-buttons {
+    margin: 0;
+    background: lime;
+    position: fixed;
+    bottom: 0;
     width: 100%;
+    left: 0;
+    display: flex;
+  }
+
+  .editButton {
     padding: 1rem;
   }
-}
-.ingame-outcome-box {
-  padding: 2px 0 0;
-}
 
-.action-buttons {
-  margin: 0;
-  background: lime;
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  display: flex;
-
-  .leftside {}
-
-  .midside {}
-
-  .rightside {}
-}
-
-.editButton {
-  padding: 1rem;
-}
-
-.rbi-input {
-  display: flex;
-}
-
-.tables-container {
-  display: flex;
-  justify-content: center;
-}
-
-.edit-container {
-  margin-bottom: 8rem;
-}
-.player-replace-list {
-  padding: 0.35rem;
-  cursor: pointer;
-  .selected{
-    background: lime;
+  .rbi-input {
+    display: flex;
   }
-}
-.player-replace-footer {
-  min-height: 2.5rem;
-  button {
-    width: 100%;
-    height: 100%;
-  }
-}
-.player-buttom-container {
-  position: relative;
 
-  .player-remove-button {
-    padding: 0.25rem;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 30px;
-    width: 30px;
-    opacity: 0.75;
+
+  .edit-container {
+    margin-bottom: 8rem;
+  }
+  .player-replace-list {
+    padding: 0.35rem;
     cursor: pointer;
+    .selected{
+      background: lime;
+    }
   }
+  .player-replace-footer {
+    min-height: 2.5rem;
+    button {
+      width: 100%;
+      height: 100%;
+    }
+  }
+  .player-button-container {
+    position: relative;
 
-  .player-swap-button {
-    padding: 0.25rem;
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 30px;
-    width: 60px;
-    opacity: 0.75;
-    cursor: pointer;
+    .player-remove-button {
+      padding: 0.25rem;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 30px;
+      width: 30px;
+      opacity: 0.75;
+      cursor: pointer;
+    }
+
+    .player-swap-button {
+      padding: 0.25rem;
+      position: absolute;
+      right: 0;
+      top: 0;
+      height: 30px;
+      width: 60px;
+      opacity: 0.75;
+      cursor: pointer;
+    }
   }
 }
+
 .search-section {
   position: absolute;
   top: 0;
 }
+.scoresheet-results-scores {
+  table {
+    margin: 1rem auto;
+  }
 
+}
 </style>
