@@ -20,5 +20,87 @@
 
     "scoresheetAPI": {
         "url": "http://shawnboivin.com/baseballAPI/api/data"
+    },
+    "stats": {
+        "hits":  [
+            {
+              "name": "1B",
+              "value": "1B"
+            },
+            {
+              "name": "2B",
+              "value": "2B"
+            },
+            {
+              "name": "3B",
+              "value": "3B"
+            },
+            {
+              "name": "4B",
+              "value": "4B"
+            },
+            {
+              "name": "HR",
+              "value": "HR"
+            },
+            {
+              "name": "FC",
+              "value": "FC"
+            },
+            {
+              "name": "SAC",
+              "value": "SAC"
+            },
+            {
+              "name": "K",
+              "value": "K"
+            },
+            {
+              "name": "BB",
+              "value": "BB",
+              "ignore": true
+            },
+            {
+              "name": "HBP",
+              "value": "HBP",
+              "ignore": true
+            },
+            {
+              "name": "E",
+              "value": "E"
+            }
+        ],
+        "bases": [
+            {
+                "name": "First Base",
+                "value": "first"
+            },
+            {
+                "name": "Second Base",
+                "value": "second"
+            },
+            {
+                "name": "Third Base",
+                "value": "third"
+            },
+            {
+                "name": "Home Base",
+                "value": "point"
+            }
+        ],
+        "actions": [
+            {
+                "name": "Inning End",
+                "value": "inningEnd"
+            },
+            {
+                "name": "RBI By",
+                "value": "rbi"
+            },
+            {
+                "name": "Put Out",
+                "value": "putOut"
+            }
+        ]
     }
 }

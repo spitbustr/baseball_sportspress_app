@@ -73,38 +73,6 @@
     <div class="edit-container">
       <button class="editButton" @click="toggleEditMode">Toggle Edit Mode</button>
     </div>
-    <div class="action-buttons" v-if="!this.editMode">
-      <div class="leftside">
-
-        <button class="editButton" @click="setOutcome('1B')">1B</button>
-        <button class="editButton" @click="setOutcome('2B')">2B</button>
-        <button class="editButton" @click="setOutcome('3B')">3B</button>
-        <button class="editButton" @click="setOutcome('4B')">4B</button>
-        <button class="editButton" @click="setOutcome('HR')">HR</button>
-        <button class="editButton" @click="setOutcome('FC')">FC</button>
-        <button class="editButton" @click="setOutcome('SAC')">SAC</button>
-        <button class="editButton" @click="setOutcome('BB')">BB</button>
-        <button class="editButton" @click="setOutcome('K')">K</button>
-        <button class="editButton" @click="setOutcome('E')">E</button>
-      </div>
-      <div class="midside">
-        <button class="editButton" @click="setAtBase('first')">First Base</button>
-        <button class="editButton" @click="setAtBase('second')">Second Base</button>
-        <button class="editButton" @click="setAtBase('third')">Third Base</button>
-        <button class="editButton" @click="setAtBase('point')"><b>Home Base</b></button>
-      </div>
-      <div class="rightside">
-        <div style="display: flex;">
-          <button class="editButton" @click="setInningEnd()">Inning End</button>
-          <button class="editButton" @click="setPutOut()">Put Out</button>
-        </div>
-        <div class="rbi-input">
-          <label id="rbi-input">RBI</label>
-          <input for="rbi-input" type="text" size="5" v-model="rbiValue" />
-          <button class="editButton" @click="setRBI()">Save RBI</button>
-        </div>
-      </div>
-    </div>
     <Modal v-show="isPlayerModalVisible" @close="closeModal" >
       <template v-slot:header>
         Replace {{ selectedPlayer.name }} by
@@ -131,16 +99,19 @@
     </Modal>
     <Modal v-show="isOutcomeModalVisible" @close="closeModal" >
       <template v-slot:header>
-        {{ selectedBatterOrder }} - Inning <b>{{ selectedInning }}</b>
+        {{ selectedBatterOrder }} - Inning {{ selectedInning }}
       </template>
       <template v-slot:body>
         <div>
-          <OutcomeBoxModal :selectedScoreBox="selectedOutcomeBox"></OutcomeBoxModal>
+          <OutcomeBoxModal
+            :selectedOutcomeBox="working_selectedOutcomeBox"
+            @updateOutcome="updateOutcomeBox($event)"
+            :isOutcomeModalVisible="isOutcomeModalVisible"></OutcomeBoxModal>
         </div>
       </template>
       <template v-slot:footer>
         <div class="player-replace-footer">
-          <button @click="acceptOutcomePlayer">ACCEPTER</button>
+          <button @click="saveOutcome">Save</button>
         </div>
       </template>
     </Modal>
@@ -233,7 +204,8 @@ export default {
       isPlayerModalVisible: false,
 
       selectedPlayer: {name: "Peanuts"},
-      selectedOutcomeBox: {name: "Peanuts"},
+      working_selectedOutcomeBox: {name: "Peanuts"},
+
       replacementPlayer: {id:null},
       rbiValue: null,
       active: {
@@ -265,98 +237,16 @@ export default {
         this.active.outcomeBox = id
       }
       else if(!this.editMode) {
-        this.selectedOutcomeBox = this.activePlayerBox
+        this.working_selectedOutcomeBox = this.activePlayerBox
         this.isOutcomeModalVisible = true
       }
     },
     toggleEditMode() {
       this.editMode = !this.editMode
     },
-    setAtBase(base) {
-      if (this.activePlayerBox && !this.editMode) {
-        if (this.activePlayerBox.onBasePosition === base) {
-          this.activePlayerBox.onBasePosition = null
-        }
-        else {
-          this.activePlayerBox.onBasePosition = base
-        }
-        this.updateData()
-      }
 
-    },
-    setOutcome(outcome) {
-      if (this.activePlayerBox && !this.editMode) {
-        if (this.activePlayerBox.atBatResult === outcome) {
-          this.activePlayerBox.atBatResult = null
-          this.activePlayerBox.putOut = false
-          this.activePlayerBox.countAsHR = false
-        }
-        else {
-          this.activePlayerBox.atBatResult = outcome
-          switch (outcome) {
-            case "1B":
-              this.activePlayerBox.onBasePosition = "first"
-              break
-            case "2B":
-              this.activePlayerBox.onBasePosition = "second"
-              break
-            case "3B":
-              this.activePlayerBox.onBasePosition = "third"
-              break
-            case "4B":
-              this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
-              break
-            case "HR":
-              this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.activePlayer?.assignedNumber
-              this.activePlayerBox.countAsHR = true
-              break
-            case "BB":
-              this.activePlayerBox.onBasePosition = "first"
-              break
-            case "K":
-              this.activePlayerBox.putOut = true
-              this.activePlayerBox.onBasePosition = "empty"
-              break
-            case "FC":
-              this.activePlayerBox.onBasePosition = "first"
-              break
-            case "E":
-              this.activePlayerBox.onBasePosition = "first"
-              break
-            case "SAC":
-              this.activePlayerBox.putOut = true
-              break
-          }
-        }
-        this.updateData()
-      }
-    },
-    setPutOut() {
-      if (this.activePlayerBox && !this.editMode) {
-        this.activePlayerBox.putOut = !this.activePlayerBox.putOut
-        this.updateData()
-      }
-    },
-    setRBI() {
-      if (this.activePlayerBox && !this.editMode) {
-        this.activePlayerBox.rbiBy = this.rbiValue;
-        if (this.rbiValue) {
-          this.activePlayerBox.onBasePosition = "point"
-        }
-        this.rbiValue = null
-        this.updateData()
-      }
-    },
-    setInningEnd() {
-      if (this.activePlayerBox && !this.editMode) {
-        this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
-        this.updateData()
-      }
-    },
     sendDataToWebsite() {
-      this.gameEvent.prepareData(this.scoresheet)
+      // this.gameEvent.prepareData(this.scoresheet)
     },
     closeModal() {
       this.isPlayerModalVisible = false
@@ -392,10 +282,19 @@ export default {
         this.updateData()
       }
     },
+    saveOutcome() {
+      this.scoresheet.players[this.activeBox[1]][this.activeBox[2]].outcome[this.activeBox[3]] = this.working_selectedOutcomeBox
+      this.closeModal()
+      this.updateData()
+    },
     updateData() {
-      this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
+      // this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       ScoresheetAPIService.saveData(this.scoresheet)
-    }
+    },
+    updateOutcomeBox(value) {
+      this.working_selectedOutcomeBox = value
+    },
+
 
   },
   async created() {

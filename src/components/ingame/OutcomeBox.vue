@@ -93,8 +93,13 @@ export default {
 
   .inning-end {
     position: absolute;
-    bottom: -1.5rem;
-    right: -1.5rem;
+    bottom: -1rem;
+    right: -1rem;
+    img {
+      height: 1.5rem;
+      width: auto;
+      filter: invert(30%) sepia(48%) saturate(920%) hue-rotate(85deg) brightness(88%) contrast(94%);
+    }
   }
 
   .field-countHR {
