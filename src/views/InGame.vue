@@ -181,7 +181,7 @@ export default {
       return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
     },
     numberOfInnings() {
-      return $settings.websiteConfig.innings.length
+      return $settings.playballConfig.innings.length
     },
     selectedInning() {
       return this.activeBox?.[3]
@@ -342,7 +342,7 @@ export default {
     this.scoresheet.gameId = this.$route?.params?.gameId
     if (this.scoresheet.gameId) {
       this.game = this.$store.getters.getGame(this.scoresheet.gameId)
-      this.scoresheet.innings = $settings.websiteConfig.innings
+      this.scoresheet.innings = $settings.playballConfig.innings
       this.scoresheet.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
       this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
       this.teams.away = this.scoresheet.teams.away

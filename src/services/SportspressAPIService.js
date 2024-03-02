@@ -12,7 +12,7 @@ export default class SportspressAPIService {
   }
   static async getCalendar() {
     const list = []
-    await axios.get(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.calendars}?slug=${$settings.websiteConfig.currentSeasonSlug}`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.calendars}?slug=${$settings.playballConfig.currentSeasonSlug}`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -20,7 +20,7 @@ export default class SportspressAPIService {
   }
   static async getAllGames() {
     const list = []
-    await axios.get(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&${$settings.websiteConfig.season}`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&${$settings.playballConfig.season}`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -28,7 +28,7 @@ export default class SportspressAPIService {
   }
   static async getAllTeams() {
     const list = []
-    await axios.get(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.teams}?per_page=20`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.teams}?per_page=20`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -39,7 +39,7 @@ export default class SportspressAPIService {
     let lastAmount = 100
     let pageIndex = 1
     while(lastAmount === 100) {
-      await axios.get(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.players}?per_page=100&page=${pageIndex}`)
+      await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}?per_page=100&page=${pageIndex}`)
       .then(result => {
           list.push(result.data)
           lastAmount = result.data.length
@@ -58,7 +58,7 @@ export default class SportspressAPIService {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*",
     }
-    await axios.post(`${$settings.websiteConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
+    await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
     .then(res => {
         console.log(res)
     })
