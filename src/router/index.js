@@ -56,6 +56,13 @@ const routes = [
     component: function () {
       return import("@/views/Standings.vue")
     }
+  },
+  {
+    path: '/cast',
+    name: 'cast',
+    component: function () {
+      return import("@/views/Cast.vue")
+    }
   }
 ]
 

@@ -22,46 +22,43 @@ export default class GameEvent {
             payload.scores.home?.runs?.[0]
         ]
         this.generatePerformanceData(payload)
-        console.log(this.performance)
         await SportspressAPIService.sendData(this)
     }
     gernerateTeamPerformance(teamId, stance,payload) {
         this.performance[teamId] = {}
         payload.players[stance].forEach(player => {
             this.performance[teamId][player.id] = {
-                number: player.number,
-                ab: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                     return total+(this.isConsideredAtBat(res) ? 1: 0)
-                },0),
-                oneb: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(res === "1B" ? 1: 0)
-                },0),
-                twob: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(res === "2B" ? 1: 0)
-                },0),
-                threeb: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(res === "3B" ? 1: 0)
-                },0),
-                cc: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(res === "4B" || res === "HR" ? 1: 0)
-                },0),
-                cs: player.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(this.isConsideredHit(res) ? 1: 0)
-                },0),
-                p: player.outcome.map(o => o.rbiBy).reduce((total,res) => {
-                    return total+(res ? 1: 0)
-                },0),
-                pp: payload?.players?.[stance]
+                number: player?.number?.toString(),
+                ab: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (this.isConsideredAtBat(res) ? 1 : 0)
+                }, 0)).toString(),
+                oneb: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (res === "1B" ? 1 : 0)
+                }, 0)).toString(),
+                twob: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (res === "2B" ? 1 : 0)
+                }, 0)).toString(),
+                threeb: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (res === "3B" ? 1 : 0)
+                }, 0)).toString(),
+                cc: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (res === "4B" || res === "HR" ? 1 : 0)
+                }, 0)).toString(),
+                cs: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (this.isConsideredHit(res) ? 1 : 0)
+                }, 0)).toString(),
+                p: (player.outcome.map(o => o.rbiBy).reduce((total, res) => {
+                    return total + (res ? 1 : 0)
+                }, 0)).toString(),
+                pp: (payload?.players?.[stance]
                     .map(p => p.outcome)
                     .flat()
                     .map(o => o.rbiBy)
-                    .filter(o => o === player.id)?.length,
-                rab: player?.outcome.map(o => o.atBatResult).reduce((total,res) => {
-                    return total+(res === "K" ? 1: 0)
-                },0),
+                    .filter(o => o === player.id)?.length).toString(),
+                rab: (player?.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                    return total + (res === "K" ? 1 : 0)
+                }, 0)).toString(),
                 status: "lineup",
-                sub: "0",
-                position: 0
             }
         })
     }

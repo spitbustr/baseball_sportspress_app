@@ -1,14 +1,33 @@
 <template>
   <div id="app">
-    <nav>
-      <router-link to="/games">Games</router-link>
-      <router-link to="/teams">Teams</router-link>
-      <router-link to="/players">Players</router-link>
-    </nav>
-    <router-view/>
+    <div>
+      <nav id="main-navigation">
+        <router-link to="/games">Games</router-link>
+        <router-link to="/teams">Teams</router-link>
+        <router-link to="/players">Players</router-link>
+        <a @click="openCast()">CAST</a>
+      </nav>
+      <router-view />
+    </div>
   </div>
 </template>
+<script>
+export default {
+  data() {
+    return {
+      broadcastChannel: null,
+    }
+  },
+  methods: {
+    openCast() {
+      window.open("/cast","castWindow")
+    }
+  },
+  mounted() {
 
+  }
+}
+</script>
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -23,8 +42,10 @@ nav {
 
   a {
     font-weight: bold;
-    color: blue#2c3e50;
+    color: blue;
     margin: 0 10px;
+    text-decoration: underline;
+    cursor: pointer;
 
     &.router-link-exact-active {
       color: #42b983;
