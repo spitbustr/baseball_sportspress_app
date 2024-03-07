@@ -5,6 +5,8 @@ import store from './store'
 import OutcomeBox from '@/components/ingame/OutcomeBox'
 import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
 
 
 const app = createApp(App).use(store).use(router)
@@ -17,7 +19,7 @@ router.beforeEach((to, from, next) => {
         '/cast': 'none',
       }
     const bodyColor = bodyColors[to.path] || 'white'
-    const displayNav = displayNavs[to.path] || 'block'
+    const displayNav = displayNavs[to.path] || ''
     document.body.style.backgroundColor = bodyColor
     document.getElementById("main-navigation").style.display = displayNav
     next()
