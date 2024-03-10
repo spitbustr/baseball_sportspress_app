@@ -33,6 +33,7 @@ export default {
 
   .game {
     margin: 1rem auto;
+    width: fit-content;
   }
 }
 </style>

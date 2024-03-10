@@ -3,7 +3,7 @@
     <template v-for="player in players" :key="player.id">
       <div class="player">
         <router-link :to="`/players/${player.id}`">
-          <div>{{ player.id }} {{ player.title.rendered }}</div>
+          <div>{{ player.id }} <span v-html="player.title.rendered"></span></div>
         </router-link>
       </div>
     </template>
@@ -28,6 +28,7 @@ export default {
 
   .player {
     margin: 0rem auto;
+    width: fit-content;
   }
 }
 </style>

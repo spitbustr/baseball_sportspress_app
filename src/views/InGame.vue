@@ -106,7 +106,7 @@
     </div>
     <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
-        Replace {{ selectedPlayer.name }} by
+        Replace <span v-html="selectedPlayer.name"></span> by
       </template>
       <template v-slot:body>
         <div>
@@ -117,7 +117,7 @@
           <template v-for="player in allAvailablePlayers" :key="player.id">
             <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
               class="player-replace-list">
-              <div>{{ player.title.rendered }} - {{ player.id }}</div>
+              <div><span v-html="player.title.rendered "></span> - {{ player.id }}</div>
             </div>
           </template>
         </div>
@@ -148,7 +148,7 @@
   </div>
 </template>
 <script>
-import PlayerInGame from "@/models/PlayerInGame"
+import {PlayerInGame} from "@/models/PlayerInGame"
 import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
 import { removeAccents } from "@/scripts/utilities"

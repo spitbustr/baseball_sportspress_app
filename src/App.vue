@@ -1,15 +1,18 @@
 <template>
-  <div>
-    <button @click="logout">Boutton de Logout temporaire</button>
-  </div>
+
   <div id="app">
     <div>
-      <nav id="main-navigation" v-if="authenticated">
-        <router-link to="/games">Games</router-link>
-        <router-link to="/teams">Teams</router-link>
-        <router-link to="/players">Players</router-link>
-        <a @click="openCast()">CAST</a>
-      </nav>
+      <div id="main-navigation" v-if="authenticated">
+        <div>
+          <button @click="logout">Bouton de Logout temporaire</button>
+        </div>
+        <nav>
+          <router-link to="/games">Games</router-link>
+          <router-link to="/teams">Teams</router-link>
+          <router-link to="/players">Players</router-link>
+          <a @click="openCast()">CAST</a>
+        </nav>
+      </div>
       <router-view />
     </div>
   </div>
