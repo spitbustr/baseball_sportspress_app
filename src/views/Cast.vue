@@ -68,6 +68,7 @@
       </div>
     </div>
     <div>
+      {{ currentBatter }}
     </div>
   </div>
 </template>
@@ -85,6 +86,10 @@ export default {
     teams() {
       return this.data?.teams
     },
+    currentBatter() {
+      console.log("BATTER",this.castService.currentBatter())
+      return this.castService.currentBatter(this.game)?.title?.rendered || null
+    }
   },
   data() {
     return {

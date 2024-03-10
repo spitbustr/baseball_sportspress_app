@@ -43,7 +43,7 @@
           <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
             :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
-              <td>{{ player.assignedNumber }} - {{ player.id }}</td>
+              <td>{{ player.assignedNumber }}</td>
               <td class="player-button-container">
                 <button v-if="editMode" class="player-remove-button"
                   @click="removePlayer(player, scoresheet.players.away)">X</button>

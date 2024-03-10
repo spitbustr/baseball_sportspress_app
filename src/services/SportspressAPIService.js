@@ -59,8 +59,8 @@ export default class SportspressAPIService {
       "Access-Control-Allow-Origin": "*",
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
-    .then(res => {
-        console.log(res)
-    })
+      .then(res => {
+          console.log(res)
+      })
   }
 }

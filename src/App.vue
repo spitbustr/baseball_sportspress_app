@@ -1,7 +1,10 @@
 <template>
+  <div>
+    <button @click="logout">Boutton de Logout temporaire</button>
+  </div>
   <div id="app">
     <div>
-      <nav id="main-navigation">
+      <nav id="main-navigation" v-if="authenticated">
         <router-link to="/games">Games</router-link>
         <router-link to="/teams">Teams</router-link>
         <router-link to="/players">Players</router-link>
@@ -12,13 +15,24 @@
   </div>
 </template>
 <script>
+
+import $settings from "@/data/settings.json"
 export default {
+  computed: {
+    authenticated() {
+      return this.$store.state.user.loggedIn
+    }
+  },
   data() {
     return {
       broadcastChannel: null,
     }
   },
   methods: {
+    logout() {
+      localStorage.removeItem(`${$settings.playballConfig.id}_login`)
+      this.$router.push("login")
+    },
     openCast() {
       window.open("/cast","castWindow")
     }

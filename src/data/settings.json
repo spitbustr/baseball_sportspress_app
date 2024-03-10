@@ -16,7 +16,8 @@
         "currentSeasonSlug": "saison-2022",
         "innings": [1,2,3,4,5,6,7],
         "season": 67,
-        "homerunRule": "plusOne"
+        "homerunRule": "plusOne",
+        "id": "lbao"
     },
 
     "scoresheetAPI": {

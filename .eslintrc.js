@@ -18,6 +18,7 @@ module.exports = {
     "no-empty": "off",
     "vue/no-deprecated-data-object-declaration" : "off",
     "vue/no-unused-components": "off",
-    "vue/no-unused-vars": "off"
+    "vue/no-unused-vars": "off",
+    'no-constant-condition': 'off',
   },
 }
