@@ -154,7 +154,7 @@ export default class GameEvent {
         payload.players.away.forEach(player => {
             player.outcome.forEach((outcome,index)=> {
                 score.away.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
-                score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
+                score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
                 score.away.runs[index] = score.away.runs?.[index] ? score.away.runs[index] : 0
                 if(index !== 0) {
                     score.away.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
@@ -167,7 +167,7 @@ export default class GameEvent {
         payload.players.home.forEach(player => {
             player.outcome.forEach((outcome,index)=> {
                 score.home.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
-                score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
+                score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
                 score.home.runs[index] = score.home.runs?.[index] ? score.home.runs[index] : 0
                 if(index !== 0) {
                     score.home.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
