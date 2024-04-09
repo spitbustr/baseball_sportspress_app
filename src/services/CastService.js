@@ -2,43 +2,30 @@ import $settings from "@/data/settings.json"
 import {InGameResults,PlayerInGame} from "@/models/PlayerInGame"
 export default class CastService {
 
-  static currentBatters(inning, nextIndex, players) {
-    let nextPlayerIndex = 0
-    let nextPlayer = null
-    let nextPlayers = []
-    const emptyOutcome = {
-      first: 0,
-      last: 0,
-    }
+  static currentBatters(players) {
+    const numberOfInnings = $settings.playballConfig.innings
+    const nextPlayers = []
+    let inningIndex = 0
+    let playerIndex = 0
     if(players?.length) {
-      players.forEach((player,$index) => {
-        const atBat = new InGameResults(player?.outcome?.[inning])
-        if(!atBat.wentAtBat && emptyOutcome.first === 0) {
-          emptyOutcome.first = $index
-        }
-        if(!atBat.wentAtBat) {
-          emptyOutcome.last = $index
-        }
+      numberOfInnings.forEach((inning) => {
+        players.forEach((player,$index) => {
+          const atBat = new InGameResults(player?.outcome?.[inning])
+          if(atBat.wentAtBat) {
+            playerIndex = $index+1
+            inningIndex = inning
+          }
+        })
       })
-      if(emptyOutcome.first === 0 && emptyOutcome.last === 0 ) {
-        nextPlayerIndex = nextIndex
-      }
-      else {
-        nextPlayerIndex = emptyOutcome.last >= players.length - 1
-          ? emptyOutcome.first
-          : 0
-      }
-      nextPlayer = players[nextPlayerIndex]
-
       let resetIndex = 0
       for(let i=0; i<3; i++) {
-        if(nextPlayerIndex >= players.length ) {
+        if(playerIndex >= players.length ) {
           nextPlayers.push(new PlayerInGame(players[resetIndex]))
           resetIndex++
         }
         else {
-          nextPlayers.push(new PlayerInGame(players[nextPlayerIndex]))
-          nextPlayerIndex++
+          nextPlayers.push(new PlayerInGame(players[playerIndex]))
+          playerIndex++
         }
       }
     }
@@ -93,8 +80,8 @@ export default class CastService {
       })
     })
     info.currentBatters = {
-      away: this.currentBatters(info.inning, info.nextPlayer.away, data?.players?.away),
-      home: this.currentBatters(info.inning, info.nextPlayer.home, data?.players?.home),
+      away: this.currentBatters(data?.players?.away),
+      home: this.currentBatters(data?.players?.home),
     }
     info.outs = this.currentOuts(info.inning, data?.players?.[info.topBottom === "top" ?"away":"home"])
     return info
