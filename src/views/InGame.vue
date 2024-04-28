@@ -1,38 +1,43 @@
 <template>
-  <div>
-    <div>
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
       Game {{ game.id }}
+      </div>
     </div>
-    <div>
+    <div class="row">
+      <div class="col-12">
       <div>SCORES</div>
-      <div class="scoresheet-results-scores">
-        <table valign="center">
+        <table valign="center" class="table table-striped-columns">
+          <thead>
           <tr>
-            <td>Teams</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</td>
-            <td>Total</td>
+            <th scope="col">Teams</th>
+            <th v-for="inning in scoresheet.innings" :key="inning" scope="col">{{ inning }}</th>
+            <th scope="col">Total</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr>
+            <td scope="col">{{ teams.away.title.rendered }}</td>
+            <td scope="col" v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</td>
+            <td scope="col">{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
           </tr>
           <tr>
-            <td>{{ teams.away.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</td>
-            <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
+            <td scope="col">{{ teams.home.title.rendered }}</td>
+            <td scope="col" v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</td>
+            <td  scope="col">{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
           </tr>
-          <tr>
-            <td>{{ teams.home.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}
-            </td>
-            <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
-          </tr>
+          </tbody>
         </table>
       </div>
     </div>
     <button @click="sendDataToWebsite">SEND DATA</button>
-    <div :class="{ 'editMode': editMode }" class="tables-container scoresheet">
-      <div class="scoresheet-table">
+    <div :class="{ 'editMode': editMode }" class="row tables-container scoresheet">
+      <div class="col-md-6 scoresheet-table">
         <div>
           {{ teams.away.title.rendered }}
         </div>
-        <table>
+        <table class="table table-striped">
           <thead>
             <tr>
               <th>#</th>
@@ -64,11 +69,11 @@
           </tr>
         </table>
       </div>
-      <div class="scoresheet-table">
+      <div class="col-md-6 scoresheet-table">
         <div>
           {{ teams.home.title.rendered }}
         </div>
-        <table>
+        <table class="table table-striped">
           <thead>
             <tr>
               <th>#</th>
@@ -80,12 +85,16 @@
             :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
               <td>{{ player.assignedNumber }}</td>
-              <td class="player-button-container">
-                <button v-if="editMode" class="player-remove-button"
-                  @click="removePlayer(player, scoresheet.players.home)">X</button>
+              <td>
+                <p>
                 <span v-html="player.name"></span>
-                <button v-if="editMode" class="player-swap-button"
+                </p>
+<div class="btn-group" role="group" aria-label="Basic example">
+                <button v-if="editMode" class="btn btn-danger player-remove-button"
+                  @click="removePlayer(player, scoresheet.players.home)">X</button>
+                <button v-if="editMode" class="btn btn-primary player-swap-button"
                   @click="editPlayer(player, scoresheet.players.home)">SWAP</button>
+                  </div>
               </td>
               <td v-for="inning in scoresheet.innings" :key="inning"
                 @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
@@ -104,6 +113,9 @@
     <div class="edit-container">
       <button class="editButton" @click="toggleEditMode">Toggle Edit Mode</button>
     </div>
+    <OffCanvas>
+      zzz
+    </OffCanvas>
     <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
         Replace {{ selectedPlayer.name }} by
@@ -380,7 +392,7 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.tables-container {
+/* .tables-container {
   display: flex;
   justify-content: center;
 
@@ -476,6 +488,7 @@ export default {
 
   }
 }
+*/
 
 .search-section {
   position: absolute;
@@ -540,7 +553,7 @@ export default {
     height: 100%;
   }
 }
-
+/*
 .player-button-container {
   position: relative;
 
@@ -565,4 +578,6 @@ export default {
     opacity: 0.75;
     cursor: pointer;
   }
-}</style>
+}
+*/
+</style>

@@ -1,14 +1,17 @@
 <template>
   <div class="teams-list">
-    <template v-for="team in teams" :key="team.id">
-      <div class="team">
-        <router-link :to="`/teams/${team.id}`">
-          <div>{{ team.title.rendered }}</div>
-        </router-link>
+    <div class="row">
+      <div class="col-md-3" v-for="team in teams" :key="team.id">
+        <div class="card">
+          <router-link :to="`/teams/${team.id}`">
+            <div class="card-body">{{ team.title.rendered }}</div>
+          </router-link>
+        </div>
       </div>
-    </template>
+    </div>
   </div>
 </template>
+
 <script>
 export default {
   computed: {

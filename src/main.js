@@ -5,6 +5,7 @@ import store from './store'
 import OutcomeBox from '@/components/ingame/OutcomeBox'
 import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
+import OffCanvas from '@/components/overlays/OffCanvas'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 
@@ -28,6 +29,7 @@ router.beforeEach((to, from, next) => {
 app.component('OutcomeBox', OutcomeBox)
 app.component('OutcomeBoxModal', OutcomeBoxModal)
 app.component('Modal', Modal)
+app.component('OffCanvas', OffCanvas)
 
 // Mount app
 app.mount('#app')
