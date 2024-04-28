@@ -206,14 +206,14 @@ export default {
         gameId: null,
         scores: {
           away: {
-            runs: [],
+            runs: new Array($settings.playballConfig.innings.length).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
             outcome: "",
           },
           home: {
-            runs: [],
+            runs: new Array($settings.playballConfig.innings.length).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,

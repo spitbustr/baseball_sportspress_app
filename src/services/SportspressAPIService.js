@@ -63,4 +63,12 @@ export default class SportspressAPIService {
           console.log(res)
       })
   }
+  static async addPlayer(playerInfo) {
+    const list = []
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.teams}?per_page=20`)
+      .then(l1 => {
+        list.push(l1.data)
+      })
+      return list.flat()
+  }
 }

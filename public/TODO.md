@@ -22,7 +22,7 @@ J'ai pas trouvé de solutions à date
 Si le match va en prolongation... on fait quoi
 
 #### Solution
-J'ai pas trouvé de solutions à date
+Ajouter un bouton pour ajouter une manche
 
 
 
@@ -31,3 +31,12 @@ On devrait avoir une liste des joueurs partant au lieu de plein de joueurs rando
 
 #### Solution
 Va falloir en discuter
+
+
+
+### Le line up de départ
+On devrait avoir une liste des joueurs partant au lieu de plein de joueurs random au début
+
+#### Solution
+Va falloir en discuter
+
