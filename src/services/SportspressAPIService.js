@@ -20,7 +20,7 @@ export default class SportspressAPIService {
   }
   static async getAllGames() {
     const list = []
-    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&${$settings.playballConfig.season}`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&seasons=${$settings.playballConfig.season}`)
     .then(l1 => {
         list.push(l1.data)
     })
