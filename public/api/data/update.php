@@ -24,7 +24,7 @@
         // Access the properties
         $data->gameId = !empty($json_data->gameId) ? $json_data->gameId : "";
         $data->jsonObject = !empty($json_data->jsonObject) ? $json_data->jsonObject : "";
-
+        $data->seasonId = !empty($json_data->seasonId) ? $json_data->seasonId : "";
         if(!empty($data->gameId)) {
             if ($scoresheet->updateById($data)) {
                 http_response_code(200);

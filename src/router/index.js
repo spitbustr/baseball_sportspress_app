@@ -81,6 +81,14 @@ const routes = [
       return import("@/views/Login.vue")
     },
     meta: { requiresAuth: false, robots: "noindex"  },
+  },
+  {
+    path: '/data',
+    name: 'data',
+    component: function () {
+      return import("@/views/Data.vue")
+    },
+    meta: { requiresAuth: false, robots: "noindex"  },
   }
 ]
 

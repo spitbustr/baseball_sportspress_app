@@ -13,11 +13,11 @@
 
     "playballConfig": {
         "baseUrl": "https://lbaoutaouais.com",
-        "currentSeasonSlug": "saison-2022",
-        "innings": [1,2,3,4,5,6,7],
+        "innings": 7,
         "season": 69,
         "homerunRule": "plusOne",
-        "id": "lbao"
+        "id": "lbao",
+        "currentLeague": "lbao"
     },
 
     "scoresheetAPI": {

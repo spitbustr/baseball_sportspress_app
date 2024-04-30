@@ -139,13 +139,13 @@ export default class GameEvent {
     generateScore(payload) {
         const score = {
             away: {
-                runs: new Array($settings.playballConfig.innings.length).fill(0),
+                runs: new Array($settings.playballConfig.innings+1).fill(0),
                 hits: 0,
                 errors: 0,
                 estwo: 1
             },
             home: {
-                runs: new Array($settings.playballConfig.innings.length).fill(0),
+                runs: new Array($settings.playballConfig.innings+1).fill(0),
                 hits: 0,
                 errors: 0,
                 estwo: 1

@@ -10,6 +10,7 @@
           <router-link to="/games">Games</router-link>
           <router-link to="/teams">Teams</router-link>
           <router-link to="/players">Players</router-link>
+          <router-link to="/data">Data</router-link>
           <a @click="openCast()">CAST</a>
         </nav>
       </div>

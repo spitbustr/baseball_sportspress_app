@@ -6,6 +6,7 @@
         public $id;
         public $gameId;
         public $jsonObject;
+        public $seasonId;
 
 
 
@@ -37,17 +38,19 @@
         }
 
         function add($newData){
-            $query = "INSERT INTO " . $this->table_name . " (gameId, jsonObject) VALUES (:gameId, :jsonObject)";
+            $query = "INSERT INTO " . $this->table_name . " (gameId, jsonObject, seasonId) VALUES (:gameId, :jsonObject, :seasonId)";
 
             // prepare query
             $stmt = $this->conn->prepare($query);
             // Bind parameters
             // Create temporary variables to store casted values
             $jsonObject = (string)json_encode($newData->jsonObject);
+            $seasonId = (string)json_encode($newData->seasonId);
             $gameId = (string)$newData->gameId;
 
             $stmt->bindParam(":gameId", $gameId);
             $stmt->bindParam(":jsonObject", $jsonObject);
+            $stmt->bindParam(":seasonId", $seasonId);
             // execute query
             if($stmt->execute()){
                 $this->conn = null;

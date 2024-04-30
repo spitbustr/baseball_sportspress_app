@@ -22,6 +22,7 @@
                 "jsonObject" => $jsonObject,
                 "gameId" => $gameId,
                 "id" => $id,
+                "seasonId" => $seasonId,
             );
             array_push($scoresheet_arr, $scoresheet_items);
         }

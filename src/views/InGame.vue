@@ -181,7 +181,7 @@ export default {
       return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
     },
     numberOfInnings() {
-      return $settings.playballConfig.innings.length
+      return $settings.playballConfig.innings
     },
     selectedInning() {
       return this.activeBox?.[3]
@@ -206,14 +206,14 @@ export default {
         gameId: null,
         scores: {
           away: {
-            runs: new Array($settings.playballConfig.innings.length).fill(0),
+            runs: new Array($settings.playballConfig.innings+1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
             outcome: "",
           },
           home: {
-            runs: new Array($settings.playballConfig.innings.length).fill(0),
+            runs: new Array($settings.playballConfig.innings+1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
@@ -340,9 +340,11 @@ export default {
   async created() {
     this.broadcastChannel = new BroadcastChannel('test_channel')
     this.scoresheet.gameId = this.$route?.params?.gameId
+    this.scoresheet.seasonId = $settings.playballConfig.season
     if (this.scoresheet.gameId) {
       this.game = this.$store.getters.getGame(this.scoresheet.gameId)
-      this.scoresheet.innings = $settings.playballConfig.innings
+      let index = 0
+      this.scoresheet.innings = Array.from({ length: $settings.playballConfig.innings }, () => ++index)
       this.scoresheet.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
       this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
       this.teams.away = this.scoresheet.teams.away

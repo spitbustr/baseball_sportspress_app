@@ -5,18 +5,16 @@ export default class CastService {
   static currentBatters(players) {
     const numberOfInnings = $settings.playballConfig.innings
     const nextPlayers = []
-    let inningIndex = 0
     let playerIndex = 0
     if(players?.length) {
-      numberOfInnings.forEach((inning) => {
+      for (let inningIndex = 1; inningIndex <= numberOfInnings; inningIndex++) {
         players.forEach((player,$index) => {
-          const atBat = new InGameResults(player?.outcome?.[inning])
+          const atBat = new InGameResults(player?.outcome?.[inningIndex])
           if(atBat.wentAtBat) {
             playerIndex = $index+1
-            inningIndex = inning
           }
         })
-      })
+      }
       let resetIndex = 0
       for(let i=0; i<3; i++) {
         if(playerIndex >= players.length ) {
