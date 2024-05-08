@@ -1,7 +1,7 @@
 <template>
   <div class="players-list">
     <div>
-      <button @click="refreshGames()"><b>ADD PLAYER</b></button>
+      <button @click="addPlayer()"><b>ADD PLAYER</b></button>
     </div>
     <template v-for="player in players" :key="player.id">
       <div class="player">
@@ -20,7 +20,9 @@ export default {
     }
   },
   methods: {
-
+    addPlayer() {
+      
+    }
   }
 }
 </script>

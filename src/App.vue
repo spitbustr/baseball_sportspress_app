@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="container"  v-if="authenticated">
+    <div class="container" id="main-navigation" v-if="authenticated">
       <div class="row">
         <div class="col-12">
           <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNavigation" aria-controls="mainNavigation">
