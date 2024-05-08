@@ -37,8 +37,9 @@ export default {
   width: 100%;
 
   button {
-    padding: 0.75rem 0.875rem;
+    cursor: pointer;
     margin: 0.275rem 0;
+    padding: 0.75rem 0.875rem;
   }
 }
 </style>
