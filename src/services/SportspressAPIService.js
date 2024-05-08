@@ -12,7 +12,7 @@ export default class SportspressAPIService {
   }
   static async getCalendar() {
     const list = []
-    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.calendars}?slug=${$settings.playballConfig.currentSeasonSlug}`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.calendars}`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -20,7 +20,7 @@ export default class SportspressAPIService {
   }
   static async getAllGames() {
     const list = []
-    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&${$settings.playballConfig.season}`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}?per_page=100&seasons=${$settings.playballConfig.season}`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -28,7 +28,7 @@ export default class SportspressAPIService {
   }
   static async getAllTeams() {
     const list = []
-    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.teams}?per_page=20`)
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.teams}?per_page=100`)
     .then(l1 => {
         list.push(l1.data)
     })
@@ -59,8 +59,16 @@ export default class SportspressAPIService {
       "Access-Control-Allow-Origin": "*",
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
-    .then(res => {
-        console.log(res)
-    })
+      .then(res => {
+          console.log(res)
+      })
+  }
+  static async addPlayer(playerInfo) {
+    const list = []
+    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}?${playerInfo}`)
+      .then(l1 => {
+        list.push(l1.data)
+      })
+      return list.flat()
   }
 }

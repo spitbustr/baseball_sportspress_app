@@ -1,5 +1,7 @@
 import { createStore } from 'vuex'
 import SportspressAPIService from "@/services/SportspressAPIService"
+import user from "@/store/modules/user"
+import $settings from "@/data/settings.json"
 const SET_PLAYERS = "SET_PLAYERS"
 const SET_GAMES = "SET_GAMES"
 const SET_TEAMS= "SET_TEAMS"
@@ -8,40 +10,40 @@ const SET_CALENDAR= "SET_CALENDAR"
 export default createStore({
   actions: {
     async initialize({state, commit}) {
-      if(localStorage.getItem("lbao_teams")) {
-        commit(SET_TEAMS, JSON.parse(localStorage.getItem("lbao_teams")))
+      if(localStorage.getItem(`${$settings.playballConfig.id}_teams`)) {
+        commit(SET_TEAMS, JSON.parse(localStorage.getItem(`${$settings.playballConfig.id}_teams`)))
       }
       else {
         await SportspressAPIService.getAllTeams().then(response => {
           commit(SET_TEAMS, response)
-          localStorage.setItem("lbao_teams", JSON.stringify(response))
+          localStorage.setItem(`${$settings.playballConfig.id}_teams`, JSON.stringify(response))
         })
       }
-      if(localStorage.getItem("lbao_calendar")) {
-        commit(SET_CALENDAR, JSON.parse(localStorage.getItem("lbao_calendar")))
+      if(localStorage.getItem(`${$settings.playballConfig.id}_calendar`)) {
+        commit(SET_CALENDAR, JSON.parse(localStorage.getItem(`${$settings.playballConfig.id}_calendar`)))
       }
       else {
         await SportspressAPIService.getCalendar().then(response => {
           commit(SET_CALENDAR, response[0])
-          localStorage.setItem("lbao_calendar", JSON.stringify(response[0]))
+          localStorage.setItem(`${$settings.playballConfig.id}_calendar`, JSON.stringify(response[0]))
         })
       }
-      if(localStorage.getItem("lbao_games")) {
-        commit(SET_GAMES, JSON.parse(localStorage.getItem("lbao_games")))
+      if(localStorage.getItem(`${$settings.playballConfig.id}_games`)) {
+        commit(SET_GAMES, JSON.parse(localStorage.getItem(`${$settings.playballConfig.id}_games`)))
       }
       else {
         await SportspressAPIService.getAllGames().then(response => {
           commit(SET_GAMES, response)
-          localStorage.setItem("lbao_games", JSON.stringify(response))
+          localStorage.setItem(`${$settings.playballConfig.id}_games`, JSON.stringify(response))
         })
       }
-      if(localStorage.getItem("lbao_players")) {
-        commit(SET_PLAYERS, JSON.parse(localStorage.getItem("lbao_players")))
+      if(localStorage.getItem(`${$settings.playballConfig.id}_players`)) {
+        commit(SET_PLAYERS, JSON.parse(localStorage.getItem(`${$settings.playballConfig.id}_players`)))
       }
       else {
         await SportspressAPIService.getAllPlayers().then(response => {
           commit(SET_PLAYERS, response)
-          localStorage.setItem("lbao_players", JSON.stringify(response))
+          localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(response))
         })
       }
     },
@@ -55,25 +57,25 @@ export default createStore({
     async refreshPlayers({state, commit}) {
       await SportspressAPIService.getAllPlayers().then(response => {
         commit(SET_PLAYERS, response)
-        localStorage.setItem("lbao_players", JSON.stringify(response))
+        localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(response))
       })
     },
     async refreshGames({state, commit}) {
       await SportspressAPIService.getAllGames().then(response => {
         commit(SET_GAMES, response)
-        localStorage.setItem("lbao_games", JSON.stringify(response))
+        localStorage.setItem(`${$settings.playballConfig.id}_games`, JSON.stringify(response))
       })
     },
     async refreshCalendar({state, commit}) {
       await SportspressAPIService.getCalendar().then(response => {
         commit(SET_CALENDAR, response[0])
-        localStorage.setItem("lbao_calendar", JSON.stringify(response[0]))
+        localStorage.setItem(`${$settings.playballConfig.id}_calendar`, JSON.stringify(response[0]))
       })
     },
     async refreshTeams({state, commit}) {
       await SportspressAPIService.getAllTeams().then(response => {
         commit(SET_TEAMS, response)
-        localStorage.setItem("lbao_teams", JSON.stringify(response))
+        localStorage.setItem(`${$settings.playballConfig.id}_teams`, JSON.stringify(response))
       })
     },
 
@@ -111,6 +113,9 @@ export default createStore({
     [SET_CALENDAR]: (state, calendar) => {
       state.data.calendar = calendar
     },
+  },
+  modules: {
+    user,
   },
   state: {
     data: {

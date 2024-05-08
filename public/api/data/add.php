@@ -22,6 +22,7 @@ if ($method === "POST") {
     // Access the properties
     $data->gameId = !empty($json_data->gameId) ? $json_data->gameId : "";
     $data->jsonObject = !empty($json_data->jsonObject) ? $json_data->jsonObject : "";
+    $data->seasonId = !empty($json_data->seasonId) ? $json_data->seasonId : "";
     $data->id = !empty($json_data->id) ? $json_data->id : "";
     echo json_encode(array("message" => $json_data));
     if (!empty($data->gameId)) {

@@ -48,7 +48,7 @@
           <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
             :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
             <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
-              <td>{{ player.assignedNumber }} - {{ player.id }}</td>
+              <td>{{ player.assignedNumber }}</td>
               <td class="player-button-container">
                 <button v-if="editMode" class="player-remove-button"
                   @click="removePlayer(player, scoresheet.players.away)">X</button>
@@ -118,7 +118,7 @@
     </OffCanvas>
     <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
-        Replace {{ selectedPlayer.name }} by
+        Replace <span v-html="selectedPlayer.name"></span> by
       </template>
       <template v-slot:body>
         <div>
@@ -129,7 +129,7 @@
           <template v-for="player in allAvailablePlayers" :key="player.id">
             <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
               class="player-replace-list">
-              <div>{{ player.title.rendered }} - {{ player.id }}</div>
+              <div><span v-html="player.title.rendered "></span> - {{ player.id }}</div>
             </div>
           </template>
         </div>
@@ -160,7 +160,7 @@
   </div>
 </template>
 <script>
-import PlayerInGame from "@/models/PlayerInGame"
+import {PlayerInGame} from "@/models/PlayerInGame"
 import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
 import { removeAccents } from "@/scripts/utilities"
@@ -193,7 +193,7 @@ export default {
       return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
     },
     numberOfInnings() {
-      return $settings.playballConfig.innings.length
+      return $settings.playballConfig.innings
     },
     selectedInning() {
       return this.activeBox?.[3]
@@ -218,14 +218,14 @@ export default {
         gameId: null,
         scores: {
           away: {
-            runs: [],
+            runs: new Array($settings.playballConfig.innings+1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
             outcome: "",
           },
           home: {
-            runs: [],
+            runs: new Array($settings.playballConfig.innings+1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
@@ -352,9 +352,11 @@ export default {
   async created() {
     this.broadcastChannel = new BroadcastChannel('test_channel')
     this.scoresheet.gameId = this.$route?.params?.gameId
+    this.scoresheet.seasonId = $settings.playballConfig.season
     if (this.scoresheet.gameId) {
       this.game = this.$store.getters.getGame(this.scoresheet.gameId)
-      this.scoresheet.innings = $settings.playballConfig.innings
+      let index = 0
+      this.scoresheet.innings = Array.from({ length: $settings.playballConfig.innings }, () => ++index)
       this.scoresheet.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
       this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
       this.teams.away = this.scoresheet.teams.away

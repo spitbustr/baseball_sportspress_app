@@ -17,6 +17,7 @@ export default class ScoresheetAPIService {
         let obj = {
             gameId: payload.gameId,
             jsonObject: this.shirinkObject(payload),
+            seasonId: payload.seasonId,
         }
         await axios.post(`${$settings.scoresheetAPI.url}/add.php`, obj).then(result => {
             response = result
@@ -28,7 +29,8 @@ export default class ScoresheetAPIService {
         let obj = {
             gameId: payload.gameId,
             jsonObject: this.shirinkObject(payload),
-            id: payload.id
+            id: payload.id,
+            seasonId: payload.seasonId,
         }
         await axios.post(`${$settings.scoresheetAPI.url}/update.php`, obj).then(result => {
             response = result

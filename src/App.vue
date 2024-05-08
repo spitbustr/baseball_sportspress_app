@@ -1,30 +1,35 @@
 <template>
-  <div id="app" class="container">
-    <div class="row">
-      <div class="col-12">
-        <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNavigation" aria-controls="mainNavigation">
-          <span class="hamburger-icon"></span>
-        </button>
-        <div class="offcanvas offcanvas-start" tabindex="-1" id="mainNavigation" aria-labelledby="mainNavigationLabel">
-          <div class="offcanvas-header">
-            <h5 class="offcanvas-title" id="mainNavigationLabel">Main Navigation</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-          </div>
-          <div class="offcanvas-body">
-            <ul id="main-navigation" class="nav nav-pills nav-justified">
-              <li class="nav-item">
-                <router-link to="/games" class="nav-link active">Games</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/teams" class="nav-link">Teams</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link to="/players" class="nav-link">Players</router-link>
-              </li>
-              <li class="nav-item">
-                <a @click="openCast()" class="nav-link">CAST</a>
-              </li>
-            </ul>
+  <div id="app">
+    <div class="container"  v-if="authenticated">
+      <div class="row">
+        <div class="col-12">
+          <button class="hamburger-btn" type="button" data-bs-toggle="offcanvas" data-bs-target="#mainNavigation" aria-controls="mainNavigation">
+            <span class="hamburger-icon"></span>
+          </button>
+          <div class="offcanvas offcanvas-start" tabindex="-1" id="mainNavigation" aria-labelledby="mainNavigationLabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="mainNavigationLabel">Main Navigation</h5>
+              <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+              <ul id="main-navigation" class="nav nav-pills nav-justified">
+                <li class="nav-item">
+                  <router-link to="/games" class="nav-link active">Games</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link to="/teams" class="nav-link">Teams</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link to="/players" class="nav-link">Players</router-link>
+                </li>
+                <li class="nav-item">
+                  <a @click="openCast()" class="nav-link">CAST</a>
+                </li>
+              </ul>
+              <div>
+                <button @click="logout">Bouton de Logout temporaire</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -37,13 +42,24 @@
   </div>
 </template>
 <script>
+
+import $settings from "@/data/settings.json"
 export default {
+  computed: {
+    authenticated() {
+      return this.$store.state.user.loggedIn
+    }
+  },
   data() {
     return {
       broadcastChannel: null,
     }
   },
   methods: {
+    logout() {
+      localStorage.removeItem(`${$settings.playballConfig.id}_login`)
+      this.$router.push("login")
+    },
     openCast() {
       window.open("/cast","castWindow")
     }

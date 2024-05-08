@@ -12,7 +12,7 @@
         </div>
         <div class="inning-display">
           <div>
-            <div v-if="castService.topBottomInning() === 0">
+            <div v-if="currentTopBottom=== 'top'">
               <img src="@/assets/images/cast/inning-top.png">
             </div>
             <div v-else>
@@ -20,10 +20,10 @@
             </div>
           </div>
           <div>
-            {{ castService.currentInning() }}
+            {{ currentInning }}
           </div>
           <div>
-            <div v-if="castService.topBottomInning() === 1">
+            <div v-if="currentTopBottom === 'bottom'">
               <img src="@/assets/images/cast/inning-bottom.png">
             </div>
             <div v-else>
@@ -42,7 +42,7 @@
       </div>
       <div class="out-display-container">
         <div class="out-display">
-          <div v-if="castService.numberOfOut() >= 1">
+          <div v-if="currentOut >= 1">
             <img src="@/assets/images/cast/out-on.png">
           </div>
           <div v-else>
@@ -50,7 +50,7 @@
           </div>
         </div>
         <div class="out-display">
-          <div v-if="castService.numberOfOut() >= 2">
+          <div v-if="currentOut >= 2">
             <img src="@/assets/images/cast/out-on.png">
           </div>
           <div v-else>
@@ -58,7 +58,7 @@
           </div>
         </div>
         <div class="out-display">
-          <div v-if="castService.numberOfOut() >= 3">
+          <div v-if="currentOut >= 3">
             <img src="@/assets/images/cast/out-on.png">
           </div>
           <div v-else>
@@ -67,7 +67,18 @@
         </div>
       </div>
     </div>
-    <div>
+    <div class="next-atbat-section">
+      <div>
+        <div v-for="(playerName, $index) in currentBattersNameAway" :key="$index">
+          <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'top'}" v-html="playerName"></div>
+        </div>
+      </div>
+      <div>
+        <div v-for="(playerName, $index) in currentBattersNameHome" :key="$index">
+          <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'bottom'}" v-html="playerName"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 </template>
@@ -76,8 +87,26 @@ import CastService from "@/services/CastService"
 export default {
 
   computed: {
+    currentBattersNameAway() {
+      return this.getGameInfo?.currentBatters?.away?.map(p => p.name)
+    },
+    currentBattersNameHome() {
+      return this.getGameInfo?.currentBatters?.home?.map(p => p.name)
+    },
+    currentInning() {
+      return this.getGameInfo.inning
+    },
+    currentOut() {
+      return this.getGameInfo.outs
+    },
+    currentTopBottom() {
+      return this.getGameInfo.topBottom
+    },
     game() {
       return this.data
+    },
+    getGameInfo() {
+      return CastService.info(this.game)
     },
     scores() {
       return this.data?.scores
@@ -85,24 +114,21 @@ export default {
     teams() {
       return this.data?.teams
     },
+
+
   },
   data() {
     return {
       broadcastChannel: null,
       data: null,
-      castService: CastService,
     }
   },
   methods: {
-    listenUpdate(message) {
-      console.log("UPDATED", message)
-    },
 
   },
   mounted() {
     this.broadcastChannel = new BroadcastChannel("gamecastChannel")
     this.broadcastChannel.onmessage = event => {
-      console.log(event.data);
       this.data = event.data
     }
   },
@@ -138,6 +164,14 @@ export default {
     .out-display {
       padding: 1rem;
     }
+  }
+}
+.next-atbat-section {
+  padding: 1rem 4rem;
+  display: flex;
+  justify-content: space-between;
+  .current-atbat {
+    font-size: 3rem;
   }
 }
 </style>
