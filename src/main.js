@@ -5,7 +5,8 @@ import store from './store'
 import OutcomeBox from '@/components/ingame/OutcomeBox'
 import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
-
+import "bootstrap/dist/css/bootstrap.min.css"
+import "bootstrap"
 
 const app = createApp(App).use(store).use(router)
 
