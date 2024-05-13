@@ -115,5 +115,103 @@
           "FC",
           "E"
         ]
+    },
+    "teams": {
+      "1093": {
+        "name": "Pele Chap",
+        "abbreviation": "PCH",
+        "colors": [
+          "darkblue",
+          "gray"
+        ]
+      },
+      "1043": {
+        "name": "Polane",
+        "abbreviation": "POL",
+        "colors": [
+          "indigo",
+          "blue"
+        ]
+      },
+      "406": {
+        "name": "Jeans",
+        "abbreviation": "JEA",
+        "colors": [
+          "blue",
+          "blue"
+        ]
+      },
+      "355": {
+        "name": "Molles",
+        "abbreviation": "MOL",
+        "colors": [
+          "darkgray",
+          "blue"
+        ]
+      },
+      "336": {
+        "name": "Qualitrus",
+        "abbreviation": "QUA",
+        "colors": [
+          "red",
+          "blue"
+        ]
+      },
+      "317": {
+        "name": "Indians",
+        "abbreviation": "IND",
+        "colors": [
+          "darkred",
+          "blue"
+        ]
+      },
+      "306": {
+        "name": "Mittes",
+        "abbreviation": "MIT",
+        "colors": [
+          "orange",
+          "blue"
+        ]
+      },
+      "294": {
+        "name": "Les Cocos",
+        "abbreviation": "COC",
+        "colors": [
+          "gold",
+          "blue"
+        ]
+      },
+      "234": {
+        "name": "Buveurs Désignés",
+        "abbreviation": "BUD",
+        "colors": [
+          "indigo",
+          "gold"
+        ]
+      },
+      "281": {
+        "name": "Softy Aces",
+        "abbreviation": "ACE",
+        "colors": [
+          "green",
+          "blue"
+        ]
+      },
+      "264": {
+        "name": "Inglorious Batters",
+        "abbreviation": "ING",
+        "colors": [
+          "maroon",
+          "blue"
+        ]
+      },
+      "189": {
+        "name": "Brewers",
+        "abbreviation": "BRW",
+        "colors": [
+          "royalblue",
+          "blue"
+        ]
+      }
     }
 }

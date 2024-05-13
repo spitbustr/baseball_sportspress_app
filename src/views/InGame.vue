@@ -595,7 +595,6 @@ export default {
     width: 40px;
     overflow: hidden;
     img {
-
       height: 100%;
       width: auto;
     }

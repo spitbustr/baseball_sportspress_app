@@ -13,7 +13,6 @@ export class PlayerInGame {
   get name() {
     return this.title.rendered
   }
-
 }
 const defaultInGameResults = {
   onBasePosition: null,

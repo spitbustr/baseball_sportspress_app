@@ -3,10 +3,15 @@
     <table width="100%">
       <tr class="team-container">
         <td class="team away">
-          <div class="team-name">
+          <div class="team-logo-container">
+            <div class="team-logo">
+              <img :src="media[teams?.away?.featured_media] || defaultImage">
+            </div>
+          </div>
+          <div class="team-name" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
             {{teams?.away?.title?.rendered || 'AWAY'}}
           </div>
-          <div class="team-points">
+          <div class="team-points" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
             {{ game?.scores?.away?.runs?.[0] || 0 }}
           </div>
         </td>
@@ -32,10 +37,15 @@
           </div>
         </td>
         <td class="team home">
-          <div class="team-name">
+          <div class="team-logo-container">
+            <div class="team-logo">
+              <img :src="media[teams?.home?.featured_media] || defaultImage">
+            </div>
+          </div>
+          <div class="team-name" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
             {{teams?.home?.title?.rendered || 'HOME'}}
           </div>
-          <div class="team-points">
+          <div class="team-points" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
             {{ game?.scores?.home?.runs?.[0] || 0 }}
           </div>
         </td>
@@ -74,14 +84,26 @@
       </tr>
       <tr >
         <td class="next-atbat-section">
-          <div v-for="(playerName, $index) in currentBattersNameAway" :key="$index">
-            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'top'}" v-html="playerName"></div>
+          <div v-for="(player, $index) in currentBattersAway" :key="$index">
+            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'top'}" v-html="player.name"></div>
           </div>
         </td>
-        <td>&nbsp;</td>
+        <td>
+          <div class="player-image-section">
+            <div class="player-image" v-if="getGameInfo.topBottom === 'top'">
+              <img :src="media?.[currentBattersAway[0]?.featured_media] || defaultPlayer">
+            </div>
+            <div class="player-image" v-else-if="getGameInfo.topBottom === 'bottom'">
+              <img :src="media?.[currentBattersHome[0]?.featured_media] || defaultPlayer">
+            </div>
+            <div class="player-image" v-else>
+              <img :src="defaultPlayer">
+            </div>
+          </div>
+        </td>
         <td class="next-atbat-section">
-          <div v-for="(playerName, $index) in currentBattersNameHome" :key="$index">
-            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'bottom'}" v-html="playerName"></div>
+          <div v-for="(player, $index) in currentBattersHome" :key="$index">
+            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'bottom'}" v-html="player.name"></div>
           </div>
         </td>
       </tr>
@@ -90,15 +112,17 @@
   </div>
 </template>
 <script>
+import $settings from "@/data/settings.json"
 import CastService from "@/services/CastService"
 export default {
 
   computed: {
-    currentBattersNameAway() {
-      return this.getGameInfo?.currentBatters?.away?.map(p => p.name)
+    currentBattersAway() {
+      console.log(this.getGameInfo?.currentBatters?.away)
+      return this.getGameInfo?.currentBatters?.away
     },
-    currentBattersNameHome() {
-      return this.getGameInfo?.currentBatters?.home?.map(p => p.name)
+    currentBattersHome() {
+      return this.getGameInfo?.currentBatters?.home
     },
     currentInning() {
       return this.getGameInfo.inning
@@ -109,11 +133,23 @@ export default {
     currentTopBottom() {
       return this.getGameInfo.topBottom
     },
+    defaultPlayer() {
+      return require(`@/assets/images/defaults/default_player.png`)
+    },
+    defaultImage() {
+      return require(`@/assets/images/defaults/team_home.png`)
+    },
     game() {
       return this.data
     },
     getGameInfo() {
       return CastService.info(this.game)
+    },
+    media() {
+      return this.$store.state.data.media
+    },
+    settings() {
+      return $settings
     },
     scores() {
       return this.data?.scores
@@ -149,13 +185,32 @@ export default {
   color: white;
   .team {
     width: 40%;
+    align-content: end;
+    .team-logo-container {
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      .team-logo {
+        height: 100px;
+        width: 100px;
+        border-radius: 50%;
+        overflow: hidden;
+        img {
+          height: 100%;
+          width: auto;
+        }
+      }
+    }
   }
   .team-container {
     .team-name {
-      font-size: 5rem;
+      -webkit-text-stroke: 0.025rem white;
+      font-size: 4rem;
     }
     .team-points {
-      font-size: 15rem;
+      -webkit-text-stroke: 0.25rem white;
+      font-size: 16rem;
     }
     .inning-display {
       width: 10%;
@@ -181,6 +236,18 @@ export default {
   .current-atbat {
     font-size: 4rem;
     line-height: 4rem;
+  }
+}
+.player-image-section {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+
+  .player-image {
+    width: 160px;
+    img {
+      width: 100%;
+    }
   }
 }
 </style>
