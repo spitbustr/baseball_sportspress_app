@@ -5,7 +5,7 @@
         <td class="team away">
           <div class="team-logo-container">
             <div class="team-logo">
-              <img :src="media[teams?.away?.featured_media] || defaultImage">
+              <img :src="media[teams?.away?.featured_media]">
             </div>
           </div>
           <div class="team-name" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
@@ -39,7 +39,7 @@
         <td class="team home">
           <div class="team-logo-container">
             <div class="team-logo">
-              <img :src="media[teams?.home?.featured_media] || defaultImage">
+              <img :src="media[teams?.home?.featured_media]">
             </div>
           </div>
           <div class="team-name" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
@@ -91,10 +91,10 @@
         <td>
           <div class="player-image-section">
             <div class="player-image" v-if="getGameInfo.topBottom === 'top'">
-              <img :src="media?.[currentBattersAway[0]?.featured_media] || defaultPlayer">
+              <img :src="media?.[currentBattersAway[0]?.featured_media]">
             </div>
             <div class="player-image" v-else-if="getGameInfo.topBottom === 'bottom'">
-              <img :src="media?.[currentBattersHome[0]?.featured_media] || defaultPlayer">
+              <img :src="media?.[currentBattersHome[0]?.featured_media]">
             </div>
             <div class="player-image" v-else>
               <img :src="defaultPlayer">
@@ -211,6 +211,7 @@ export default {
     .team-points {
       -webkit-text-stroke: 0.25rem white;
       font-size: 16rem;
+      line-height: 14rem;
     }
     .inning-display {
       width: 10%;
@@ -236,6 +237,7 @@ export default {
   .current-atbat {
     font-size: 4rem;
     line-height: 4rem;
+    margin-bottom: 1rem;
   }
 }
 .player-image-section {
