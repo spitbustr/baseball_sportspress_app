@@ -34,6 +34,23 @@ export default class SportspressAPIService {
     })
     return list.flat()
   }
+  static async getAllMedia() {
+    let list = {}
+    let lastAmount = 100
+    let pageIndex = 1
+    while(lastAmount === 100) {
+      await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.media}?per_page=100&page=${pageIndex}`)
+      .then(result => {
+            list = result.data.reduce(function(map, obj) {
+              map[obj.id] = obj.source_url;
+              return map;
+          }, list);
+          lastAmount = result.data.length
+          pageIndex++
+      })
+    }
+    return list
+  }
   static async getAllPlayers() {
     const list = []
     let lastAmount = 100
@@ -53,6 +70,7 @@ export default class SportspressAPIService {
     await this.loadConfig().then(result => {
       token = result?.API_token?.api_token
     })
+    console.log("TOKEN ",token)
     const headers = {
       "Authorization": `Basic ${token}`,
       "Content-Type": "application/json",

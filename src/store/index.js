@@ -4,6 +4,7 @@ import user from "@/store/modules/user"
 import $settings from "@/data/settings.json"
 const SET_PLAYERS = "SET_PLAYERS"
 const SET_GAMES = "SET_GAMES"
+const SET_MEDIA = "SET_MEDIA"
 const SET_TEAMS= "SET_TEAMS"
 const SET_CALENDAR= "SET_CALENDAR"
 
@@ -46,18 +47,33 @@ export default createStore({
           localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(response))
         })
       }
+      if(localStorage.getItem(`${$settings.playballConfig.id}_media`)) {
+        commit(SET_MEDIA, JSON.parse(localStorage.getItem(`${$settings.playballConfig.id}_media`)))
+      }
+      else {
+        await SportspressAPIService.getAllMedia().then(response => {
+          commit(SET_MEDIA, response)
+          localStorage.setItem(`${$settings.playballConfig.id}_media`, JSON.stringify(response))
+        })
+      }
     },
     async refreshData({state, dispatch}) {
       await dispatch("refreshCalendar")
       await dispatch("refreshGames")
       await dispatch("refreshTeams")
       await dispatch("refreshPlayers")
-
+      await dispatch("refreshMedia")
     },
     async refreshPlayers({state, commit}) {
       await SportspressAPIService.getAllPlayers().then(response => {
         commit(SET_PLAYERS, response)
         localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(response))
+      })
+    },
+    async refreshMedia({state, commit}) {
+      await SportspressAPIService.getAllMedia().then(response => {
+        commit(SET_MEDIA, response)
+        localStorage.setItem(`${$settings.playballConfig.id}_media`, JSON.stringify(response))
       })
     },
     async refreshGames({state, commit}) {
@@ -93,6 +109,9 @@ export default createStore({
     getAllPlayers: (state) => {
       return state.data.players
     },
+    getAllMedia: (state) => {
+      return state.data.media
+    },
     getGame: (state) => (gameId) => {
       return state.data.games.find(g => g.id == +gameId)
     },
@@ -107,6 +126,9 @@ export default createStore({
     [SET_PLAYERS]: (state, players) => {
       state.data.players = players
     },
+    [SET_MEDIA]: (state, media) => {
+      state.data.media = media
+    },
     [SET_GAMES]: (state, games) => {
       state.data.games = games
     },
@@ -119,6 +141,7 @@ export default createStore({
   },
   state: {
     data: {
+      media: [],
       players: [],
       teams: [],
       games: [],

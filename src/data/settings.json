@@ -6,7 +6,8 @@
         "games":  "/wp-json/sportspress/v2/calendars",
         "lists":  "/wp-json/sportspress/v2/lists",
         "events": "/wp-json/sportspress/v2/events",
-        "calendars": "/wp-json/sportspress/v2/calendars"
+        "calendars": "/wp-json/sportspress/v2/calendars",
+        "media": "/wp-json/wp/v2/media"
     },
 
 

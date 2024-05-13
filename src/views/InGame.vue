@@ -8,17 +8,31 @@
       <div class="scoresheet-results-scores">
         <table valign="center">
           <tr>
-            <td>Teams</td>
+            <td colspan="2">Teams</td>
             <td v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</td>
             <td>Total</td>
           </tr>
           <tr>
-            <td>{{ teams.away.title.rendered }}</td>
+            <td>
+              <div class="team-image-container">
+                <div class="team-image" >
+                  <img :src="media[teams?.away?.featured_media] || defaultImage">
+                </div>
+              </div>
+            </td>
+            <td align="left">{{ teams.away.title.rendered }}</td>
             <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</td>
             <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
           </tr>
           <tr>
-            <td>{{ teams.home.title.rendered }}</td>
+            <td>
+              <div class="team-image-container">
+                <div class="team-image" >
+                  <img :src="media[teams?.home?.featured_media] || defaultImage">
+                </div>
+              </div>
+            </td>
+            <td align="left">{{ teams.home.title.rendered }}</td>
             <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}
             </td>
             <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
@@ -179,6 +193,12 @@ export default {
     },
     activePlayerBox() {
       return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
+    },
+    defaultImage() {
+      return require(`@/assets/images/defaults/team_home.png`)
+    },
+    media() {
+      return this.$store.state.data.media
     },
     numberOfInnings() {
       return $settings.playballConfig.innings
@@ -567,4 +587,20 @@ export default {
     opacity: 0.75;
     cursor: pointer;
   }
-}</style>
+}
+.team-image-container {
+  .team-image {
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+    overflow: hidden;
+    img {
+
+      height: 100%;
+      width: auto;
+    }
+  }
+}
+
+
+</style>
