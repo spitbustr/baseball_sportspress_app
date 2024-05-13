@@ -51,7 +51,7 @@ export default class SportspressAPIService {
   static async sendData(payload) {
     let token = null
     await this.loadConfig().then(result => {
-      token = result.API_token.api_token
+      token = result?.API_token?.api_token
     })
     const headers = {
       "Authorization": `Basic ${token}`,
