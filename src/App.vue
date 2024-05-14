@@ -2,6 +2,11 @@
 
   <div id="app">
     <div>
+      <Modal type="loading" v-show="progressing || loading">
+        <template v-slot:body>
+          {{progress.loading}}
+        </template>
+      </Modal>
       <div id="main-navigation" v-if="authenticated">
         <div>
           <button @click="logout">Bouton de Logout temporaire</button>
@@ -25,11 +30,18 @@ export default {
   computed: {
     authenticated() {
       return this.$store.state.user.loggedIn
+    },
+    progress() {
+      return this.$store.state.data.progress
+    },
+    progressing() {
+      return this.$store.state.data.progress.percentage < 100
     }
   },
   data() {
     return {
       broadcastChannel: null,
+      loading: false,
     }
   },
   methods: {
@@ -43,6 +55,14 @@ export default {
   },
   mounted() {
 
+  },
+  watch: {
+    progressing(val, old) {
+      this.loading = true
+      setTimeout(() => {
+        this.loading = false
+      }, 1000)
+    }
   }
 }
 </script>

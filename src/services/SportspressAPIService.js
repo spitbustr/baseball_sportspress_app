@@ -32,7 +32,7 @@ export default class SportspressAPIService {
     .then(l1 => {
         list.push(l1.data)
     })
-    return list.flat()
+    return list.flat().filter(p => p.id != 4277)
   }
   static async getAllMedia() {
     let list = {}
@@ -70,7 +70,6 @@ export default class SportspressAPIService {
     await this.loadConfig().then(result => {
       token = result?.API_token?.api_token
     })
-    console.log("TOKEN ",token)
     const headers = {
       "Authorization": `Basic ${token}`,
       "Content-Type": "application/json",
@@ -81,12 +80,22 @@ export default class SportspressAPIService {
           console.log(res)
       })
   }
-  static async addPlayer(playerInfo) {
-    const list = []
-    await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}?${playerInfo}`)
-      .then(l1 => {
-        list.push(l1.data)
+  static async addPlayer(playerInfo, store) {
+    let token = null
+    await this.loadConfig().then(result => {
+      token = result?.API_token?.api_token
+    })
+    const headers = {
+      "Authorization": `Basic ${token}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    }
+    await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}`, playerInfo, {headers})
+      .then(result => {
+        if(result?.status == 201) {
+          store.dispatch("addPlayer", result.data)
+          console.log(result.data, store)
+        }
       })
-      return list.flat()
   }
 }

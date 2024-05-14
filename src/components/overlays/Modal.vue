@@ -3,21 +3,27 @@
     <transition name="modal-fade">
       <div class="modal-backdrop" @click="handleBackdropClick">
         <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
-          <header class="modal-header" id="modalTitle">
-            <slot name="header">
-            </slot>
-            <button type="button" class="btn-close" @click="close" aria-label="Close modal">
-              x
-            </button>
-          </header>
-          <section class="modal-body" id="modalDescription">
-            <slot name="body">
-            </slot>
-          </section>
-          <footer class="modal-footer">
-            <slot name="footer">
-            </slot>
-          </footer>
+          <div class="modal-content">
+            <header class="modal-header" id="modalTitle" v-if="$slots.header">
+              <slot name="header">
+              </slot>
+              <button type="button" class="btn-close" @click="close" aria-label="Close modal">
+                x
+              </button>
+            </header>
+            <section class="modal-body-container" id="modalDescription">
+              <div class="modal-body-content">
+                <div class="modal-body">
+                  <slot name="body">
+                  </slot>
+                </div>
+              </div>
+            </section>
+            <footer class="modal-footer" v-if="$slots.footer">
+              <slot name="footer">
+              </slot>
+            </footer>
+          </div>
         </div>
       </div>
     </transition>
@@ -37,6 +43,7 @@ export default {
     },
     handleBackdropClick(event) {
       if (event.target === event.currentTarget) {
+        if(this.type==="loading") return
         this.close()
       }
     }
@@ -62,7 +69,7 @@ export default {
 .modal {
   background: #FFFFFF;
   box-shadow: 2px 2px 20px 1px;
-  overflow-x: auto;
+  overflow-x: hidden;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -71,7 +78,10 @@ export default {
   max-width: 32rem;
   max-height: 40rem;
   position: relative;
-
+  &.loading {
+    overflow: hidden;
+    max-height: 4rem;
+  }
   &.fullScreen {
     width: 100%;
     height: 100%;
@@ -86,16 +96,21 @@ export default {
 .modal-footer {
   padding: 15px;
   display: flex;
+  z-index: 10;
 }
 
 .modal-header {
-  position: relative;
-  border-bottom: 1px solid #eeeeee;
+  background: white;
+  position: sticky;
+  border-bottom: 2px solid #eeeeee;
   color: #4AAE9B;
   justify-content: space-between;
+  align-items: center;
+  top: 0;
 }
 
 .modal-footer {
+  background: white;
   border-top: 1px solid #eeeeee;
   flex-direction: column;
   position: sticky;
@@ -104,12 +119,19 @@ export default {
   bottom: 0;
   padding: 0;
 }
-
-.modal-body {
+.modal-body-container {
   position: relative;
-  padding: 20px 10px;
   height: 100%;
+  .modal-body-content {
+    .modal-body {
+      position: relative;
+      padding: 20px 10px;
+
+    }
+  }
+
 }
+
 
 .btn-close {
   position: absolute;
@@ -140,4 +162,5 @@ export default {
 .modal-fade-leave-active {
   transition: opacity .5s ease;
 }
+
 </style>

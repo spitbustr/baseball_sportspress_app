@@ -7,16 +7,34 @@
       <button @click="refreshTeams()">Refresh <b>TEAMS</b></button>
     </div>
     <div>
-      <button @click="refreshGames()">Refresh <b>PLAYERS</b></button>
+      <button @click="refreshMedia()">Refresh <b>MEDIA</b></button>
+    </div>
+    <div>
+      ------
+    </div>
+    <div>
+      <button @click="refreshPlayers()">Refresh <b>PLAYERS</b></button>
+    </div>
+    <div>
+      ------
+    </div>
+    <div>
+      <button @click="clearDataBase()">CLEAR DATABASE FOR SEASON <b>{{ settings.playballConfig.season }}</b></button>
     </div>
   </div>
 </template>
 <script>
+import $settings from "@/data/settings.json"
 export default {
   computed: {
-
+    settings() {
+      return $settings
+    },
   },
   methods: {
+    async clearDataBase() {
+
+    },
     async refreshGames() {
       await this.$store.dispatch("refreshCalendar")
       await this.$store.dispatch("refreshGames")
@@ -26,7 +44,10 @@ export default {
     },
     async refreshPlayers() {
       await this.$store.dispatch("refreshPlayers")
-    }
+    },
+    async refreshMedia() {
+      await this.$store.dispatch("refreshMedia")
+    },
   }
 }
 </script>

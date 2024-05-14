@@ -1,16 +1,15 @@
 <template>
   <div>
     <div>
-      Game {{ game.id }}
+      {{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span>
     </div>
     <div>
-      <div>SCORES</div>
       <div class="scoresheet-results-scores">
-        <table valign="center">
+        <table valign="center" class="score-table">
           <tr>
-            <td colspan="2">Teams</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</td>
-            <td>Total</td>
+            <th colspan="2">Teams</th>
+            <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
+            <th>Total</th>
           </tr>
           <tr>
             <td>
@@ -21,7 +20,7 @@
               </div>
             </td>
             <td align="left">{{ teams.away.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</td>
+            <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</span></td>
             <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
           </tr>
           <tr>
@@ -33,8 +32,7 @@
               </div>
             </td>
             <td align="left">{{ teams.home.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning">{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}
-            </td>
+            <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</span></td>
             <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
           </tr>
         </table>
@@ -120,20 +118,25 @@
     </div>
     <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
-        Replace <span v-html="selectedPlayer.name"></span> by
+        <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
       </template>
       <template v-slot:body>
         <div>
-          <div class="search-section">
-            SEARCH:
-            <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
-          </div>
-          <template v-for="player in allAvailablePlayers" :key="player.id">
-            <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
-              class="player-replace-list">
-              <div><span v-html="player.title.rendered "></span> - {{ player.id }}</div>
+          <div>
+            <div class="search-section">
+              SEARCH:
+              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
             </div>
-          </template>
+          </div>
+          <div>
+            <div v-for="player in allAvailablePlayers" :key="player.id">
+              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+                class="player-replace-list">
+                <div><span v-html="player.title.rendered "></span> - {{ player.id }}</div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </template>
       <template v-slot:footer>
@@ -168,7 +171,7 @@ import $settings from "@/data/settings.json"
 import { removeAccents } from "@/scripts/utilities"
 import ScoresheetAPIService from "@/services/ScoresheetAPIService"
 import { clone } from "@/scripts/utilities"
-
+import moment from "moment"
 import { VueDraggableNext } from 'vue-draggable-next'
 
 export default {
@@ -278,6 +281,9 @@ export default {
     editPlayer(player, list) {
       this.isPlayerModalVisible = true
       this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` })
+    },
+    getDateTime(event) {
+      return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
@@ -500,7 +506,12 @@ export default {
 }
 
 .search-section {
-  position: absolute;
+  background: white;
+  position: relative;
+  border-bottom: 2px solid #eeeeee;
+  color: #4AAE9B;
+  justify-content: space-between;
+  align-items: center;
   top: 0;
 }
 
@@ -600,6 +611,23 @@ export default {
     }
   }
 }
+.score-table {
+  border-collapse: collapse;
 
+  tr {
+    td,th {
+      border: 1px solid black;
+      padding: 0.25rem 0.5rem;
+    }
+    td {
+      &:nth-child(even) {
+        color: black;
+      }
+    }
+  }
+}
+.date-time {
+  text-transform: capitalize;
+}
 
 </style>

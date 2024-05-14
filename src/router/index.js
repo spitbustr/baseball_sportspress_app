@@ -105,6 +105,9 @@ router.beforeEach (async (to, from, next) => {
       authentication = response
     })
   }
+  if(authentication) {
+    store?.dispatch("initialize")
+  }
   store.dispatch("user/setLoggedIn",!!authentication)
   if(to.meta.requiresAuth && !authentication) {
     next({ name: 'login' })

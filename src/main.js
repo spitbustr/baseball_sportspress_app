@@ -19,7 +19,6 @@ app.component('Modal', Modal)
 // Mount app
 app.mount('#app')
 
-store.dispatch("initialize")
 store.dispatch("user/initialize")
 
 router.beforeEach (async (to, from, next) => {

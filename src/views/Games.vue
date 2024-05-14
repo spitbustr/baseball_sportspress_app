@@ -27,7 +27,7 @@ export default {
   },
   methods: {
     getDateTime(event) {
-      return moment(event.date).locale("fr").format("dddd DD MMM YYYY")
+      return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
     },
     getTeamName(teamId, defaultName) {
       return this.$store.state.data.teams?.find(t => t?.id === teamId)?.title?.rendered ?? defaultName
