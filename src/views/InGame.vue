@@ -5,36 +5,40 @@
     </div>
     <div>
       <div class="scoresheet-results-scores">
-        <table valign="center" class="score-table">
-          <tr>
-            <th colspan="2">Teams</th>
-            <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
-            <th>Total</th>
-          </tr>
-          <tr>
-            <td>
-              <div class="team-image-container">
-                <div class="team-image" >
-                  <img :src="media[teams?.away?.featured_media] || defaultImage">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th colspan="2">Teams</th>
+              <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="team-image-container">
+                  <div class="team-image">
+                    <img :src="media[teams?.away?.featured_media] || defaultImage">
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td align="left">{{ teams.away.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</span></td>
-            <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
-          </tr>
-          <tr>
-            <td>
-              <div class="team-image-container">
-                <div class="team-image" >
-                  <img :src="media[teams?.home?.featured_media] || defaultImage">
+              </td>
+              <td align="left">{{ teams.away.title.rendered }}</td>
+              <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</span></td>
+              <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
+            </tr>
+            <tr>
+              <td>
+                <div class="team-image-container">
+                  <div class="team-image">
+                    <img :src="media[teams?.home?.featured_media] || defaultImage">
+                  </div>
                 </div>
-              </div>
-            </td>
-            <td align="left">{{ teams.home.title.rendered }}</td>
-            <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</span></td>
-            <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
-          </tr>
+              </td>
+              <td align="left">{{ teams.home.title.rendered }}</td>
+              <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</span></td>
+              <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
+            </tr>
+          </tbody>
         </table>
       </div>
     </div>
@@ -44,7 +48,7 @@
         <div>
           {{ teams.away.title.rendered }}
         </div>
-        <table>
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>#</th>
@@ -80,7 +84,7 @@
         <div>
           {{ teams.home.title.rendered }}
         </div>
-        <table>
+        <table class="table table-bordered">
           <thead>
             <tr>
               <th>#</th>
@@ -410,40 +414,27 @@ export default {
 <style lang="scss" scoped>
 .tables-container {
   display: flex;
-  justify-content: center;
-
   .scoresheet-table {
 
-    table,
-    td,
-    th {
-      border-collapse: collapse;
-      border: 1px solid #000000;
-    }
+
 
     table {
-      margin: 1rem 10px;
 
       tr {
         &:nth-child(even) {
           td {
-            background: #F8F8FF;
           }
         }
 
         &:nth-child(odd) {
           td {
-            background: #F5F5F5;
           }
         }
 
         th {
-          padding: 0rem 1.25rem;
-          background: darkgray;
 
           &:nth-child(1) {
             max-width: 1rem;
-            padding: 0.25rem 1rem;
           }
         }
 

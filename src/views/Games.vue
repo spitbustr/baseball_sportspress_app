@@ -1,14 +1,38 @@
 <template>
-  <div class="games-list">
-    <template v-for="game in games" :key="game">
-      <div class="game">
-        <router-link :to="`/game/${game.id}`">
-          <div>Game #{{ game.id }}</div>
-          <div>{{ getTeamName(game.teams[0], "Away Team") }} vs {{ getTeamName(game.teams[1], "Home Team") }}</div>
-          <div class="date-time">{{ getDateTime(game) }}</div>
-        </router-link>
-      </div>
-    </template>
+  <div class="row">
+    <div class="col-sm-12">
+      <table class="table table-striped table-hover text-start">
+        <thead>
+          <tr>
+            <th>Game ID</th>
+            <th>Away Team</th>
+            <th>Home Team</th>
+            <th>Date and Time</th>
+            <th>Actions</th>
+
+          </tr>
+        </thead>
+        <tbody>
+          <template v-for="game in games" :key="game">
+            <tr>
+              <td>{{ game.id }}</td>
+              <td>{{ getTeamName(game.teams[0], "Away Team") }}</td>
+              <td>{{ getTeamName(game.teams[1], "Home Team") }}</td>
+              <td>{{ getDateTime(game) }}</td>
+              <td>
+                <div class="d-grid gap-1">
+
+                  <router-link :to="`/game/${game.id}`" class="btn btn-primary btn-block">
+                    Éditer
+                  </router-link>
+                  </div>
+              </td>
+            </tr>
+          </template>
+        </tbody>
+      </table>
+
+    </div>
   </div>
 </template>
 <script>
@@ -35,17 +59,3 @@ export default {
   }
 }
 </script>
-<style lang="scss" scoped>
-.games-list {
-  text-align: center;
-  width: 100%;
-
-  .game {
-    margin: 1rem auto;
-    width: fit-content;
-  }
-  .date-time {
-    text-transform: capitalize;
-  }
-}
-</style>

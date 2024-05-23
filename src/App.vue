@@ -19,7 +19,9 @@
           <a @click="openCast()">CAST</a>
         </nav>
       </div>
+      <div class="container">
       <router-view />
+      </div>
     </div>
   </div>
 </template>
