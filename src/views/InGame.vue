@@ -70,7 +70,7 @@
               <td v-for="inning in scoresheet.innings" :key="inning"
                 @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
                 :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }" class="ingame-outcome-box">
-                <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
+                  <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
               </td>
             </tr>
           </draggable>
@@ -470,7 +470,7 @@ export default {
     }
 
     .ingame-outcome-box {
-      padding: 2px 0 0;
+      padding: 2px;
     }
 
     .action-buttons {

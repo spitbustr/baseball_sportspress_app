@@ -1,13 +1,12 @@
 <template>
   <div class="box">
-    <div class="field-countHR" v-if="countAsHR">
-      *
+    <div v-if="countAsHR" class="field-countHR" >
+      <div >
+        *
+      </div>
     </div>
     <div class="field-onbase" :class="{ 'isPutOut': isPutOut }">
       <img :src="fieldImage" />
-    </div>
-    <div class="outcome-result">
-      {{ atBatOutcome }}
     </div>
     <div class="center-field out-result" v-if="isPutOut">
       O
@@ -15,12 +14,17 @@
     <div class="center-field rbi-result" v-if="rbiResult && !isPutOut">
       {{ rbiPlayer }}
     </div>
+    <div v-if="atBatOutcome" class="outcome-result">
+      {{ getFieldSymbol(atBatOutcome) }}
+    </div>
     <div class="inning-end" v-if="inningEnd">
       <img :src="inningEndImage" />
     </div>
   </div>
 </template>
 <script>
+
+import $settings from "@/data/settings.json"
 export default {
   computed: {
     fieldImage() {
@@ -47,6 +51,14 @@ export default {
     inningEnd() {
       return this.outcome?.inningEnd
     },
+
+  },
+  methods: {
+    getFieldSymbol(value) {
+      console.log($settings.stats.hits)
+      const hit = $settings.stats.hits.find(h => h.value === value)
+      return hit?.symbol || hit.value
+    }
   },
   props: {
     outcome: Object,
@@ -57,22 +69,21 @@ export default {
 <style lang="scss" scoped>
 .box {
   position: relative;
-
   .outcome-result {
     position: absolute;
     font-size: 12px;
-    right: 2px;
-    bottom: 0;
+    right: -1px;
+    bottom: -6px;
   }
 
   .center-field {
     position: absolute;
     font-weight: bold;
     font-size: 12px;
-    top: 0;
+    top: 10px;
     left: 0;
     right: 0;
-    margin: 0.7rem auto;
+    margin: auto;
 
     &.rbi-result {
       color: black;
@@ -85,20 +96,21 @@ export default {
   }
 
   .field-onbase {
+    padding: 2px;
     img {
       width: 35px;
       height: 35px;
     }
 
     &.isPutOut {
-      opacity: 0.1;
+      opacity: 0.2;
     }
   }
 
   .inning-end {
     position: absolute;
     bottom: -1rem;
-    right: -1rem;
+    right: -0.9rem;
     img {
       height: 1.5rem;
       width: auto;
@@ -109,7 +121,7 @@ export default {
   .field-countHR {
     font-weight: bold;
     position: absolute;
-    top: -0.25rem;
+    top: -0.55rem;
     left: 0rem;
     font-size: 30px;
   }

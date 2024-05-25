@@ -27,6 +27,11 @@
     "stats": {
         "hits":  [
             {
+              "name": "OUT AB",
+              "value": "outAB",
+              "symbol": "OB"
+            },
+            {
               "name": "1B",
               "value": "1B"
             },

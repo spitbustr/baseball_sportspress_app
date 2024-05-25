@@ -1,5 +1,15 @@
 <template>
   <div class="row">
+    <div>
+      <button @click="changeFilter('past')">PAST GAMES</button>
+      <button @click="changeFilter('today')">TODAY'S GAMES</button>
+      <button @click="changeFilter('upcoming')">UPCOMING GAMES</button>
+    </div>
+    <div>
+      <button @click="changeFilter('week',-1)">LAST WEEK'S GAMES</button>
+      <button @click="changeFilter('week',0)">THIS WEEK'S GAMES</button>
+      <button @click="changeFilter('week',1)">NEXT WEEK'S GAMES</button>
+    </div>
     <div class="col-sm-12">
       <table class="table table-striped table-hover text-start">
         <thead>
@@ -9,21 +19,30 @@
             <th>Home Team</th>
             <th>Date and Time</th>
             <th>Actions</th>
-
           </tr>
         </thead>
         <tbody>
-          <template v-for="game in games" :key="game">
-            <tr>
+          <template v-for="game in filteredGames" :key="game">
+            <tr :class="{'today-game': isToday(game)}">
               <td>{{ game.id }}</td>
-              <td>{{ getTeamName(game.teams[0], "Away Team") }}</td>
-              <td>{{ getTeamName(game.teams[1], "Home Team") }}</td>
-              <td>{{ getDateTime(game) }}</td>
+              <td>
+                <div class="team-display away">
+                  {{ getTeamName(game.teams[0], "Away Team") }}
+                  <img class="team-logo away" :src="media[getTeamLogo(game.teams[0])] || defaultImage">
+                </div>
+              </td>
+              <td>
+                <div class="team-display home">
+                  <img class="team-logo home" :src="media[getTeamLogo(game.teams[1])] || defaultImage">
+                  {{ getTeamName(game.teams[1], "Home Team") }}
+                </div>
+              </td>
+              <td class="date-time">{{ getDateTime(game) }}</td>
               <td>
                 <div class="d-grid gap-1">
 
                   <router-link :to="`/game/${game.id}`" class="btn btn-primary btn-block">
-                    Éditer
+                    EDIT
                   </router-link>
                   </div>
               </td>
@@ -43,19 +62,118 @@ import {cloneDeep} from "lodash"
 
 export default {
   computed: {
+    defaultImage() {
+      return require(`@/assets/images/defaults/team_home.png`)
+    },
+
+    filteredGames() {
+      if(this.gameFilter?.type === "today") {
+        return this.todayGames
+      }
+      else if(this.gameFilter?.type === "upcoming") {
+        return this.games.filter(g => this.isUpcoming(g))
+      }
+      else if(this.gameFilter?.type === "past") {
+        return this.games.filter(g => this.isPast(g))
+      }
+      else if(this.gameFilter?.type === "week") {
+        return this.gamesbyWeek(this.gameFilter.week)
+      }
+      return this.games
+    },
     games() {
       const list = cloneDeep(this.$store.state.data.games)
       moment.locale("fr")
       return list.sort((a,b) => {return new Date(a.date)-new Date(b.date)})
     },
+    media() {
+      return this.$store.state.data.media
+    },
+    todayGames() {
+      return this.games.filter(g => this.isToday(g))
+    },
+  },
+  data() {
+    return {
+      gameFilter: null
+    }
   },
   methods: {
+    changeFilter(id,week) {
+      this.gameFilter = {
+        type: id,
+        week: week,
+      }
+    },
+    gamesbyWeek(week) {
+      // Start of this week (Sunday)
+      const startOfWeek = moment().add(week, 'weeks').startOf('week').day(0)
+      // End of this week (Saturday)
+      const endOfWeek = moment(startOfWeek).day(6)
+
+      return this.games.filter(game => {
+        const gameDate = moment(game.date)
+        return gameDate.isSameOrAfter(startOfWeek) && gameDate.isSameOrBefore(endOfWeek)
+      })
+
+    },
     getDateTime(event) {
       return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
     },
+    getTeamData(teamId) {
+      return this.$store.state.data.teams?.find(t => t?.id === teamId)
+    },
+    getTeamLogo(teamId) {
+      return this.getTeamData(teamId).featured_media
+    },
     getTeamName(teamId, defaultName) {
-      return this.$store.state.data.teams?.find(t => t?.id === teamId)?.title?.rendered ?? defaultName
-    }
+      return this.getTeamData(teamId)?.title?.rendered ?? defaultName
+    },
+    isPast(game) {
+      const today = moment()
+      const date = game.date
+      return moment(date).isBefore(today, 'day')
+    },
+
+    isToday(game) {
+      const today = moment()
+      const date = game.date
+      return moment(date).isSame(today, 'day')
+    },
+    isUpcoming(game) {
+      const today = moment()
+      const date = game.date
+      return moment(date).isAfter(today, 'day')
+    },
+
   }
 }
 </script>
+<style lang="scss" scoped>
+.date-time {
+  text-transform: capitalize;
+}
+.today-game {
+  td {
+    background: #e5fbe5;
+  }
+}
+
+.team-display {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  .team-logo {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+  }
+  &.home {
+     justify-content: start;
+    img {
+      margin-right: 1rem;
+    }
+  }
+}
+</style>
+

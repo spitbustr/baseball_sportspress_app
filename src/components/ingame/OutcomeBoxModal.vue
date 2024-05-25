@@ -90,6 +90,14 @@ export default {
         else {
           this.activePlayerBox.atBatResult = outcome
           switch (outcome) {
+            case "outAB":
+            case "o":
+            case "-":
+              this.activePlayerBox.onBasePosition = null
+              this.activePlayerBox.rbiBy = null
+              this.activePlayerBox.countAsHR = false
+              this.activePlayerBox.putOut = true
+              break
             case "1B":
               this.activePlayerBox.onBasePosition = "first"
               this.activePlayerBox.rbiBy = null
