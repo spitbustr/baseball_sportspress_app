@@ -503,7 +503,9 @@ export default {
 <style lang="scss" scoped>
 .tables-container {
   display: flex;
+  justify-content: space-around;
   .scoresheet-table {
+    padding: 0 0.5rem;
     table {
       tr {
         &:nth-child(even) {

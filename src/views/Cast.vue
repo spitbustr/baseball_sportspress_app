@@ -11,7 +11,7 @@
           <div class="team-name" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
             {{teams?.away?.title?.rendered || 'AWAY'}}
           </div>
-          <div class="team-points" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
+          <div class="team-points">
             {{ game?.scores?.away?.runs?.[0] || 0 }}
           </div>
         </td>
@@ -45,7 +45,7 @@
           <div class="team-name" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
             {{teams?.home?.title?.rendered || 'HOME'}}
           </div>
-          <div class="team-points" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
+          <div class="team-points">
             {{ game?.scores?.home?.runs?.[0] || 0 }}
           </div>
         </td>
@@ -85,7 +85,7 @@
       <tr >
         <td class="next-atbat-section">
           <div v-for="(player, $index) in currentBattersAway" :key="$index">
-            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'top'}" v-html="player.name"></div>
+            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'top'}" v-html="player.name.split('(R)')[0]"></div>
           </div>
         </td>
         <td>
@@ -103,7 +103,7 @@
         </td>
         <td class="next-atbat-section">
           <div v-for="(player, $index) in currentBattersHome" :key="$index">
-            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'bottom'}" v-html="player.name"></div>
+            <div :class="{'current-atbat': $index === 0 && getGameInfo.topBottom === 'bottom'}" v-html="player.name.split('(R)')[0]"></div>
           </div>
         </td>
       </tr>
@@ -231,9 +231,9 @@ export default {
   font-size: 1.25rem;
   flex-direction: column;
   justify-content: center;
-  padding: 1rem 4rem;
+  padding: 1rem 0rem;
   .current-atbat {
-    font-size: 4rem;
+    font-size: 2.5rem;
     line-height: 4rem;
     margin-bottom: 1rem;
   }
