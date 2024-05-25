@@ -8,7 +8,7 @@
         <table class="table table-bordered">
           <thead>
             <tr>
-              <th colspan="2">Teams</th>
+              <th>Teams</th>
               <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
               <th>Total</th>
             </tr>
@@ -20,9 +20,9 @@
                   <div class="team-image">
                     <img :src="media[teams?.away?.featured_media] || defaultImage">
                   </div>
+                  <div>{{ teams.away.title.rendered }}</div>
                 </div>
               </td>
-              <td align="left">{{ teams.away.title.rendered }}</td>
               <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</span></td>
               <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
             </tr>
@@ -32,9 +32,9 @@
                   <div class="team-image">
                     <img :src="media[teams?.home?.featured_media] || defaultImage">
                   </div>
+                  <div>{{ teams.home.title.rendered }}</div>
                 </div>
               </td>
-              <td align="left">{{ teams.home.title.rendered }}</td>
               <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</span></td>
               <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
             </tr>
@@ -46,7 +46,10 @@
     <div :class="{ 'editMode': editMode }" class="tables-container scoresheet">
       <div class="scoresheet-table">
         <div>
+          <button v-if="editMode" @click="setLineup(teams?.away, 'away')">Set Lineup</button>
+          <img class="team-image" :src="media[teams?.away?.featured_media] || defaultImage">
           {{ teams.away.title.rendered }}
+          <button v-if="editMode" @click="clearLineup('away')">CLEAR LINEUP</button>
         </div>
         <table class="table table-bordered">
           <thead>
@@ -75,14 +78,18 @@
             </tr>
           </draggable>
           <tr class="unclickable" v-if="editMode">
-            <td :colspan="numberOfInnings + 2" class="add-player-button"><button
-                @click="addPlayer(scoresheet.players.away)">Add Player</button></td>
+            <td :colspan="numberOfInnings + 2" class="add-player-button">
+              <button @click="addPlayer(scoresheet.players.away)">Add Player</button>
+            </td>
           </tr>
         </table>
       </div>
       <div class="scoresheet-table">
         <div>
+          <button v-if="editMode" @click="setLineup(teams?.home, 'home')">Set Lineup</button>
+          <img class="team-image" :src="media[teams?.home?.featured_media] || defaultImage">
           {{ teams.home.title.rendered }}
+          <button v-if="editMode" @click="clearLineup('home')">CLEAR LINEUP</button>
         </div>
         <table class="table table-bordered">
           <thead>
@@ -118,8 +125,11 @@
       </div>
     </div>
     <div class="edit-container">
-      <button class="editButton" @click="toggleEditMode">Toggle Edit Mode</button>
+      <button class="editButton" @click="toggleEditMode">{{this.editMode ? "SAVE CHANGES": "Toggle Edit Mode"}}</button>
     </div>
+
+
+    <!-- REPLACE PLAYER MODAL -->
     <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
         <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
@@ -136,7 +146,7 @@
             <div v-for="player in allAvailablePlayers" :key="player.id">
               <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
                 class="player-replace-list">
-                <div><span v-html="player.title.rendered "></span> - {{ player.id }}</div>
+                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span></div>
               </div>
             </div>
           </div>
@@ -149,6 +159,40 @@
         </div>
       </template>
     </Modal>
+
+    <!-- SETTING LINE UP MODAL -->
+    <Modal v-show="settingLineup.open" @close="closeModal">
+      <template v-slot:header>
+        <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length" @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+        <h5>Lineup {{ settingLineup.team.name }}</h5>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div>
+            <div class="search-section">
+              SEARCH:
+              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+            </div>
+          </div>
+          <div>
+            <div v-for="player in allAvailablePlayers" :key="player.id">
+              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+                class="player-replace-list">
+                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="setLineupAddPlayer">ACCEPTER</button>
+        </div>
+      </template>
+    </Modal>
+
+
+    <!-- AT-BAT OUTCOME MODAL -->
     <Modal v-show="isOutcomeModalVisible" @close="closeModal">
       <template v-slot:header>
         {{ selectedBatterOrder }} - Inning {{ selectedInning }}
@@ -187,10 +231,15 @@ export default {
       return this.$store.getters.getAllPlayers
     },
     allAvailablePlayers() {
-      return this.allPlayers
+      if(this.inputSearchPlayer?.length) {
+        return this.allPlayers
         .filter(player => this.scoresheet.players.home.map(p => p.id).indexOf(player.id) === -1)
         .filter(player => this.scoresheet.players.away.map(p => p.id).indexOf(player.id) === -1)
         .filter(player => this.inputSearchPlayer?.length ? removeAccents(player.title?.rendered.toLowerCase())?.indexOf(removeAccents(this.inputSearchPlayer.toLowerCase())) !== -1 : true)
+      }
+      else {
+        return this.allPlayers
+      }
     },
     activeBox() {
       return this.active?.outcomeBox?.split("_")
@@ -270,6 +319,13 @@ export default {
         player: null,
         outcomeBox: null
       },
+      settingLineup: {
+        open: false,
+        team: {
+          id: null,
+          name: "",
+        }
+      },
       hasContentInDB: false,
     }
   },
@@ -278,6 +334,14 @@ export default {
       const player = this.allAvailablePlayers[0]
       teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
       this.updateData()
+    },
+    closeModal() {
+      this.isPlayerModalVisible = false
+      this.isOutcomeModalVisible = false
+      this.settingLineup.open = false
+    },
+    clearLineup(team) {
+      this.scoresheet.players[team] = []
     },
     dragged() {
       this.updateData()
@@ -288,6 +352,13 @@ export default {
     },
     getDateTime(event) {
       return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
+    },
+    getPlayerTeams(player) {
+      const teams = player.current_teams
+        .map(t => this.$store.getters.getTeam(t)?.title?.rendered)
+        .filter(t => t)
+        .join(",")
+      return teams
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
@@ -307,15 +378,15 @@ export default {
     },
     toggleEditMode() {
       this.editMode = !this.editMode
+      if(!this.editMode) {
+        this.updateData()
+      }
     },
 
     async sendDataToWebsite() {
       this.gameEvent.prepareData(this.scoresheet)
     },
-    closeModal() {
-      this.isPlayerModalVisible = false
-      this.isOutcomeModalVisible = false
-    },
+
     inputUpdate(event) {
       this.inputSearchPlayer = event.target.value
     },
@@ -351,8 +422,23 @@ export default {
       this.closeModal()
       this.updateData()
     },
+    setLineup(team,homeAway) {
+      console.log(team)
+      this.settingLineup = {
+        open: true,
+        team: {
+          id: team,
+          name: team?.title?.rendered || homeAway,
+          homeAway: homeAway,
+        },
+      }
+    },
+    setLineupAddPlayer() {
+      const player = this.replacementPlayer
+      const homeAway = this.settingLineup.team.homeAway
+      this.scoresheet.players[homeAway].push(player)
+    },
     sendPostMessage() {
-      console.log(this,this.scoresheet)
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
     },
     updateData() {
@@ -364,6 +450,9 @@ export default {
     updateOutcomeBox(value) {
       this.working_selectedOutcomeBox = value
     },
+    undoAddPlayer(list) {
+      list = list.pop()
+    }
 
 
   },
@@ -395,7 +484,7 @@ export default {
         this.scoresheet.players = obj.players
       })
         .catch(error => {
-          console.log(error)
+          console.error(error)
         })
     }
     else {
@@ -406,7 +495,7 @@ export default {
   mounted() {
     this.broadcastChannel = new BroadcastChannel("gamecastChannel")
     this.broadcastChannel.onmessage = event => {
-      console.log(event.data);
+
     }
   }
 }
@@ -415,11 +504,7 @@ export default {
 .tables-container {
   display: flex;
   .scoresheet-table {
-
-
-
     table {
-
       tr {
         &:nth-child(even) {
           td {
@@ -439,6 +524,7 @@ export default {
         }
 
         td {
+          vertical-align: middle;
           &:nth-child(1) {
             padding: 0 1rem;
           }
@@ -509,6 +595,9 @@ export default {
 .scoresheet-results-scores {
   table {
     margin: 1rem auto;
+    td {
+      vertical-align: middle;
+    }
   }
 
 }
@@ -567,7 +656,7 @@ export default {
 
 .player-button-container {
   position: relative;
-
+  text-align: left;
   .player-remove-button {
     padding: 0.25rem;
     position: absolute;
@@ -591,15 +680,19 @@ export default {
   }
 }
 .team-image-container {
-  .team-image {
-    border-radius: 50%;
-    height: 40px;
-    width: 40px;
-    overflow: hidden;
-    img {
-      height: 100%;
-      width: auto;
-    }
+  align-items: center;
+  display: flex;
+
+}
+.team-image {
+  border-radius: 50%;
+  height: 40px;
+  margin-right: 8px;
+  width: 40px;
+  overflow: hidden;
+  img {
+    height: 100%;
+    width: auto;
   }
 }
 .score-table {

@@ -118,7 +118,6 @@ export default {
 
   computed: {
     currentBattersAway() {
-      console.log(this.getGameInfo?.currentBatters?.away)
       return this.getGameInfo?.currentBatters?.away
     },
     currentBattersHome() {
@@ -173,7 +172,6 @@ export default {
     this.broadcastChannel = new BroadcastChannel("gamecastChannel")
     this.broadcastChannel.onmessage = event => {
       this.data = event.data
-      console.log(this.data)
     }
   },
 

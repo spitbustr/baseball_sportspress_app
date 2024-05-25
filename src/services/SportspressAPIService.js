@@ -41,12 +41,12 @@ export default class SportspressAPIService {
     while(lastAmount === 100) {
       await axios.get(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.media}?per_page=100&page=${pageIndex}`)
       .then(result => {
-            list = result.data.reduce(function(map, obj) {
-              map[obj.id] = obj.source_url;
-              return map;
-          }, list);
-          lastAmount = result.data.length
-          pageIndex++
+        list = result.data.reduce(function(map, obj) {
+          map[obj.id] = obj.source_url;
+          return map;
+        }, list);
+        lastAmount = result.data.length
+        pageIndex++
       })
     }
     return list
@@ -77,7 +77,6 @@ export default class SportspressAPIService {
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
       .then(res => {
-          console.log(res)
       })
   }
   static async addPlayer(playerInfo, store) {
@@ -94,7 +93,6 @@ export default class SportspressAPIService {
       .then(result => {
         if(result?.status == 201) {
           store.dispatch("addPlayer", result.data)
-          console.log(result.data, store)
         }
       })
   }

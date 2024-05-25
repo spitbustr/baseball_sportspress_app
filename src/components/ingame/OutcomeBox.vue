@@ -55,7 +55,6 @@ export default {
   },
   methods: {
     getFieldSymbol(value) {
-      console.log($settings.stats.hits)
       const hit = $settings.stats.hits.find(h => h.value === value)
       return hit?.symbol || hit.value
     }
