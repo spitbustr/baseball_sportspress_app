@@ -1,14 +1,18 @@
 <template>
   <div class="row">
-    <div>
-      <button @click="changeFilter('past')">PAST GAMES</button>
-      <button @click="changeFilter('today')">TODAY'S GAMES</button>
-      <button @click="changeFilter('upcoming')">UPCOMING GAMES</button>
-    </div>
-    <div>
-      <button @click="changeFilter('week',-1)">LAST WEEK'S GAMES</button>
-      <button @click="changeFilter('week',0)">THIS WEEK'S GAMES</button>
-      <button @click="changeFilter('week',1)">NEXT WEEK'S GAMES</button>
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="gameFilterDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+      Filter Games
+      </button>
+      <ul class="dropdown-menu" aria-labelledby="gameFilterDropdown">
+      <li><a class="dropdown-item" @click="changeFilter('past')">PAST GAMES</a></li>
+      <li><a class="dropdown-item" @click="changeFilter('today')">TODAY'S GAMES</a></li>
+      <li><a class="dropdown-item" @click="changeFilter('upcoming')">UPCOMING GAMES</a></li>
+      <li><hr class="dropdown-divider"></li>
+      <li><a class="dropdown-item" @click="changeFilter('week',-1)">LAST WEEK'S GAMES</a></li>
+      <li><a class="dropdown-item" @click="changeFilter('week',0)">THIS WEEK'S GAMES</a></li>
+      <li><a class="dropdown-item" @click="changeFilter('week',1)">NEXT WEEK'S GAMES</a></li>
+      </ul>
     </div>
     <div class="col-sm-12">
       <table class="table table-striped table-hover text-start">
@@ -27,8 +31,8 @@
               <td>{{ game.id }}</td>
               <td>
                 <div class="team-display away">
-                  {{ getTeamName(game.teams[0], "Away Team") }}
                   <img class="team-logo away" :src="media[getTeamLogo(game.teams[0])] || defaultImage">
+                  {{ getTeamName(game.teams[0], "Away Team") }}
                 </div>
               </td>
               <td>
@@ -44,7 +48,7 @@
                   <router-link :to="`/game/${game.id}`" class="btn btn-primary btn-block">
                     EDIT
                   </router-link>
-                  </div>
+                </div>
               </td>
             </tr>
           </template>
@@ -169,9 +173,7 @@ export default {
 }
 
 .team-display {
-  align-items: center;
-  display: flex;
-  justify-content: space-between;
+
   .team-logo {
     height: 2rem;
     width: 2rem;
@@ -179,9 +181,6 @@ export default {
   }
   &.home {
      justify-content: start;
-    img {
-      margin-right: 1rem;
-    }
   }
 }
 .day-change {

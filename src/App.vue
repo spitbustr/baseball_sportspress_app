@@ -8,19 +8,32 @@
         </template>
       </Modal>
       <div id="main-navigation" v-if="authenticated">
-        <div>
-          <button @click="logout">Bouton de Logout temporaire</button>
-        </div>
-        <nav>
-          <router-link to="/games">Games</router-link>
-          <router-link to="/teams">Teams</router-link>
-          <router-link to="/players">Players</router-link>
-          <router-link to="/data">Data</router-link>
-          <a @click="openCast()">CAST</a>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+              <li class="nav-item">
+                <router-link class="nav-link" to="/games">Games</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/teams">Teams</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/players">Players</router-link>
+              </li>
+              <li class="nav-item">
+                <router-link class="nav-link" to="/data">Data</router-link>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" @click="openCast()">CAST</a>
+              </li>
+            </ul>
+            <button class="btn btn-primary" @click="logout">Bouton de Logout temporaire</button>
+
+          </div>
         </nav>
       </div>
       <div class="container">
-      <router-view />
+        <router-view />
       </div>
     </div>
   </div>
