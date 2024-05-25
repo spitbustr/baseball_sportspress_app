@@ -22,8 +22,8 @@
           </tr>
         </thead>
         <tbody>
-          <template v-for="game in filteredGames" :key="game">
-            <tr :class="{'today-game': isToday(game)}">
+          <template v-for="(game,index) in filteredGames" :key="game">
+            <tr :class="{'today-game': isToday(game), 'day-change':dayHasChanged(index)}">
               <td>{{ game.id }}</td>
               <td>
                 <div class="team-display away">
@@ -95,7 +95,10 @@ export default {
   },
   data() {
     return {
-      gameFilter: null
+      dayChange: {
+        currentDay: null,
+      },
+      gameFilter: null,
     }
   },
   methods: {
@@ -104,6 +107,12 @@ export default {
         type: id,
         week: week,
       }
+    },
+    dayHasChanged(index) {
+      if (index === 0) return false
+      const currentGameDate = moment(this.filteredGames?.[index]?.date)
+      const previousGameDate = moment(this.filteredGames?.[index+1]?.date || null)
+      return !currentGameDate.isSame(previousGameDate, "day")
     },
     gamesbyWeek(week) {
       // Start of this week (Sunday)
@@ -174,6 +183,12 @@ export default {
       margin-right: 1rem;
     }
   }
+}
+.day-change {
+  td {
+    border-bottom: 3px solid black;
+  }
+
 }
 </style>
 
