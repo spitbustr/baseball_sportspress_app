@@ -11,6 +11,10 @@
                 x
               </button>
             </header>
+            <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
+              <slot name="subheader">
+              </slot>
+            </div>
             <section class="modal-body-container" id="modalDescription">
               <div class="modal-body-content">
                 <div class="modal-body">
@@ -99,7 +103,7 @@ export default {
   z-index: 10;
 }
 
-.modal-header {
+.modal-header, .modal-subheader {
   background: white;
   position: sticky;
   border-bottom: 2px solid #eeeeee;

@@ -163,8 +163,13 @@
     <!-- SETTING LINE UP MODAL -->
     <Modal v-show="settingLineup.open" @close="closeModal">
       <template v-slot:header>
-        <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length" @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
         <h5>Lineup {{ settingLineup.team.name }}</h5>
+      </template>
+      <template v-slot:subheader>
+        <div class="">
+            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length" @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+            <button @click="addNewPlayer()">NEW PLAYER</button>
+          </div>
       </template>
       <template v-slot:body>
         <div>
@@ -191,7 +196,7 @@
       </template>
     </Modal>
 
-
+    <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
     <!-- AT-BAT OUTCOME MODAL -->
     <Modal v-show="isOutcomeModalVisible" @close="closeModal">
       <template v-slot:header>
@@ -309,7 +314,7 @@ export default {
 
       isOutcomeModalVisible: false,
       isPlayerModalVisible: false,
-
+      isAddNewPlayerModalVisible: false,
       selectedPlayer: { name: "Peanuts" },
       working_selectedOutcomeBox: { name: "Peanuts" },
 
@@ -330,12 +335,16 @@ export default {
     }
   },
   methods: {
+    addNewPlayer() {
+      this.isAddNewPlayerModalVisible = true
+    },
     addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
       teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
       this.updateData()
     },
     closeModal() {
+      this.isAddNewPlayerModalVisible = false
       this.isPlayerModalVisible = false
       this.isOutcomeModalVisible = false
       this.settingLineup.open = false

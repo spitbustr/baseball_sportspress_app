@@ -6,6 +6,7 @@ import store from './store'
 import OutcomeBox from '@/components/ingame/OutcomeBox'
 import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
+import AddPlayer from '@/components/overlays/modals/AddPlayer'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 
@@ -15,6 +16,7 @@ const app = createApp(App).use(store).use(router)
 app.component('OutcomeBox', OutcomeBox)
 app.component('OutcomeBoxModal', OutcomeBoxModal)
 app.component('Modal', Modal)
+app.component('AddPlayer', AddPlayer)
 
 // Mount app
 app.mount('#app')
