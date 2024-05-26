@@ -68,7 +68,7 @@
 
           </table>
           <div class="d-grid gap-2">
-            <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+            <button class="btn btn-outline-primary btn-lg" v-if="editMode"
               @click="addPlayer(scoresheet.players.away)">Ajouter</button>
           </div>
         </div>
@@ -126,7 +126,7 @@
             </draggable>
           </table>
           <div class="d-grid gap-2">
-            <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+            <button class="btn btn-outline-primary btn-lg" v-if="editMode"
               @click="addPlayer(scoresheet.players.home)">Ajouter</button>
           </div>
         </div>
