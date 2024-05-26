@@ -508,11 +508,24 @@ export default {
 
 
         if (homeIndex !== -1) {
+          this.scoresheet.players.home.forEach(p => {
+            p.outcome.forEach(o => {
+              if(o.rbiBy === this.selectedPlayer.id) {
+                o.rbiBy = this.replacementPlayer.id
+              }
+            })
+          })
           this.scoresheet.players.home.splice(homeIndex, 1, this.replacementPlayer)
         }
         if (awayIndex !== -1) {
+          this.scoresheet.players.away.forEach(p => {
+            p.outcome.forEach(o => {
+              if(o.rbiBy === this.selectedPlayer.id) {
+                o.rbiBy = this.replacementPlayer.id
+              }
+            })
+          })
           this.scoresheet.players.away.splice(awayIndex, 1, this.replacementPlayer)
-
         }
         this.replacementPlayer = { id: null }
         this.inputSearchPlayer = ""
