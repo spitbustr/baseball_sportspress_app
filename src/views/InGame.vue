@@ -12,7 +12,7 @@
     <div :class="{ 'editMode': editMode }" class="scoresheet">
       <div class="row">
         <div class="col-md-6">
-          <nav class="navbar navbar-light bg-light">
+          <nav class="navbar navbar-light" style="background-color:#Fff">
             <div class="container-fluid">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.away?.featured_media] || defaultImage">
@@ -70,7 +70,7 @@
           </div>
         </div>
         <div class="col-md-6">
-          <nav class="navbar navbar-light bg-light">
+          <nav class="navbar navbar-light" style="background-color:#Fff">
             <div class="container-fluid">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.home?.featured_media] || defaultImage">
@@ -174,103 +174,102 @@
           </table>
         </div>
         <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary btn-lg" type="button"
-            @click="sendDataToWebsite">Enregistrer</button>
-        </div>
+          <button class="btn btn-outline-primary btn-lg" type="button" @click="sendDataToWebsite">Enregistrer</button>
         </div>
       </div>
-
-      <!-- REPLACE PLAYER MODAL -->
-      <Modal v-show="isPlayerModalVisible" @close="closeModal">
-        <template v-slot:header>
-          <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
-        </template>
-        <template v-slot:body>
-          <div>
-            <div>
-              <div class="search-section">
-                SEARCH:
-                <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
-              </div>
-            </div>
-            <div>
-              <div v-for="player in allAvailablePlayers" :key="player.id">
-                <div :class="{ 'selected': replacementPlayer.id === player.id }"
-                  @click="selectReplacementPlayer(player)" class="player-replace-list">
-                  <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </template>
-        <template v-slot:footer>
-          <div class="player-replace-footer">
-            <button @click="replacePlayer">ACCEPTER</button>
-          </div>
-        </template>
-      </Modal>
-
-      <!-- SETTING LINE UP MODAL -->
-      <Modal v-show="settingLineup.open" @close="closeModal">
-        <template v-slot:header>
-          <h5>Lineup {{ settingLineup.team.name }}</h5>
-        </template>
-        <template v-slot:subheader>
-          <div class="">
-            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
-              @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
-            <button @click="addNewPlayer()">NEW PLAYER</button>
-          </div>
-        </template>
-        <template v-slot:body>
-          <div>
-            <div>
-              <div class="search-section">
-                SEARCH:
-                <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
-              </div>
-            </div>
-            <div>
-              <div v-for="player in allAvailablePlayers" :key="player.id">
-                <div :class="{ 'selected': replacementPlayer.id === player.id }"
-                  @click="selectReplacementPlayer(player)" class="player-replace-list">
-                  <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </template>
-        <template v-slot:footer>
-          <div class="player-replace-footer">
-            <button @click="setLineupAddPlayer">ACCEPTER</button>
-          </div>
-        </template>
-      </Modal>
-
-      <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
-      <!-- AT-BAT OUTCOME MODAL -->
-      <Modal v-show="isOutcomeModalVisible" @close="closeModal">
-        <template v-slot:header>
-          {{ selectedBatterOrder }} - Inning {{ selectedInning }}
-        </template>
-        <template v-slot:body>
-          <div>
-            <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
-              :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
-              :players="scoresheet.players?.[this.activeBox?.[1]]">
-            </OutcomeBoxModal>
-          </div>
-        </template>
-        <template v-slot:footer>
-          <div class="outcome-save-button">
-            <button @click="saveOutcome">Save</button>
-          </div>
-        </template>
-      </Modal>
     </div>
+
+    <!-- REPLACE PLAYER MODAL -->
+    <Modal v-show="isPlayerModalVisible" @close="closeModal">
+      <template v-slot:header>
+        <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div>
+            <div class="search-section">
+              SEARCH:
+              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+            </div>
+          </div>
+          <div>
+            <div v-for="player in allAvailablePlayers" :key="player.id">
+              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+                class="player-replace-list">
+                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="replacePlayer">ACCEPTER</button>
+        </div>
+      </template>
+    </Modal>
+
+    <!-- SETTING LINE UP MODAL -->
+    <Modal v-show="settingLineup.open" @close="closeModal">
+      <template v-slot:header>
+        <h5>Lineup {{ settingLineup.team.name }}</h5>
+      </template>
+      <template v-slot:subheader>
+        <div class="">
+          <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
+            @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+          <button @click="addNewPlayer()">NEW PLAYER</button>
+        </div>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div>
+            <div class="search-section">
+              SEARCH:
+              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+            </div>
+          </div>
+          <div>
+            <div v-for="player in allAvailablePlayers" :key="player.id">
+              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+                class="player-replace-list">
+                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="setLineupAddPlayer">ACCEPTER</button>
+        </div>
+      </template>
+    </Modal>
+
+    <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
+    <!-- AT-BAT OUTCOME MODAL -->
+    <Modal v-show="isOutcomeModalVisible" @close="closeModal">
+      <template v-slot:header>
+        {{ selectedBatterOrder }} - Inning {{ selectedInning }}
+      </template>
+      <template v-slot:body>
+        <div>
+          <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
+            :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
+            :players="scoresheet.players?.[this.activeBox?.[1]]">
+          </OutcomeBoxModal>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="outcome-save-button">
+          <button @click="saveOutcome">Save</button>
+        </div>
+      </template>
+    </Modal>
+  </div>
 </template>
 <script>
 import {PlayerInGame} from "@/models/PlayerInGame"
