@@ -261,12 +261,15 @@
     <!-- AT-BAT OUTCOME MODAL -->
     <Modal v-show="isOutcomeModalVisible" @close="closeModal">
       <template v-slot:header>
-        {{ selectedBatterOrder }} - Inning {{ selectedInning }}
+        <span v-html="selectedBatterOrder"></span> - Inning {{ selectedInning }}
       </template>
       <template v-slot:body>
         <div>
-          <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
-            :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
+          <OutcomeBoxModal
+            :selectedOutcomeBox="working_selectedOutcomeBox"
+            @updateOutcome="updateOutcomeBox($event)"
+            :activePlayer="activePlayer"
+            :isOutcomeModalVisible="isOutcomeModalVisible"
             :players="scoresheet.players?.[this.activeBox?.[1]]">
           </OutcomeBoxModal>
         </div>
@@ -275,6 +278,34 @@
         <div class="outcome-save-button">
           <button @click="saveOutcome">Save</button>
         </div>
+      </template>
+    </Modal>
+    <Modal v-show="openRbiModal" @close="closeModal">
+      <template v-slot:header>
+        <span v-html="selectedBatterOrder"></span> - Inning {{ selectedInning }}
+      </template>
+      <template v-slot:body>
+        <div>
+          <RbiOutcomeBoxModal
+            :selectedOutcomeBox="working_selectedOutcomeBox"
+            @updateOutcome="updateOutcomeBox($event)"
+            :activePlayer="activePlayer"
+            :openModal="openRbiModal"
+            :players="scoresheet.players?.[this.activeBox?.[1]]">
+          </RbiOutcomeBoxModal>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="outcome-save-button">
+          <button @click="saveOutcome">Save</button>
+        </div>
+      </template>
+    </Modal>
+
+    <!-- Loading Modal -->
+    <Modal type="loading" v-show="loading">
+      <template v-slot:body>
+        Sending data...
       </template>
     </Modal>
   </div>
@@ -297,6 +328,14 @@ export default {
     draggable: VueDraggableNext,
   },
   computed: {
+    allModalToggle() {
+      return this.isAddNewPlayerModalVisible
+      || this.isPlayerModalVisible
+      || this.isOutcomeModalVisible
+      || this.settingLineup.open
+      || this.probablyRightPlayer
+      || this.openRbiModal
+    },
     allPlayers() {
       return this.$store.getters.getAllPlayers
     },
@@ -378,6 +417,7 @@ export default {
       isOutcomeModalVisible: false,
       isPlayerModalVisible: false,
       isAddNewPlayerModalVisible: false,
+
       selectedPlayer: { name: "Peanuts" },
       working_selectedOutcomeBox: { name: "Peanuts" },
 
@@ -396,6 +436,7 @@ export default {
       },
       probablyRightPlayer: false,
       hasContentInDB: false,
+      loading: false,
     }
   },
   methods: {
@@ -414,6 +455,7 @@ export default {
       this.isOutcomeModalVisible = false
       this.settingLineup.open = false
       this.probablyRightPlayer = false
+      this.openRbiModal = false
     },
     clearLineup(team) {
       this.scoresheet.players[team] = []
@@ -444,7 +486,6 @@ export default {
       const homeAway = this.activeBox?.[1]
       const row = +this.activeBox?.[2]
       const col = +this.activeBox?.[3]
-      console.log(col)
       if(arrow === "up" && row > 0){
         this.active.outcomeBox = (`${prop}_${homeAway}_${row-1}_${col}`)
       }
@@ -482,7 +523,11 @@ export default {
     },
 
     async sendDataToWebsite() {
-      this.gameEvent.prepareData(this.scoresheet)
+      this.loading = true
+      this.gameEvent.prepareData(this.scoresheet).then(result => {
+      }).finally(() => {
+        this.loading = false
+      })
     },
 
     inputUpdate(event) {

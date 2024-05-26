@@ -110,7 +110,7 @@ export default {
   position: sticky;
   border-bottom: 2px solid #eeeeee;
   color: #4AAE9B;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
   top: 0;
 }

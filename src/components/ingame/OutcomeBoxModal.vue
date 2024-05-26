@@ -35,7 +35,7 @@
             <div v-if=" activePlayerBox?.onBasePosition === 'point'">
               <select class="rbi-button" v-model="activePlayerBox.rbiBy">
                 <option :value="null">NO RBI</option>
-                <option v-for="player in players" :value="player.id" :key="player.id">{{ player.name }}</option>
+                <option v-for="player in players" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
               </select>
             </div>
             <div v-if=" activePlayerBox?.countAsHR">

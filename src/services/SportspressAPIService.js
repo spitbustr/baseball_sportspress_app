@@ -65,7 +65,7 @@ export default class SportspressAPIService {
     }
     return list.flat()
   }
-  static async sendData(payload) {
+  static async sendData(payload, store) {
     let token = null
     await this.loadConfig().then(result => {
       token = result?.API_token?.api_token
@@ -77,6 +77,7 @@ export default class SportspressAPIService {
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
       .then(res => {
+        return res
       })
   }
   static async addPlayer(playerInfo, store) {

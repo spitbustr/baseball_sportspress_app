@@ -179,8 +179,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .cast-game {
-  padding: 2rem;
   color: white;
+  padding: 2rem;
+  text-align: center;
   .team {
     width: 40%;
     align-content: end;
@@ -208,7 +209,8 @@ export default {
     }
     .team-points {
       -webkit-text-stroke: 0.25rem white;
-      font-size: 16rem;
+      font-weight: bold;
+      font-size: 21rem;
       line-height: 14rem;
     }
     .inning-display {

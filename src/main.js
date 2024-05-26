@@ -8,6 +8,7 @@ import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
 import AddPlayer from '@/components/overlays/modals/AddPlayer'
 import Confirmation from '@/components/overlays/modals/Confirmation'
+import RbiOutcomeBoxModal from '@/components/overlays/modals/RbiOutcomeBoxModal'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import EventBusPlugin from '@/scripts/eventBus'
@@ -19,6 +20,7 @@ app.component('OutcomeBoxModal', OutcomeBoxModal)
 app.component('Modal', Modal)
 app.component('AddPlayer', AddPlayer)
 app.component('Confirmation', Confirmation)
+app.component('RbiOutcomeBoxModal', RbiOutcomeBoxModal)
 
 // Mount app
 app.mount('#app')

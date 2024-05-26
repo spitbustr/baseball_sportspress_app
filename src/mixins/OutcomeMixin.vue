@@ -2,27 +2,37 @@
 import $settings from "@/data/settings.json"
 import { clone } from "@/scripts/utilities"
 export default {
+  data() {
+    return { 
+      openRbiModal: false,
+    }
+  },
   methods: {
     advancePlayer() {
       if(this.activePlayerBox?.atBatResult) {
         if(this.activePlayerBox?.onBasePosition === "third") {
           this.setAtBase("point")
           this.activePlayerBox.rbiBy = this.activePlayer?.id
+          this.openRbiModal = true
         }
         else if(this.activePlayerBox?.onBasePosition === "second") {
           this.setAtBase("third")
+          this.activePlayerBox.rbiBy = null
         }
         else if(this.activePlayerBox?.onBasePosition === "first") {
           this.setAtBase("second")
+          this.activePlayerBox.rbiBy = null
         }
       }
     },
     returnPlayer() {
       if(this.activePlayerBox?.atBatResult) {
         if(this.activePlayerBox?.onBasePosition === "second") {
+          this.activePlayerBox.rbiBy = null
           this.setAtBase("first")
         }
         else if(this.activePlayerBox?.onBasePosition === "third") {
+          this.activePlayerBox.rbiBy = null
           this.setAtBase("second")
         }
         else if(this.activePlayerBox?.onBasePosition === "point") {

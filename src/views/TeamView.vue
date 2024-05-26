@@ -6,12 +6,14 @@
         <img :src="media[team.featured_media]">
       </div>
     </div>
+    <div>
+      <table>
+        <tr v-for="player in playersList" :key="player.id">
+          <td><span v-html="player.title.rendered"></span></td>
+        </tr>
+      </table>
+    </div>
     <pre>{{ team }}</pre>
-    <table>
-      <tr v-for="player in playersList" :key="player.id">
-        <td><span v-html="player.title.rendered"></span></td>
-      </tr>
-    </table>
   </div>
 </template>
 <script>
