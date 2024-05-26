@@ -1,32 +1,35 @@
 <template>
-  <div :type="type" >
+  <div :type="type">
     <transition name="modal-fade">
       <div class="modal-backdrop" @click="handleBackdropClick">
-        <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle" aria-describedby="modalDescription">
-          <div class="modal-content">
-            <header class="modal-header" id="modalTitle" v-if="$slots.header">
-              <slot name="header">
-              </slot>
-              <button type="button" class="btn-close" @click="close" aria-label="Close modal">
-                x
-              </button>
-            </header>
-            <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
-              <slot name="subheader">
-              </slot>
-            </div>
-            <section class="modal-body-container" id="modalDescription">
-              <div class="modal-body-content">
-                <div class="modal-body">
-                  <slot name="body">
-                  </slot>
-                </div>
+        <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle"
+          aria-describedby="modalDescription">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <header class="modal-header" id="modalTitle" v-if="$slots.header">
+                <slot name="header">
+                </slot>
+                <button type="button" class="btn-close" @click="close" aria-label="Close modal">
+                  x
+                </button>
+              </header>
+              <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
+                <slot name="subheader">
+                </slot>
               </div>
-            </section>
-            <footer class="modal-footer" v-if="$slots.footer">
-              <slot name="footer">
-              </slot>
-            </footer>
+              <section class="modal-body-container" id="modalDescription">
+                <div class="modal-body-content">
+                  <div class="modal-body">
+                    <slot name="body">
+                    </slot>
+                  </div>
+                </div>
+              </section>
+              <footer class="modal-footer" v-if="$slots.footer">
+                <slot name="footer">
+                </slot>
+              </footer>
+            </div>
           </div>
         </div>
       </div>
@@ -59,7 +62,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.modal-backdrop {
+/*.modal-backdrop {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -69,11 +72,9 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-}
+}*/
 
 .modal {
-  background: #FFFFFF;
-  box-shadow: 2px 2px 20px 1px;
   overflow-x: hidden;
   display: flex;
   flex-direction: column;

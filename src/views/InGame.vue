@@ -1,10 +1,12 @@
 <template>
-  <nav class="navbar navbar-light bg-light">
+  <nav class="navbar navbar-light bg-light py-4">
     <div class="container-fluid">
       <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
       <div class="d-flex btn-group" role="group" aria-label="Basic example">
         <button type="button editButton" class="btn btn-outline-primary btn-lg" @click="toggleEditMode">{{ this.editMode
-          ? "Retour au match" : "Éditer alignements"}}</button>
+          ? "Sauvegarder" : "Éditer alignements"}}</button>
+                    <button class="btn btn-outline-primary btn-lg" type="button" @click="sendDataToWebsite">Envoyer</button>
+
       </div>
     </div>
   </nav>
@@ -134,7 +136,7 @@
       <div class="col-sm-12">
         <div class="scoresheet-results-scores">
           <table class="table table-bordered table-hover">
-            <thead>
+            <thead class="table-light">
               <tr>
                 <th>Teams</th>
                 <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
@@ -172,9 +174,6 @@
               </tr>
             </tbody>
           </table>
-        </div>
-        <div class="d-grid gap-2">
-          <button class="btn btn-outline-primary btn-lg" type="button" @click="sendDataToWebsite">Enregistrer</button>
         </div>
       </div>
     </div>
@@ -580,6 +579,7 @@ export default {
 
     table {
       width:100%;
+      text-align:center;
       tr {
         td {
           &.active {
