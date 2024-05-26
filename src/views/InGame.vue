@@ -463,6 +463,7 @@ export default {
     },
     replacePlayer() {
       if (this.replacementPlayer?.id) {
+        this.replacementPlayer.outcome = this.selectedPlayer.outcome
         this.isPlayerModalVisible = false
         const homeIndex = this.scoresheet.players.home.findIndex(p => {
           return p.id == this.selectedPlayer.id
