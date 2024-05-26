@@ -8,35 +8,43 @@
         </template>
       </Modal>
       <div id="main-navigation" v-if="authenticated">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-          <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item">
-                <router-link class="nav-link" to="/games">Games</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link class="nav-link" to="/teams">Teams</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link class="nav-link" to="/players">Players</router-link>
-              </li>
-              <li class="nav-item">
-                <router-link class="nav-link" to="/data">Data</router-link>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" @click="openCast()">CAST</a>
-              </li>
-            </ul>
-            <button class="btn btn-primary" @click="logout">Bouton de Logout temporaire</button>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container-fluid">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
+              aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+            <a class="navbar-brand" href="#">LBAO/MRK</a>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                  <router-link class="nav-link" to="/games">Games</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" to="/teams">Teams</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" to="/players">Players</router-link>
+                </li>
+                <li class="nav-item">
+                  <router-link class="nav-link" to="/data">Data</router-link>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" @click="openCast()">CAST</a>
+                </li>
+              </ul>
 
+            </div>
+            <div class="d-flex">
+              <button class="btn btn-outline-primary" @click="logout">Déconnexion</button>
+            </div>
           </div>
+
         </nav>
       </div>
-      <div class="container">
         <router-view />
       </div>
     </div>
-  </div>
 </template>
 <script>
 

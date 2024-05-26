@@ -1,221 +1,276 @@
 <template>
-  <div>
-    <div>
-      {{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span>
-    </div>
-    <div>
-      <div class="scoresheet-results-scores">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>Teams</th>
-              <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div class="team-image-container">
-                  <div class="team-image">
-                    <img :src="media[teams?.away?.featured_media] || defaultImage">
-                  </div>
-                  <div>{{ teams.away.title.rendered }}</div>
-                </div>
-              </td>
-              <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.away?.runs?.[inning] ?? 0 }}</span></td>
-              <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
-            </tr>
-            <tr>
-              <td>
-                <div class="team-image-container">
-                  <div class="team-image">
-                    <img :src="media[teams?.home?.featured_media] || defaultImage">
-                  </div>
-                  <div>{{ teams.home.title.rendered }}</div>
-                </div>
-              </td>
-              <td v-for="inning in scoresheet.innings" :key="inning"><span>{{ scoresheet?.scores?.home?.runs?.[inning] ?? 0 }}</span></td>
-              <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
-            </tr>
-          </tbody>
-        </table>
+  <nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+      <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
+      <div class="d-flex btn-group" role="group" aria-label="Basic example">
+        <button type="button editButton" class="btn btn-outline-primary btn-lg" @click="toggleEditMode">{{ this.editMode
+          ? "Retour au match" : "Éditer alignements"}}</button>
       </div>
     </div>
-    <button @click="sendDataToWebsite">SEND DATA</button>
-    <div :class="{ 'editMode': editMode }" class="tables-container scoresheet">
-      <div class="scoresheet-table">
-        <div>
-          <button v-if="editMode" @click="setLineup(teams?.away, 'away')">Set Lineup</button>
-          <img class="team-image" :src="media[teams?.away?.featured_media] || defaultImage">
-          {{ teams.away.title.rendered }}
-          <button v-if="editMode" @click="clearLineup('away')">CLEAR LINEUP</button>
-        </div>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Player</th>
-              <th v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
-            </tr>
-          </thead>
-          <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
-            :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
-            <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
-              <td>{{ player.assignedNumber }}</td>
-              <td class="player-button-container">
-                <button v-if="editMode" class="player-remove-button"
-                  @click="removePlayer(player, scoresheet.players.away)">X</button>
-                <span v-html="player.name"></span>
-                <button v-if="editMode" class="player-swap-button"
-                  @click="editPlayer(player, scoresheet.players.away)">SWAP</button>
-              </td>
-              <td v-for="inning in scoresheet.innings" :key="inning"
-                @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
-                :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }" class="ingame-outcome-box">
-                  <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
-              </td>
-            </tr>
-          </draggable>
-          <tr class="unclickable" v-if="editMode">
-            <td :colspan="numberOfInnings + 2" class="add-player-button">
-              <button @click="addPlayer(scoresheet.players.away)">Add Player</button>
-            </td>
-          </tr>
-        </table>
-      </div>
-      <div class="scoresheet-table">
-        <div>
-          <button v-if="editMode" @click="setLineup(teams?.home, 'home')">Set Lineup</button>
-          <img class="team-image" :src="media[teams?.home?.featured_media] || defaultImage">
-          {{ teams.home.title.rendered }}
-          <button v-if="editMode" @click="clearLineup('home')">CLEAR LINEUP</button>
-        </div>
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Player</th>
-              <th v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
-            </tr>
-          </thead>
-          <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.home"
-            :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
-            <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
-              <td>{{ player.assignedNumber }}</td>
-              <td class="player-button-container">
-                <button v-if="editMode" class="player-remove-button"
-                  @click="removePlayer(player, scoresheet.players.home)">X</button>
-                <span v-html="player.name"></span>
-                <button v-if="editMode" class="player-swap-button"
-                  @click="editPlayer(player, scoresheet.players.home)">SWAP</button>
-              </td>
-              <td v-for="inning in scoresheet.innings" :key="inning"
-                @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
-                :class="{ active: active.outcomeBox === `outcome_home_${$index}_${inning}` }" class="ingame-outcome-box">
-                <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
-              </td>
-            </tr>
-          </draggable>
-          <tr class="unclickable" v-if="editMode">
-            <td :colspan="numberOfInnings + 2" class="add-player-button"><button
-                @click="addPlayer(scoresheet.players.home)">Add Player</button></td>
-          </tr>
-        </table>
-      </div>
-    </div>
-    <div class="edit-container">
-      <button class="editButton" @click="toggleEditMode">{{this.editMode ? "SAVE CHANGES": "Toggle Edit Mode"}}</button>
-    </div>
-
-
-    <!-- REPLACE PLAYER MODAL -->
-    <Modal v-show="isPlayerModalVisible" @close="closeModal">
-      <template v-slot:header>
-        <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
-      </template>
-      <template v-slot:body>
-        <div>
-          <div>
-            <div class="search-section">
-              SEARCH:
-              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
-            </div>
-          </div>
-          <div>
-            <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
-                class="player-replace-list">
-                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span></div>
+  </nav>
+  <div class="container-fluid">
+    <div :class="{ 'editMode': editMode }" class="scoresheet">
+      <div class="row">
+        <div class="col-md-6">
+          <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+              <span class="navbar-brand mb-0 h1"> <img class="team-image"
+                  :src="media[teams?.away?.featured_media] || defaultImage">
+                {{ teams.away.title.rendered }}</span>
+              <div class="d-flex btn-group" role="group" aria-label="Basic example">
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+                  @click="setLineup(teams?.away, 'away')">Set Lineup</button>
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('away')">CLEAR
+                  LINEUP</button>
               </div>
             </div>
+          </nav>
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th v-if="editMode"></th>
+                <th>#</th>
+                <th class="large-cell">Player</th>
+                <th class="header-innings" v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
+                <th v-if="editMode">Actions</th>
+              </tr>
+            </thead>
+            <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
+              :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
+              <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
+                <td v-if="editMode"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                    <path
+                      d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                  </svg></td>
+                <td>{{ player.assignedNumber }}</td>
+                <td class="player-button-container">
+                  <span v-html="player.name"></span>
+                </td>
+                <td v-for="inning in scoresheet.innings" :key="inning"
+                  @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
+                  :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }"
+                  class="ingame-outcome-box">
+                  <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
+                </td>
+                <td v-if="editMode">
+                  <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
+                    @click="removePlayer(player, scoresheet.players.away)">Supprimer</button>&nbsp;
+                  <button v-if="editMode" class="btn btn-primary btn-sm player-swap-button"
+                    @click="editPlayer(player, scoresheet.players.away)">Remplacer
+                  </button>
+                </td>
+              </tr>
+            </draggable>
+
+          </table>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+              @click="addPlayer(scoresheet.players.away)">Ajouter</button>
           </div>
-
         </div>
-      </template>
-      <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="replacePlayer">ACCEPTER</button>
+        <div class="col-md-6">
+          <nav class="navbar navbar-light bg-light">
+            <div class="container-fluid">
+              <span class="navbar-brand mb-0 h1"> <img class="team-image"
+                  :src="media[teams?.home?.featured_media] || defaultImage">
+                {{ teams.home.title.rendered }}</span>
+              <div class="d-flex btn-group" role="group" aria-label="Basic example">
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+                  @click="setLineup(teams?.home, 'home')">Set Lineup</button>
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('home')">CLEAR
+                  LINEUP</button>
+              </div>
+            </div>
+          </nav>
+          <table class="table table-bordered table-hover align-middle">
+            <thead class="table-light">
+              <tr>
+                <th v-if="editMode"></th>
+                <th>#</th>
+                <th>Player</th>
+                <th class="header-innings" v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
+                <th v-if="editMode">Actions</th>
+              </tr>
+            </thead>
+            <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.home"
+              :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
+              <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
+                <td v-if="editMode"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
+                    <path
+                      d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                  </svg></td>
+                <td>{{ player.assignedNumber }}</td>
+                <td class="player-button-container">
+                  <span v-html="player.name"></span>
+                </td>
+                <td v-for="inning in scoresheet.innings" :key="inning"
+                  @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
+                  :class="{ active: active.outcomeBox === `outcome_home_${$index}_${inning}` }"
+                  class="ingame-outcome-box">
+                  <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
+                </td>
+                <td v-if="editMode">
+                  <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
+                    @click="removePlayer(player, scoresheet.players.home)">Supprimer</button>&nbsp;
+                  <button v-if="editMode" class="btn btn-primary btn-sm player-swap-button"
+                    @click="editPlayer(player, scoresheet.players.home)">Remplacer
+                  </button>
+                </td>
+              </tr>
+            </draggable>
+          </table>
+          <div class="d-grid gap-2">
+            <button class="btn btn-outline-primary btn-sm" v-if="editMode"
+              @click="addPlayer(scoresheet.players.home)">Ajouter</button>
+          </div>
         </div>
-      </template>
-    </Modal>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <div class="scoresheet-results-scores">
+          <table class="table table-bordered table-hover">
+            <thead>
+              <tr>
+                <th>Teams</th>
+                <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="team-image-container">
+                    <div class="team-image">
+                      <img :src="media[teams?.away?.featured_media] || defaultImage">
+                    </div>
+                    <div>{{ teams.away.title.rendered }}</div>
+                  </div>
+                </td>
+                <td v-for="inning in scoresheet.innings" :key="inning"><span>{{
+                    scoresheet?.scores?.away?.runs?.[inning]
+                    ?? 0 }}</span></td>
+                <td>{{ scoresheet.scores?.away?.runs?.[0] ?? 0 }}</td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="team-image-container">
+                    <div class="team-image">
+                      <img :src="media[teams?.home?.featured_media] || defaultImage">
+                    </div>
+                    <div>{{ teams.home.title.rendered }}</div>
+                  </div>
+                </td>
+                <td v-for="inning in scoresheet.innings" :key="inning"><span>{{
+                    scoresheet?.scores?.home?.runs?.[inning]
+                    ?? 0 }}</span></td>
+                <td>{{ scoresheet.scores?.home?.runs?.[0] ?? 0 }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-outline-primary btn-lg" type="button"
+            @click="sendDataToWebsite">Enregistrer</button>
+        </div>
+        </div>
+      </div>
 
-    <!-- SETTING LINE UP MODAL -->
-    <Modal v-show="settingLineup.open" @close="closeModal">
-      <template v-slot:header>
-        <h5>Lineup {{ settingLineup.team.name }}</h5>
-      </template>
-      <template v-slot:subheader>
-        <div class="">
-            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length" @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+      <!-- REPLACE PLAYER MODAL -->
+      <Modal v-show="isPlayerModalVisible" @close="closeModal">
+        <template v-slot:header>
+          <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
+        </template>
+        <template v-slot:body>
+          <div>
+            <div>
+              <div class="search-section">
+                SEARCH:
+                <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+              </div>
+            </div>
+            <div>
+              <div v-for="player in allAvailablePlayers" :key="player.id">
+                <div :class="{ 'selected': replacementPlayer.id === player.id }"
+                  @click="selectReplacementPlayer(player)" class="player-replace-list">
+                  <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </template>
+        <template v-slot:footer>
+          <div class="player-replace-footer">
+            <button @click="replacePlayer">ACCEPTER</button>
+          </div>
+        </template>
+      </Modal>
+
+      <!-- SETTING LINE UP MODAL -->
+      <Modal v-show="settingLineup.open" @close="closeModal">
+        <template v-slot:header>
+          <h5>Lineup {{ settingLineup.team.name }}</h5>
+        </template>
+        <template v-slot:subheader>
+          <div class="">
+            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
+              @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
             <button @click="addNewPlayer()">NEW PLAYER</button>
           </div>
-      </template>
-      <template v-slot:body>
-        <div>
+        </template>
+        <template v-slot:body>
           <div>
-            <div class="search-section">
-              SEARCH:
-              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+            <div>
+              <div class="search-section">
+                SEARCH:
+                <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+              </div>
             </div>
-          </div>
-          <div>
-            <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
-                class="player-replace-list">
-                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span></div>
+            <div>
+              <div v-for="player in allAvailablePlayers" :key="player.id">
+                <div :class="{ 'selected': replacementPlayer.id === player.id }"
+                  @click="selectReplacementPlayer(player)" class="player-replace-list">
+                  <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="setLineupAddPlayer">ACCEPTER</button>
-        </div>
-      </template>
-    </Modal>
+        </template>
+        <template v-slot:footer>
+          <div class="player-replace-footer">
+            <button @click="setLineupAddPlayer">ACCEPTER</button>
+          </div>
+        </template>
+      </Modal>
 
-    <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
-    <!-- AT-BAT OUTCOME MODAL -->
-    <Modal v-show="isOutcomeModalVisible" @close="closeModal">
-      <template v-slot:header>
-        {{ selectedBatterOrder }} - Inning {{ selectedInning }}
-      </template>
-      <template v-slot:body>
-        <div>
-          <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
-            :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
-            :players="scoresheet.players?.[this.activeBox?.[1]]"></OutcomeBoxModal>
-        </div>
-      </template>
-      <template v-slot:footer>
-        <div class="outcome-save-button">
-          <button @click="saveOutcome">Save</button>
-        </div>
-      </template>
-    </Modal>
-  </div>
+      <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
+      <!-- AT-BAT OUTCOME MODAL -->
+      <Modal v-show="isOutcomeModalVisible" @close="closeModal">
+        <template v-slot:header>
+          {{ selectedBatterOrder }} - Inning {{ selectedInning }}
+        </template>
+        <template v-slot:body>
+          <div>
+            <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
+              :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
+              :players="scoresheet.players?.[this.activeBox?.[1]]">
+            </OutcomeBoxModal>
+          </div>
+        </template>
+        <template v-slot:footer>
+          <div class="outcome-save-button">
+            <button @click="saveOutcome">Save</button>
+          </div>
+        </template>
+      </Modal>
+    </div>
 </template>
 <script>
 import {PlayerInGame} from "@/models/PlayerInGame"
@@ -510,42 +565,11 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
-.tables-container {
-  display: flex;
-  justify-content: space-around;
-  .scoresheet-table {
-    padding: 0 0.5rem;
+
     table {
+      width:100%;
       tr {
-        &:nth-child(even) {
-          td {
-          }
-        }
-
-        &:nth-child(odd) {
-          td {
-          }
-        }
-
-        th {
-
-          &:nth-child(1) {
-            max-width: 1rem;
-          }
-        }
-
         td {
-          vertical-align: middle;
-          &:nth-child(1) {
-            padding: 0 1rem;
-          }
-
-          &:nth-child(2) {
-            min-width: 8rem;
-          }
-
-          padding: 0rem 1rem;
-
           &.active {
             background: lightgreen;
           }
@@ -560,10 +584,8 @@ export default {
     }
 
     .add-player-button {
-      button {
-        width: 100%;
-        padding: 1rem;
-      }
+      background:white !important;
+      padding:0 0 !important;
     }
 
     .ingame-outcome-box {
@@ -587,11 +609,6 @@ export default {
     .rbi-input {
       display: flex;
     }
-
-
-
-  }
-}
 
 .search-section {
   background: white;
@@ -629,11 +646,6 @@ export default {
           background: pink;
         }
       }
-
-      td {
-        background: lightblue;
-      }
-
       &.unclickable {
         td {
           background: lightgray;
@@ -724,5 +736,23 @@ export default {
 .date-time {
   text-transform: capitalize;
 }
+.editMode {
+  table {
+    td {
+          &:nth-child(1) {
+              max-width: 0.5rem;
+            }
+    &:nth-child(2) {
+                  min-width: 0rem;
+                }
 
+                                                            &:last-child {
+                                                              max-width:  auto;
+                                                            }
+  }
+    }
+  .ingame-outcome-box, .header-innings {
+    display:none;
+  }
+}
 </style>
