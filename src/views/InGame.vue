@@ -258,8 +258,11 @@
         </template>
         <template v-slot:body>
           <div>
-            <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
-              :activePlayer="activePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
+            <OutcomeBoxModal 
+              :selectedOutcomeBox="working_selectedOutcomeBox"
+              @updateOutcome="updateOutcomeBox($event)"
+              :activePlayer="activePlayer"
+              :isOutcomeModalVisible="isOutcomeModalVisible"
               :players="scoresheet.players?.[this.activeBox?.[1]]">
             </OutcomeBoxModal>
           </div>
@@ -281,6 +284,8 @@ import ScoresheetAPIService from "@/services/ScoresheetAPIService"
 import { clone } from "@/scripts/utilities"
 import moment from "moment"
 import { VueDraggableNext } from 'vue-draggable-next'
+import OutcomeMixin from "@/mixins/OutcomeMixin"
+import KeyHandlerMixin from "@/mixins/KeyHandlerMixin"
 
 export default {
   components: {
@@ -424,6 +429,9 @@ export default {
         .join(",")
       return teams
     },
+    handleKeys(event) {
+      this.handleShortcutKeys(event)
+    },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
       if (playerIndex !== -1) {
@@ -487,7 +495,6 @@ export default {
       this.updateData()
     },
     setLineup(team,homeAway) {
-      console.log(team)
       this.settingLineup = {
         open: true,
         team: {
@@ -520,6 +527,10 @@ export default {
 
 
   },
+  mixins: [
+    OutcomeMixin,
+    KeyHandlerMixin,
+  ],
   async created() {
     this.broadcastChannel = new BroadcastChannel('test_channel')
     this.scoresheet.gameId = this.$route?.params?.gameId
@@ -557,11 +568,15 @@ export default {
     this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
   },
   mounted() {
+    window.addEventListener('keydown', this.handleKeys)
     this.broadcastChannel = new BroadcastChannel("gamecastChannel")
-    this.broadcastChannel.onmessage = event => {
+    this.broadcastChannel.onmessage = event => {}
+    this.events.$on("escapePressed", this.closeModal)
+    this.events.$on("enterPressed", this.saveOutcome)
+    this.events.$on("advancePlayer", this.advancePlayer)
+    this.events.$on("returnPlayer", this.returnPlayer)
+  },
 
-    }
-  }
 }
 </script>
 <style lang="scss" scoped>
@@ -739,18 +754,18 @@ export default {
 .editMode {
   table {
     td {
-          &:nth-child(1) {
-              max-width: 0.5rem;
-            }
-    &:nth-child(2) {
-                  min-width: 0rem;
-                }
+      &:nth-child(1) {
+        max-width: 0.5rem;
+      }
+      &:nth-child(2) {
+        min-width: 0rem;
+      }
 
-                                                            &:last-child {
-                                                              max-width:  auto;
-                                                            }
-  }
+      &:last-child {
+        max-width:  auto;
+      }
     }
+  }
   .ingame-outcome-box, .header-innings {
     display:none;
   }

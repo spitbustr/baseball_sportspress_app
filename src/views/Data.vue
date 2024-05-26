@@ -1,6 +1,12 @@
 <template>
   <div class="data-list">
     <div>
+      <button @click="refreshData()">Refresh <b>ALL DATA</b></button>
+    </div>
+    <div>
+      -------
+    </div>
+    <div>
       <button @click="refreshGames()">Refresh <b>GAMES SCHEDULE</b></button>
     </div>
     <div>
@@ -14,12 +20,6 @@
     </div>
     <div>
       <button @click="refreshPlayers()">Refresh <b>PLAYERS</b></button>
-    </div>
-    <div>
-      ------
-    </div>
-    <div>
-      <button @click="clearDataBase()">CLEAR DATABASE FOR SEASON <b>{{ settings.playballConfig.season }}</b></button>
     </div>
   </div>
 </template>
@@ -48,6 +48,9 @@ export default {
     async refreshMedia() {
       await this.$store.dispatch("refreshMedia")
     },
+    async refreshData() {
+      await this.$store.dispatch("refreshData")
+    }
   }
 }
 </script>

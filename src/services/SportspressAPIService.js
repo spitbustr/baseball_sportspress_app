@@ -96,4 +96,21 @@ export default class SportspressAPIService {
         }
       })
   }
+  static async deletePlayer(playerId, store) {
+    let token = null
+    await this.loadConfig().then(result => {
+      token = result?.API_token?.api_token
+    })
+    const headers = {
+      "Authorization": `Basic ${token}`,
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    }
+    await axios.delete(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}/${playerId}`, {headers})
+      .then(result => {
+        if(result?.status == 200) {
+          store.dispatch("deletePlayer", playerId)
+        }
+      })
+  }
 }

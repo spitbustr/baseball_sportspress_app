@@ -7,16 +7,18 @@ import OutcomeBox from '@/components/ingame/OutcomeBox'
 import OutcomeBoxModal from '@/components/ingame/OutcomeBoxModal'
 import Modal from '@/components/overlays/Modal'
 import AddPlayer from '@/components/overlays/modals/AddPlayer'
+import Confirmation from '@/components/overlays/modals/Confirmation'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
+import EventBusPlugin from '@/scripts/eventBus'
 
-const app = createApp(App).use(store).use(router)
-
+const app = createApp(App).use(store).use(router).use(EventBusPlugin)
 // Components
 app.component('OutcomeBox', OutcomeBox)
 app.component('OutcomeBoxModal', OutcomeBoxModal)
 app.component('Modal', Modal)
 app.component('AddPlayer', AddPlayer)
+app.component('Confirmation', Confirmation)
 
 // Mount app
 app.mount('#app')

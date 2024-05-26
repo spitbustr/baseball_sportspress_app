@@ -123,8 +123,10 @@ export default {
       return !currentGameDate.isSame(previousGameDate, "day")
     },
     gamesbyWeek(week) {
+      // Add 1 to start the week on Sunday
+      const today = moment().add(1, 'days')
       // Start of this week (Sunday)
-      const startOfWeek = moment().add(week, 'weeks').startOf('week').day(0)
+      const startOfWeek = today.add(week, 'weeks').startOf('week').day(0)
       // End of this week (Saturday)
       const endOfWeek = moment(startOfWeek).day(6)
 

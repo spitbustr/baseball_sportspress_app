@@ -9,10 +9,15 @@ const SET_MEDIA = "SET_MEDIA"
 const SET_TEAMS = "SET_TEAMS"
 const SET_CALENDAR = "SET_CALENDAR"
 const SET_PROGRESS = "SET_PROGRESS"
+const DELETE_PLAYER = "DELETE_PLAYER"
 export default createStore({
   actions: {
     async addPlayer({state, commit},payload) {
       commit(ADD_PLAYER, payload)
+      localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(state.data.players))
+    },
+    async deletePlayer({state, commit},playerId) {
+      commit(DELETE_PLAYER, playerId)
       localStorage.setItem(`${$settings.playballConfig.id}_players`, JSON.stringify(state.data.players))
     },
     async initialize({state, commit, dispatch}) {
@@ -227,6 +232,14 @@ export default createStore({
     },
     [ADD_PLAYER]: (state, player) => {
       state.data.players.unshift(player)
+    },
+    [DELETE_PLAYER]: (state,playerId) => {
+      const index = state.data.players.findIndex(p => p.id === playerId)
+      console.log(index)
+      if(index !== -1) {
+        state.data.players.splice(index,1)
+        console.log(state.data.players)
+      }
     },
     [SET_PROGRESS]: (state, progress) => {
       state.data.progress = progress

@@ -32,6 +32,10 @@
               "symbol": "OB"
             },
             {
+              "name": "FC",
+              "value": "FC"
+            },
+            {
               "name": "1B",
               "value": "1B"
             },
@@ -51,10 +55,7 @@
               "name": "HR",
               "value": "HR"
             },
-            {
-              "name": "FC",
-              "value": "FC"
-            },
+
             {
               "name": "SAC",
               "value": "SAC"

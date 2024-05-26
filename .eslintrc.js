@@ -20,5 +20,6 @@ module.exports = {
     "vue/no-unused-components": "off",
     "vue/no-unused-vars": "off",
     'no-constant-condition': 'off',
+    "vue/no-deprecated-events-api": "off"
   },
 }

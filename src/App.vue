@@ -14,7 +14,9 @@
               aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="#">LBAO/MRK</a>
+            <div class="navbar-brand">
+              <router-link to="/">LBAO/MRK</router-link>
+            </div>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
@@ -103,7 +105,6 @@ nav {
 
   a {
     font-weight: bold;
-    color: blue;
     margin: 0 10px;
     text-decoration: underline;
     cursor: pointer;
@@ -112,5 +113,21 @@ nav {
       color: #42b983;
     }
   }
+}
+.navbar-brand {
+  a {
+    color: gray;
+    text-decoration: none;
+    &:active {
+      color: gray;
+    }
+    &:hover {
+      color: gray;
+    }
+    &.router-link-exact-active {
+      color: gray;
+    }
+  }
+
 }
 </style>
