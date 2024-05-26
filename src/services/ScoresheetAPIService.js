@@ -63,6 +63,7 @@ export default class ScoresheetAPIService {
                 assignedNumber: p.assignedNumber,
                 featured_media: p.featured_media,
                 number: p.number,
+                probably: p.probably,
                 title: {
                     rendered: p.title.rendered
                 },
@@ -76,6 +77,7 @@ export default class ScoresheetAPIService {
                 assignedNumber: p.assignedNumber,
                 featured_media: p?.featured_media,
                 number: p.number,
+                probably: p.probably,
                 title: {
                     rendered: p.title.rendered
                 },

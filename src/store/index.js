@@ -235,10 +235,8 @@ export default createStore({
     },
     [DELETE_PLAYER]: (state,playerId) => {
       const index = state.data.players.findIndex(p => p.id === playerId)
-      console.log(index)
       if(index !== -1) {
         state.data.players.splice(index,1)
-        console.log(state.data.players)
       }
     },
     [SET_PROGRESS]: (state, progress) => {

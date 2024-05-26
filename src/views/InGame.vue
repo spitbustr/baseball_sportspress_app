@@ -47,6 +47,7 @@
                   </svg></td>
                 <td>{{ player.assignedNumber }}</td>
                 <td class="player-button-container">
+                  <span class="probably" v-if="player.probably">*</span>
                   <span v-html="player.name"></span>
                 </td>
                 <td v-for="inning in scoresheet.innings" :key="inning"
@@ -105,6 +106,7 @@
                   </svg></td>
                 <td>{{ player.assignedNumber }}</td>
                 <td class="player-button-container">
+                  <span class="probably" v-if="player.probably">*</span>
                   <span v-html="player.name"></span>
                 </td>
                 <td v-for="inning in scoresheet.innings" :key="inning"
@@ -183,6 +185,12 @@
       <template v-slot:header>
         <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
       </template>
+      <template v-slot:subheader>
+        <div class="">
+          <button @click="addNewPlayer()">NEW PLAYER</button>
+          <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
+        </div>
+      </template>
       <template v-slot:body>
         <div>
           <div>
@@ -220,6 +228,7 @@
           <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
             @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
           <button @click="addNewPlayer()">NEW PLAYER</button>
+          <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
         </div>
       </template>
       <template v-slot:body>
@@ -281,6 +290,7 @@ import moment from "moment"
 import { VueDraggableNext } from 'vue-draggable-next'
 import OutcomeMixin from "@/mixins/OutcomeMixin"
 import KeyHandlerMixin from "@/mixins/KeyHandlerMixin"
+import {debounce} from "lodash"
 
 export default {
   components: {
@@ -293,8 +303,6 @@ export default {
     allAvailablePlayers() {
       if(this.inputSearchPlayer?.length) {
         return this.allPlayers
-        .filter(player => this.scoresheet.players.home.map(p => p.id).indexOf(player.id) === -1)
-        .filter(player => this.scoresheet.players.away.map(p => p.id).indexOf(player.id) === -1)
         .filter(player => this.inputSearchPlayer?.length ? removeAccents(player.title?.rendered.toLowerCase())?.indexOf(removeAccents(this.inputSearchPlayer.toLowerCase())) !== -1 : true)
       }
       else {
@@ -386,6 +394,7 @@ export default {
           name: "",
         }
       },
+      probablyRightPlayer: false,
       hasContentInDB: false,
     }
   },
@@ -395,7 +404,8 @@ export default {
     },
     addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
-      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` }))
+      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer }))
+      this.probablyRightPlayer = false
       this.updateData()
     },
     closeModal() {
@@ -403,6 +413,7 @@ export default {
       this.isPlayerModalVisible = false
       this.isOutcomeModalVisible = false
       this.settingLineup.open = false
+      this.probablyRightPlayer = false
     },
     clearLineup(team) {
       this.scoresheet.players[team] = []
@@ -412,7 +423,8 @@ export default {
     },
     editPlayer(player, list) {
       this.isPlayerModalVisible = true
-      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` })
+      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer })
+      this.probablyRightPlayer = false
     },
     getDateTime(event) {
       return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
@@ -426,6 +438,25 @@ export default {
     },
     handleKeys(event) {
       this.handleShortcutKeys(event)
+    },
+    moveThroughBoxes(arrow) {
+      const prop = this.activeBox?.[0]
+      const homeAway = this.activeBox?.[1]
+      const row = +this.activeBox?.[2]
+      const col = +this.activeBox?.[3]
+      console.log(col)
+      if(arrow === "up" && row > 0){
+        this.active.outcomeBox = (`${prop}_${homeAway}_${row-1}_${col}`)
+      }
+      if(arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1){
+        this.active.outcomeBox = (`${prop}_${homeAway}_${row+1}_${col}`)
+      }
+      if(arrow === "left" && col > 1){
+        this.active.outcomeBox = (`${prop}_${homeAway}_${row}_${col-1}`)
+      }
+      if(arrow === "right" && col < this.numberOfInnings){
+        this.active.outcomeBox = (`${prop}_${homeAway}_${row}_${col+1}`)
+      }
     },
     removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
@@ -458,11 +489,15 @@ export default {
       this.inputSearchPlayer = event.target.value
     },
     selectReplacementPlayer(player) {
-      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` })
+      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer })
+    },
+    probablyPlayer() {
+      this.probablyRightPlayer = !this.probablyRightPlayer
     },
     replacePlayer() {
       if (this.replacementPlayer?.id) {
         this.replacementPlayer.outcome = this.selectedPlayer.outcome
+        this.replacementPlayer.probably = this.probablyRightPlayer
         this.isPlayerModalVisible = false
         const homeIndex = this.scoresheet.players.home.findIndex(p => {
           return p.id == this.selectedPlayer.id
@@ -540,9 +575,9 @@ export default {
       this.teams.away = this.scoresheet.teams.away
       this.teams.home = this.scoresheet.teams.home
       this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` }))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer }))
       this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` }))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer }))
     }
     await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
       this.hasContentInDB = result?.data?.id
@@ -571,6 +606,7 @@ export default {
     this.events.$on("enterPressed", this.saveOutcome)
     this.events.$on("advancePlayer", this.advancePlayer)
     this.events.$on("returnPlayer", this.returnPlayer)
+    this.events.$on("move", this.moveThroughBoxes)
   },
 
 }
@@ -712,6 +748,9 @@ export default {
     width: 60px;
     opacity: 0.75;
     cursor: pointer;
+  }
+  .probably {
+    font-size: 1.2rem;
   }
 }
 .team-image-container {

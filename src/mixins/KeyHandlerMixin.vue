@@ -1,11 +1,11 @@
 <script>
 import $settings from "@/data/settings.json"
 import { clone } from "@/scripts/utilities"
+
 export default {
   methods: {
     handleShortcutKeys(event) {
       if(this.activePlayer) {
-
         // HITS
         if(event.key === "1") {
           this.setOutcome("1B")
@@ -19,7 +19,7 @@ export default {
         if(event.key === "4") {
           this.setOutcome("HR")
         }
-        if(event.key === "x") {
+        if(event.key === "0") {
           this.setOutcome("outAB")
         }
         if(event.key === "k") {
@@ -57,6 +57,19 @@ export default {
           this.events.$emit("returnPlayer")
         }
 
+        // Move through box
+        if(event.key === "ArrowDown" ) {
+          this.events.$emit("move", "down")
+        }
+        if(event.key === "ArrowUp" ) {
+          this.events.$emit("move", "up")
+        }
+        if(event.key === "ArrowLeft" ) {
+          this.events.$emit("move", "left")
+        }
+        if(event.key === "ArrowRight" ) {
+          this.events.$emit("move", "right")
+        }
       }
 
     },
