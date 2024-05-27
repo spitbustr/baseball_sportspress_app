@@ -9,7 +9,7 @@
     <div>
       <table>
         <tr v-for="player in playersList" :key="player.id">
-          <td><span v-html="player.title.rendered"></span></td>
+          <td><span v-if="player.number">{{player.number}} - </span><span v-html="player.title.rendered"></span></td>
         </tr>
       </table>
     </div>

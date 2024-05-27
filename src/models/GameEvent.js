@@ -7,7 +7,8 @@ const defaultGameEvent = {
     players: [],
     results: {},
     performance: {},
-    main_results: []
+    main_results: [],
+    status: "publish"
 }
 export default class GameEvent {
     constructor(properties) {
@@ -81,6 +82,11 @@ export default class GameEvent {
             eight: this.inningNotPlayed(payload,"away",8) ? null : (payload.scores.away?.runs?.[8] ?? 0).toString(),
             nine: this.inningNotPlayed(payload,"away",9) ? null : (payload.scores.away?.runs?.[9] ?? 0).toString(),
             ten: this.inningNotPlayed(payload,"away",10) ? null : (payload.scores.away?.runs?.[10] ?? 0).toString(),
+            eleven: this.inningNotPlayed(payload,"away",11) ? null : (payload.scores.away?.runs?.[11] ?? 0).toString(),
+            twelve: this.inningNotPlayed(payload,"away",12) ? null : (payload.scores.away?.runs?.[12] ?? 0).toString(),
+            thirteen: this.inningNotPlayed(payload,"away",13) ? null : (payload.scores.away?.runs?.[13] ?? 0).toString(),
+            fourteen: this.inningNotPlayed(payload,"away",14) ? null : (payload.scores.away?.runs?.[14] ?? 0).toString(),
+            fifteen: this.inningNotPlayed(payload,"away",15) ? null : (payload.scores.away?.runs?.[15] ?? 0).toString(),
             r: (payload.scores.away?.runs?.[0] ?? 0).toString(),
             h: (payload.scores.away?.hits ?? 0).toString(),
             e: (payload.scores.away?.errors ?? 0).toString(),
@@ -88,7 +94,9 @@ export default class GameEvent {
             outcome: [
                 payload.scores.away?.runs?.[0] > payload.scores.home?.runs?.[0]
                 ? "win"
-                : "loss"
+                : payload.scores.away?.runs?.[0] === payload.scores.home?.runs?.[0]
+                 ? "tie"
+                 : "loss"
             ]
         }
         results[payload.teams.home.id] = {
@@ -102,6 +110,11 @@ export default class GameEvent {
             eight: this.inningNotPlayed(payload,"home",8) ? null : (payload.scores.home?.runs?.[8] ?? 0).toString(),
             nine: this.inningNotPlayed(payload,"home",9) ? null : (payload.scores.home?.runs?.[9] ?? 0).toString(),
             ten: this.inningNotPlayed(payload,"home",10) ? null : (payload.scores.home?.runs?.[10] ?? 0).toString(),
+            eleven: this.inningNotPlayed(payload,"home",11) ? null : (payload.scores.home?.runs?.[11] ?? 0).toString(),
+            twelve: this.inningNotPlayed(payload,"home",12) ? null : (payload.scores.home?.runs?.[12] ?? 0).toString(),
+            thirteen: this.inningNotPlayed(payload,"home",13) ? null : (payload.scores.home?.runs?.[13] ?? 0).toString(),
+            fourteen: this.inningNotPlayed(payload,"home",14) ? null : (payload.scores.home?.runs?.[14] ?? 0).toString(),
+            fifteen: this.inningNotPlayed(payload,"home",15) ? null : (payload.scores.home?.runs?.[15] ?? 0).toString(),
             r: (payload.scores.home?.runs?.[0] ?? 0).toString(),
             h: (payload.scores.home?.hits ?? 0).toString(),
             e: (payload.scores.home?.errors ?? 0).toString(),
@@ -109,7 +122,9 @@ export default class GameEvent {
             outcome: [
                 payload.scores.away?.runs?.[0] < payload.scores.home?.runs?.[0]
                     ? "win"
-                    : "loss"
+                    : payload.scores.away?.runs?.[0] === payload.scores.home?.runs?.[0]
+                        ? "tie"
+                        : "loss"
             ]
         }
         return results

@@ -286,13 +286,14 @@
       </template>
       <template v-slot:body>
         <div>
-          <RbiOutcomeBoxModal
-            :selectedOutcomeBox="working_selectedOutcomeBox"
-            @updateOutcome="updateOutcomeBox($event)"
-            :activePlayer="activePlayer"
-            :openModal="openRbiModal"
-            :players="scoresheet.players?.[this.activeBox?.[1]]">
-          </RbiOutcomeBoxModal>
+          <div>
+            <div v-if=" activePlayerBox?.onBasePosition === 'point'">
+              <select class="rbi-button" v-model="activePlayerBox.rbiBy">
+              <option :value="null">NO RBI</option>
+              <option v-for="player in players" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
+              </select>
+            </div>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -479,7 +480,7 @@ export default {
       return teams
     },
     handleKeys(event) {
-      this.handleShortcutKeys(event)
+      this.handleShortcutKeys(event,this.allModalToggle)
     },
     moveThroughBoxes(arrow) {
       const prop = this.activeBox?.[0]
