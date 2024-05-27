@@ -704,7 +704,6 @@ export default {
   },
   watch: {
     openRbiModal(value, oldVal) {
-      console.log(        this.activePlayerBox ,this.currentActivePlayerBox)
       if(value !== oldVal)
         this.working_selectedOutcomeBox = this.activePlayerBox
     }

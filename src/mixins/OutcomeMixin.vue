@@ -144,14 +144,16 @@ export default {
       }
     },
     setInningEnd() {
-
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
         this.updateData()
       }
     },
     setCountAsHr() {
-      this.activePlayerBox.countAsHR = !this.activePlayerBox?.countAsHR
+      if (this.activePlayerBox && !this.editMode) {
+        this.activePlayerBox.countAsHR = !this.activePlayerBox?.countAsHR
+        this.updateData()
+      }
     },
   },
 }
