@@ -86,13 +86,13 @@ export default {
               break
             case "4B":
               this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.currentActivePlayer?.id
+              this.activePlayerBox.rbiBy = this.activePlayer?.id || this.currentActivePlayer?.id
               this.activePlayerBox.countAsHR = false
               this.activePlayerBox.putOut = false
               break
             case "HR":
               this.activePlayerBox.onBasePosition = "point"
-              this.activePlayerBox.rbiBy = this.currentActivePlayer?.id
+              this.activePlayerBox.rbiBy = this.activePlayer?.id || this.currentActivePlayer?.id
               this.activePlayerBox.countAsHR = true
               this.activePlayerBox.putOut = false
               break
