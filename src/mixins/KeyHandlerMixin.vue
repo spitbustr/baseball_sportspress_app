@@ -4,7 +4,7 @@ import { clone } from "@/scripts/utilities"
 
 export default {
   methods: {
-    handleShortcutKeys(event, modalOpened) {
+    handleShortcutKeys(event, activePlayer, modalOpened) {
       if(modalOpened) {
         if(event.keyCode === 32) {
           event.preventDefault()
@@ -17,7 +17,7 @@ export default {
         }
       }
       else{
-        if(this.activePlayer) {
+        if(activePlayer) {
           // HITS
           if(event.key === "1") {
             this.setOutcome("1B")

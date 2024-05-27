@@ -8,40 +8,6 @@ export default {
     }
   },
   methods: {
-    advancePlayer() {
-      if(this.activePlayerBox?.atBatResult) {
-        if(this.activePlayerBox?.onBasePosition === "third") {
-          this.setAtBase("point")
-          this.activePlayerBox.rbiBy = this.activePlayer?.id
-          this.openRbiModal = true
-        }
-        else if(this.activePlayerBox?.onBasePosition === "second") {
-          this.setAtBase("third")
-          this.activePlayerBox.rbiBy = null
-        }
-        else if(this.activePlayerBox?.onBasePosition === "first") {
-          this.setAtBase("second")
-          this.activePlayerBox.rbiBy = null
-        }
-      }
-    },
-    returnPlayer() {
-      if(this.activePlayerBox?.atBatResult) {
-        if(this.activePlayerBox?.onBasePosition === "second") {
-          this.activePlayerBox.rbiBy = null
-          this.setAtBase("first")
-        }
-        else if(this.activePlayerBox?.onBasePosition === "third") {
-          this.activePlayerBox.rbiBy = null
-          this.setAtBase("second")
-        }
-        else if(this.activePlayerBox?.onBasePosition === "point") {
-          this.activePlayerBox.rbiBy = null
-          this.setAtBase("third")
-        }
-      }
-    },
-
     playerAt(position) {
       if(this.activePlayerBox?.onBasePosition === "first" ) {
         if(position === "first") {
@@ -66,7 +32,6 @@ export default {
       return false
     },
     setAtBase(base) {
-      this.activePlayerBox = clone(this.selectedOutcomeBox)
       if (this.activePlayerBox && !this.editMode) {
         if (this.activePlayerBox.onBasePosition === base) {
           this.activePlayerBox.onBasePosition = null
@@ -82,7 +47,6 @@ export default {
 
     },
     setOutcome(outcome) {
-      this.activePlayerBox = clone(this.selectedOutcomeBox)
       if (this.activePlayerBox && !this.editMode) {
         if (this.activePlayerBox.atBatResult === outcome) {
           this.activePlayerBox.onBasePosition = null

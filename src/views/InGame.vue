@@ -268,9 +268,9 @@
           <OutcomeBoxModal
             :selectedOutcomeBox="working_selectedOutcomeBox"
             @updateOutcome="updateOutcomeBox($event)"
-            :activePlayer="activePlayer"
+            :activePlayer="currentActivePlayer"
             :isOutcomeModalVisible="isOutcomeModalVisible"
-            :players="scoresheet.players?.[this.activeBox?.[1]]">
+            :players="scoresheet.players?.[this.currentActiveBox?.[1]]">
           </OutcomeBoxModal>
         </div>
       </template>
@@ -287,10 +287,10 @@
       <template v-slot:body>
         <div>
           <div>
-            <div v-if=" activePlayerBox?.onBasePosition === 'point'">
-              <select class="rbi-button" v-model="activePlayerBox.rbiBy">
+            <div v-if="currentActivePlayerBox?.onBasePosition === 'point'">
+              <select class="rbi-button" v-model="currentActivePlayerBox.rbiBy">
               <option :value="null">NO RBI</option>
-              <option v-for="player in players" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
+              <option v-for="player in scoresheet.players?.[this.currentActiveBox?.[1]]" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
               </select>
             </div>
           </div>
@@ -349,14 +349,14 @@ export default {
         return this.allPlayers
       }
     },
-    activeBox() {
+    currentActiveBox() {
       return this.active?.outcomeBox?.split("_")
     },
-    activePlayer() {
-      return this.scoresheet.players?.[this.activeBox?.[1]]?.[this.activeBox?.[2]] || null
+    currentActivePlayer() {
+      return this.scoresheet.players?.[this.currentActiveBox?.[1]]?.[this.currentActiveBox?.[2]] || null
     },
-    activePlayerBox() {
-      return this.activePlayer?.outcome?.[this.activeBox?.[3]] || null
+    currentActivePlayerBox() {
+      return this.currentActivePlayer?.outcome?.[this.currentActiveBox?.[3]] || null
     },
     defaultImage() {
       return require(`@/assets/images/defaults/team_home.png`)
@@ -368,14 +368,15 @@ export default {
       return $settings.playballConfig.innings
     },
     selectedInning() {
-      return this.activeBox?.[3]
+      return this.currentActiveBox?.[3]
     },
     selectedBatterOrder() {
-      return this.scoresheet.players?.[this.activeBox?.[1]]?.[this.activeBox?.[2]]?.name
+      return this.scoresheet.players?.[this.currentActiveBox?.[1]]?.[this.currentActiveBox?.[2]]?.name
     },
   },
   data() {
     return {
+      activePlayerBox: null,
       broadcastChannel: null,
       scoresheet: {
         innings: null,
@@ -441,6 +442,39 @@ export default {
     }
   },
   methods: {
+    advancePlayer() {
+      if(this.activePlayerBox?.atBatResult) {
+        if(this.activePlayerBox?.onBasePosition === "third") {
+          this.setAtBase("point")
+          this.activePlayerBox.rbiBy = this.currentActivePlayer?.id
+          this.openRbiModal = true
+        }
+        else if(this.activePlayerBox?.onBasePosition === "second") {
+          this.setAtBase("third")
+          this.activePlayerBox.rbiBy = null
+        }
+        else if(this.activePlayerBox?.onBasePosition === "first") {
+          this.setAtBase("second")
+          this.activePlayerBox.rbiBy = null
+        }
+      }
+    },
+    returnPlayer() {
+      if(this.activePlayerBox?.atBatResult) {
+        if(this.activePlayerBox?.onBasePosition === "second") {
+          this.activePlayerBox.rbiBy = null
+          this.setAtBase("first")
+        }
+        else if(this.activePlayerBox?.onBasePosition === "third") {
+          this.activePlayerBox.rbiBy = null
+          this.setAtBase("second")
+        }
+        else if(this.activePlayerBox?.onBasePosition === "point") {
+          this.activePlayerBox.rbiBy = null
+          this.setAtBase("third")
+        }
+      }
+    },
     addNewPlayer() {
       this.isAddNewPlayerModalVisible = true
     },
@@ -480,13 +514,13 @@ export default {
       return teams
     },
     handleKeys(event) {
-      this.handleShortcutKeys(event,this.allModalToggle)
+      this.handleShortcutKeys(event, this.active.outcomeBox,this.allModalToggle)
     },
     moveThroughBoxes(arrow) {
-      const prop = this.activeBox?.[0]
-      const homeAway = this.activeBox?.[1]
-      const row = +this.activeBox?.[2]
-      const col = +this.activeBox?.[3]
+      const prop = this.currentActiveBox?.[0]
+      const homeAway = this.currentActiveBox?.[1]
+      const row = +this.currentActiveBox?.[2]
+      const col = +this.currentActiveBox?.[3]
       if(arrow === "up" && row > 0){
         this.active.outcomeBox = (`${prop}_${homeAway}_${row-1}_${col}`)
       }
@@ -512,9 +546,10 @@ export default {
         this.active.outcomeBox = id
       }
       else if (!this.editMode) {
-        this.working_selectedOutcomeBox = this.activePlayerBox
+        this.working_selectedOutcomeBox = this.currentActivePlayerBox
         this.isOutcomeModalVisible = true
       }
+      this.activePlayerBox = this.currentActivePlayerBox
     },
     toggleEditMode() {
       this.editMode = !this.editMode
@@ -580,7 +615,7 @@ export default {
       }
     },
     saveOutcome() {
-      this.scoresheet.players[this.activeBox[1]][this.activeBox[2]].outcome[this.activeBox[3]] = this.working_selectedOutcomeBox
+      this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].outcome[this.currentActiveBox[3]] = this.working_selectedOutcomeBox
       this.closeModal()
       this.updateData()
     },
