@@ -138,14 +138,13 @@ export default {
       }
     },
     setPutOut() {
-      this.activePlayerBox = clone(this.selectedOutcomeBox)
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.putOut = !this.activePlayerBox.putOut
         this.updateData()
       }
     },
     setInningEnd() {
-      this.activePlayerBox = clone(this.selectedOutcomeBox)
+
       if (this.activePlayerBox && !this.editMode) {
         this.activePlayerBox.inningEnd = !this.activePlayerBox.inningEnd
         this.updateData()

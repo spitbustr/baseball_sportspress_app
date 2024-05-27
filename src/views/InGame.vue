@@ -522,16 +522,16 @@ export default {
       const row = +this.currentActiveBox?.[2]
       const col = +this.currentActiveBox?.[3]
       if(arrow === "up" && row > 0){
-        this.active.outcomeBox = (`${prop}_${homeAway}_${row-1}_${col}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}`)
       }
       if(arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1){
-        this.active.outcomeBox = (`${prop}_${homeAway}_${row+1}_${col}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row+1}_${col}`)
       }
       if(arrow === "left" && col > 1){
-        this.active.outcomeBox = (`${prop}_${homeAway}_${row}_${col-1}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col-1}`)
       }
       if(arrow === "right" && col < this.numberOfInnings){
-        this.active.outcomeBox = (`${prop}_${homeAway}_${row}_${col+1}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col+1}`)
       }
     },
     removePlayer(player, list) {
