@@ -287,8 +287,8 @@
       <template v-slot:body>
         <div>
           <div>
-            <div v-if="currentActivePlayerBox?.onBasePosition === 'point'">
-              <select class="rbi-button" v-model="currentActivePlayerBox.rbiBy">
+            <div v-if="activePlayerBox?.onBasePosition === 'point'">
+              <select class="rbi-button" v-model="activePlayerBox.rbiBy">
               <option :value="null">NO RBI</option>
               <option v-for="player in scoresheet.players?.[this.currentActiveBox?.[1]]" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
               </select>
@@ -702,6 +702,13 @@ export default {
     this.events.$on("returnPlayer", this.returnPlayer)
     this.events.$on("move", this.moveThroughBoxes)
   },
+  watch: {
+    openRbiModal(value, oldVal) {
+      console.log(        this.activePlayerBox ,this.currentActivePlayerBox)
+      if(value !== oldVal)
+        this.working_selectedOutcomeBox = this.activePlayerBox
+    }
+  }
 
 }
 </script>
