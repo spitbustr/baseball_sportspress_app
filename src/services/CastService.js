@@ -3,7 +3,7 @@ import {InGameResults,PlayerInGame} from "@/models/PlayerInGame"
 export default class CastService {
 
   static currentBatters(players) {
-    const numberOfInnings = $settings.playballConfig.innings
+    const numberOfInnings = $settings.playballConfig.innings+1
     const nextPlayers = []
     let playerIndex = 0
     if(players?.length) {
@@ -44,7 +44,7 @@ export default class CastService {
   static info(data) {
     const info = {
       topBottom: "top",
-      inning: 0,
+      inning: 1,
       nextPlayer: {
         away: 0,
         home: 0,

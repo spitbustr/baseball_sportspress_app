@@ -8,7 +8,7 @@
               <img :src="media[teams?.away?.featured_media]">
             </div>
           </div>
-          <div class="team-name" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white'}">
+          <div class="team-name" :style="{'color': settings?.teams?.[teams?.away?.id]?.colors?.[0] || 'white','text-stroke': `0.25rem ${settings?.teams?.[teams?.away?.id]?.colors?.[0]}`}">
             {{teams?.away?.title?.rendered || 'AWAY'}}
           </div>
           <div class="team-points">
@@ -42,7 +42,7 @@
               <img :src="media[teams?.home?.featured_media]">
             </div>
           </div>
-          <div class="team-name" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white'}">
+          <div class="team-name" :style="{'color': settings?.teams?.[teams?.home?.id]?.colors?.[0] || 'white','text-stroke': `0.25rem ${settings?.teams?.[teams?.home?.id]?.colors?.[0]}`}">
             {{teams?.home?.title?.rendered || 'HOME'}}
           </div>
           <div class="team-points">
@@ -191,8 +191,8 @@ export default {
       justify-content: center;
       width: 100%;
       .team-logo {
-        height: 100px;
-        width: 100px;
+        height: 10rem;
+        width: 10rem;
         border-radius: 50%;
         overflow: hidden;
         img {
@@ -204,18 +204,18 @@ export default {
   }
   .team-container {
     .team-name {
-      -webkit-text-stroke: 0.025rem white;
-      font-size: 4rem;
+      color: black;
+      font-size: 5rem;
+      margin: 1rem 0 2rem;
     }
     .team-points {
-      -webkit-text-stroke: 0.25rem white;
       font-weight: bold;
       font-size: 21rem;
       line-height: 14rem;
     }
     .inning-display {
       width: 10%;
-      font-size: 4rem;
+      font-size: 7rem;
     }
   }
   .out-display-container {
