@@ -8,6 +8,18 @@ export default {
     }
   },
   methods: {
+    isInningFull(inning, homeAway) {
+      const playersAtbAt = this.scoresheet.players?.[homeAway]?.map(p => p.outcome)
+      let fullInnning = true
+      playersAtbAt?.forEach(player => {
+        player.forEach((outcome,index) => {
+          if(fullInnning && index===inning && !outcome.atBatResult) {
+            fullInnning = false
+          }
+        })
+      })
+      return fullInnning
+    },
     playerAt(position) {
       if(this.activePlayerBox?.onBasePosition === "first" ) {
         if(position === "first") {

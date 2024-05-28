@@ -33,7 +33,10 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th class="large-cell">Player</th>
-                <th class="header-innings" v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
+                <template  v-for="inning in displayedInnings" :key="inning">
+                  <th class="header-innings">{{ inning }}</th>
+                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'away' )" class="header-innings" :key="$$index">{{ extraInning }}</th>
+                </template>
                 <th v-if="editMode">Actions</th>
               </tr>
             </thead>
@@ -92,7 +95,10 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th>Player</th>
-                <th class="header-innings" v-for="inning in scoresheet.innings" :key="inning">{{ inning }}</th>
+                <template  v-for="inning in displayedInnings" :key="inning">
+                  <th class="header-innings">{{ inning }}</th>
+                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'home' )" class="header-innings" :key="$$index">{{ extraInning }}</th>
+                </template>
                 <th v-if="editMode">Actions</th>
               </tr>
             </thead>
@@ -361,6 +367,11 @@ export default {
     defaultImage() {
       return require(`@/assets/images/defaults/team_home.png`)
     },
+    displayedInnings() {
+      if(this.getAllFullInnings("away")) {
+      }
+      return this.numberOfInnings
+    },
     media() {
       return this.$store.state.data.media
     },
@@ -475,6 +486,12 @@ export default {
         }
       }
     },
+    addInningBlock(inning,homeAway) {
+      const allInnings = this.getAllFullInnings(homeAway)
+      const inningIsFull = allInnings.find(i => inning === i.inning && i.res)
+      console.log(inningIsFull, inning,homeAway)
+      return inningIsFull
+    },
     addNewPlayer() {
       this.isAddNewPlayerModalVisible = true
     },
@@ -502,6 +519,22 @@ export default {
       this.isPlayerModalVisible = true
       this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer })
       this.probablyRightPlayer = false
+    },
+    extraBlocks(inning) {
+      return []
+    },
+    getAllFullInnings(homeAway) {
+      let index = 1;
+      const inningsArray = Array.from({ length: this.numberOfInnings  }, () => index++);
+      let allInnings = []
+      inningsArray?.forEach((inning,index) => {
+        allInnings.push({
+          inning: inning,
+          res: this.isInningFull(inning,homeAway)
+        })
+      })
+      console.log(allInnings)
+      return this.numberOfInnings
     },
     getDateTime(event) {
       return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
@@ -569,6 +602,7 @@ export default {
     inputUpdate(event) {
       this.inputSearchPlayer = event.target.value
     },
+
     selectReplacementPlayer(player) {
       this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer })
     },

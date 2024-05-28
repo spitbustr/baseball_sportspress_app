@@ -8,7 +8,9 @@ const defaultGameEvent = {
     results: {},
     performance: {},
     main_results: [],
-    status: "publish"
+    status: "publish",
+    mode: "team",
+    staff: [0,0]
 }
 export default class GameEvent {
     constructor(properties) {
