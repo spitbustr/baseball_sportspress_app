@@ -2,7 +2,7 @@
   <div class="cast-game">
     <table width="100%">
       <tr class="team-container">
-        <td class="team away">
+        <td class="team away" rowspan="2">
           <div class="team-logo-container">
             <div class="team-logo">
               <img :src="media[teams?.away?.featured_media]">
@@ -36,7 +36,7 @@
             </div>
           </div>
         </td>
-        <td class="team home">
+        <td class="team home" rowspan="2">
           <div class="team-logo-container">
             <div class="team-logo">
               <img :src="media[teams?.home?.featured_media]">
@@ -51,7 +51,6 @@
         </td>
       </tr>
       <tr >
-        <td></td>
         <td>
           <div class="out-display-container">
             <div class="out-display">
@@ -80,7 +79,6 @@
             </div>
           </div>
         </td>
-        <td></td>
       </tr>
       <tr >
         <td class="next-atbat-section">
@@ -184,7 +182,7 @@ export default {
   text-align: center;
   .team {
     width: 40%;
-    align-content: end;
+    align-content: space-evenly;
     .team-logo-container {
       align-items: center;
       display: flex;

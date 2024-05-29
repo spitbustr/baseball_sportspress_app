@@ -65,7 +65,7 @@ export default class ScoresheetAPIService {
                 number: p.number,
                 probably: p.probably,
                 title: {
-                    rendered: p.title.rendered
+                    rendered: p?.title?.rendered
                 },
                 team: teamHome,
             }
@@ -79,7 +79,7 @@ export default class ScoresheetAPIService {
                 number: p.number,
                 probably: p.probably,
                 title: {
-                    rendered: p.title.rendered
+                    rendered: p?.title?.rendered
                 },
                 team: teamHome,
             }

@@ -11,7 +11,7 @@ export class PlayerInGame {
   }
 
   get name() {
-    return this.title.rendered
+    return this.title?.rendered || ""
   }
 }
 const defaultInGameResults = {
