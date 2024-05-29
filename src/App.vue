@@ -36,7 +36,7 @@
 
             </div>
             <div class="d-flex">
-              <button class="btn btn-outline-primary" @click="logout">Déconnexion</button>
+              <button class="btn btn-outline-light" @click="logout">Déconnexion</button>
             </div>
           </div>
 

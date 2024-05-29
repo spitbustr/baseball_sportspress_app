@@ -8,7 +8,7 @@
           <button type="button" class="btn btn-outline-secondary" @click="changeFilter('upcoming')">UPCOMING GAMES</button>
         </div>
       </div>
-      <div class="col-md-6">
+      <div class="col-md-6 text-md-end">
       <div class="btn-group" role="group" aria-label="Week Filter">
         <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',-1)">LAST WEEK'S GAMES</button>
         <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',0)">THIS WEEK'S GAMES</button>
@@ -18,7 +18,7 @@
   </div>
   <div class="row">
     <div class="col-sm-12">
-      <table class="table table-striped table-hover text-start">
+      <table class="table table-striped table-hover text-star align-middle">
         <thead>
           <tr>
             <th>Game ID</th>
@@ -48,8 +48,8 @@
               <td>
                 <div class="d-grid gap-1">
 
-                  <router-link :to="`/game/${game.id}`" class="btn btn-primary btn-block">
-                    EDIT
+                  <router-link :to="`/game/${game.id}`" class="btn btn-primary btn-block btn-sm">
+                    Éditer
                   </router-link>
                 </div>
               </td>
