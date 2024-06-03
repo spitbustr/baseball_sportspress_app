@@ -495,11 +495,11 @@ export default {
     addNewPlayer() {
       this.isAddNewPlayerModalVisible = true
     },
-    addPlayer(teamPlayers) {
+    async addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
       teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer }))
       this.probablyRightPlayer = false
-      this.updateData()
+      await this.updateData()
     },
     closeModal() {
       this.isAddNewPlayerModalVisible = false
@@ -512,8 +512,8 @@ export default {
     clearLineup(team) {
       this.scoresheet.players[team] = []
     },
-    dragged() {
-      this.updateData()
+    async dragged() {
+      await this.updateData()
     },
     editPlayer(player, list) {
       this.isPlayerModalVisible = true
@@ -567,11 +567,11 @@ export default {
         this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col+1}`)
       }
     },
-    removePlayer(player, list) {
+    async removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
-        this.updateData()
+        await this.updateData()
       }
     },
     setActiveOutcome(id) {
@@ -584,10 +584,10 @@ export default {
       }
       this.activePlayerBox = this.currentActivePlayerBox
     },
-    toggleEditMode() {
+    async toggleEditMode() {
       this.editMode = !this.editMode
       if(!this.editMode) {
-        this.updateData()
+        await this.updateData()
       }
     },
 
@@ -609,7 +609,7 @@ export default {
     probablyPlayer() {
       this.probablyRightPlayer = !this.probablyRightPlayer
     },
-    replacePlayer() {
+    async replacePlayer() {
       if (this.replacementPlayer?.id) {
         this.replacementPlayer.outcome = this.selectedPlayer.outcome
         this.replacementPlayer.probably = this.probablyRightPlayer
@@ -645,13 +645,13 @@ export default {
         this.replacementPlayer = { id: null }
         this.inputSearchPlayer = ""
         this.selectedPlayer = { name: null }
-        this.updateData()
+        await this.updateData()
       }
     },
-    saveOutcome() {
+    async saveOutcome() {
       this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].outcome[this.currentActiveBox[3]] = this.working_selectedOutcomeBox
       this.closeModal()
-      this.updateData()
+      await this.updateData()
     },
     setLineup(team,homeAway) {
       this.settingLineup = {
@@ -671,10 +671,16 @@ export default {
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
     },
-    updateData() {
+    async updateData() {
+      if(!this.hasContentInDB) {
+        await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
+          this.hasContentInDB = result?.data?.id
+        })
+        await ScoresheetAPIService.createData(this.scoresheet)
+      }
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       localStorage.setItem("cast-matchup", JSON.stringify(this.scoresheet))
-      ScoresheetAPIService.saveData(this.scoresheet)
+      await ScoresheetAPIService.saveData(this.scoresheet)
       this.sendPostMessage()
     },
     updateOutcomeBox(value) {
