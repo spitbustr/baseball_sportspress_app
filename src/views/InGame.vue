@@ -3,9 +3,9 @@
     <div class="container-fluid">
       <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
       <div class="d-flex btn-group" role="group" aria-label="Basic example">
-        <button type="button editButton" class="btn btn-outline-primary btn-lg" @click="toggleEditMode">{{ this.editMode
+        <button type="button editButton" class="btn btn-outline-primary" @click="toggleEditMode">{{ this.editMode
           ? "Sauvegarder" : "Éditer alignements"}}</button>
-                    <button class="btn btn-outline-primary btn-lg" type="button" @click="sendDataToWebsite">Envoyer</button>
+        <button class="btn btn-outline-primary" type="button" @click="sendDataToWebsite">Envoyer</button>
 
       </div>
     </div>
@@ -33,9 +33,10 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th class="large-cell">Player</th>
-                <template  v-for="inning in displayedInnings" :key="inning">
+                <template v-for="inning in displayedInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
-                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'away' )" class="header-innings" :key="$$index">{{ extraInning }}</th>
+                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'away' )" class="header-innings"
+                    :key="$$index">{{ extraInning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -95,9 +96,10 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th>Player</th>
-                <template  v-for="inning in displayedInnings" :key="inning">
+                <template v-for="inning in displayedInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
-                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'home' )" class="header-innings" :key="$$index">{{ extraInning }}</th>
+                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'home' )" class="header-innings"
+                    :key="$$index">{{ extraInning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -271,18 +273,16 @@
       </template>
       <template v-slot:body>
         <div>
-          <OutcomeBoxModal
-            :selectedOutcomeBox="working_selectedOutcomeBox"
-            @updateOutcome="updateOutcomeBox($event)"
-            :activePlayer="currentActivePlayer"
-            :isOutcomeModalVisible="isOutcomeModalVisible"
+          <OutcomeBoxModal :selectedOutcomeBox="working_selectedOutcomeBox" @updateOutcome="updateOutcomeBox($event)"
+            :activePlayer="currentActivePlayer" :isOutcomeModalVisible="isOutcomeModalVisible"
             :players="scoresheet.players?.[this.currentActiveBox?.[1]]">
           </OutcomeBoxModal>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="outcome-save-button">
-          <button @click="saveOutcome">Save</button>
+        <div class="outcome-save-button d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-primary btn-lg" @click="saveOutcome">Sauvegarder</button>
+          <button class="btn btn-secondary btn-lg" @click="closeModal">Fermer</button>
         </div>
       </template>
     </Modal>
@@ -295,16 +295,18 @@
           <div>
             <div v-if="activePlayerBox?.onBasePosition === 'point'">
               <select class="rbi-button" v-model="activePlayerBox.rbiBy">
-              <option :value="null">NO RBI</option>
-              <option v-for="player in scoresheet.players?.[this.currentActiveBox?.[1]]" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
+                <option :value="null">NO RBI</option>
+                <option v-for="player in scoresheet.players?.[this.currentActiveBox?.[1]]" :value="player.id"
+                  :key="player.id"><span v-html="player.name"></span></option>
               </select>
             </div>
           </div>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="outcome-save-button">
-          <button @click="saveOutcome">Save</button>
+        <div class="outcome-save-button d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn btn-primary btn-lg" @click="saveOutcome">Sauvegarder</button>
+          <button class="btn btn-secondary btn-lg" @click="closeModal">Fermer</button>
         </div>
       </template>
     </Modal>
@@ -819,11 +821,7 @@ export default {
 }
 
 .outcome-save-button {
-  button {
-    width: 100%;
-    height: 100%;
-    padding: 1rem;
-  }
+
 }
 
 .editMode {
