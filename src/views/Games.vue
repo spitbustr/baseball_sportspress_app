@@ -34,14 +34,24 @@
               <td>{{ game.id }}</td>
               <td>
                 <div class="team-display away">
-                  <img class="team-logo away" :src="media[getTeamLogo(game.teams[0])] || defaultImage">
-                  {{ getTeamName(game.teams[0], "Away Team") }}
+                  <div>
+                    <img class="team-logo away" :src="media[getTeamLogo(game.teams[0])] || defaultImage">
+                    <span :class="{'winning-team': hasWon(game,'away')}">{{ getTeamName(game.teams[0], "Away Team") }}</span>
+                  </div>
+                  <div>
+                    <span :class="{'winning-team': hasWon(game,'away')}" v-if="game?.main_results?.[0]">{{game.main_results[0]}}</span>
+                  </div>
                 </div>
               </td>
               <td>
-                <div class="team-display home">
-                  <img class="team-logo home" :src="media[getTeamLogo(game.teams[1])] || defaultImage">
-                  {{ getTeamName(game.teams[1], "Home Team") }}
+                <div class="team-display away">
+                  <div>
+                    <img class="team-logo away" :src="media[getTeamLogo(game.teams[1])] || defaultImage">
+                    <span :class="{'winning-team': hasWon(game,'home')}">{{ getTeamName(game.teams[1], "Home Team") }}</span>
+                  </div>
+                  <div>
+                    <span :class="{'winning-team': hasWon(game,'home')}" v-if="game?.main_results?.[1]">{{game.main_results[1]}}</span>
+                  </div>
                 </div>
               </td>
               <td class="date-time">{{ getDateTime(game) }}</td>
@@ -147,6 +157,16 @@ export default {
     getTeamName(teamId, defaultName) {
       return this.getTeamData(teamId)?.title?.rendered ?? defaultName
     },
+    hasWon(game, team) {
+      let winner = ""
+      if(+game?.main_results[0] > +game?.main_results[1]) {
+        winner = "away"
+      }
+      if(+game?.main_results[0] < +game?.main_results[1]) {
+        winner = "home"
+      }
+      return winner === team
+    },
     isPast(game) {
       const today = moment()
       const date = game.date
@@ -178,14 +198,20 @@ export default {
 }
 
 .team-display {
-
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   .team-logo {
     height: 2rem;
     width: 2rem;
     border-radius: 50%;
+    margin-right: 0.5rem;
   }
   &.home {
      justify-content: start;
+  }
+  .winning-team {
+    font-weight: bold;
   }
 }
 .day-change {
