@@ -4,14 +4,12 @@
       <div class="modal-backdrop" @click="handleBackdropClick">
         <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle"
           aria-describedby="modalDescription">
-          <div class="modal-dialog">
+          <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <header class="modal-header" id="modalTitle" v-if="$slots.header">
                 <slot name="header">
                 </slot>
-                <button type="button" class="btn-close" @click="close" aria-label="Close modal">
-                  x
-                </button>
+                <button type="button" class="btn-close" @click="close" aria-label="Close modal"></button>
               </header>
               <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
                 <slot name="subheader">
@@ -65,7 +63,10 @@ export default {
 .modal-backdrop {
   background-color: rgba(0, 0, 0, 0.3);
 }
-
+.modal {
+  display: block;
+}
+/*
 .modal {
   overflow-x: hidden;
   display: flex;
@@ -160,5 +161,5 @@ export default {
 .modal-fade-leave-active {
   transition: opacity .5s ease;
 }
-
+*/
 </style>

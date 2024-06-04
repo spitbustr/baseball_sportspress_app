@@ -1,46 +1,70 @@
 <template>
   <div class="selected-outcome-box">
-    <div>
-      <div>
-        HIT
-      </div>
-      <div class="button-grid">
-        <div v-for="hit in hits" :key="hit.value" class="grid-item">
-          <button @click="setOutcome(hit.value)" :class="{ 'active': isActive(hit.value) }">
-            {{ hit.name }}
-          </button>
+    <div class="container">
+      <div class="row">
+        <div class="col-3">
+          <h6>
+            Résultat
+          </h6>
+          <div class="btn-group-vertical">
+            <button v-for="hit in hits" :key="hit.value" @click="setOutcome(hit.value)"
+              :class="{ 'active': isActive(hit.value) }" type="button" class="btn btn-outline-primary">
+              {{ hit.name }}
+            </button>
+          </div>
         </div>
-      </div>
+        <div class="col-9">
+          <div class="container">
+            <div class="row">
+              <h6>
+                Actions
+              </h6>
+              <div class="btn-group">
+                <button :disabled="!hasHit" :class="{'active': activePlayerBox?.inningEnd}" @click="setInningEnd()"
+                  type="button" class="btn btn-outline-primary">Inning
+                  End</button>
+                <button :disabled="!hasHit" :class="{'active': activePlayerBox?.putOut}" @click="setPutOut()"
+                  type="button" class="btn btn-outline-primary">Out</button>
+                <button :disabled="!hasHit" :class="{'active': activePlayerBox?.countAsHR}" @click="setCountAsHr()"
+                  type="button" class="btn btn-outline-primary">Count
+                  as
+                  HR</button>
+              </div>
+            </div>
 
-    </div>
-    <div>
-      <div>
-        <div>
-          Actions
-        </div>
-        <div>
-          <button :disabled="!hasHit" :class="{'active': activePlayerBox?.inningEnd}" @click="setInningEnd()">Inning End</button>
-          <button :disabled="!hasHit" :class="{'active': activePlayerBox?.putOut}" @click="setPutOut()">Out</button>
-          <button :disabled="!hasHit" :class="{'active': activePlayerBox?.countAsHR}" @click="setCountAsHr()">Count as HR</button>
-        </div>
-      </div>
-      <div>
-        <div>
-          <div class="baseball-field">
-            <button :disabled="!hasHit" :class="{'active': playerAt('third')}" @click="setAtBase('third')" class="base third-base">3</button>
-            <button :disabled="!hasHit" :class="{'active': playerAt('second')}" @click="setAtBase('second')" class="base second-base">2</button>
-            <button :disabled="!hasHit" :class="{'active': playerAt('first')}"  @click="setAtBase('first')" class="base first-base">1</button>
-            <button :disabled="!hasHit" :class="{'active': playerAt('point')}" @click="setAtBase('point')" class="base home-plate">H</button>
-            <div :class="[{'out': activePlayerBox?.putOut }]" class="outcome-rbi-out">{{ activePlayerBox?.putOut ? "O": rbiPlayer(activePlayerBox?.rbiBy) ?? "" }}</div>
-            <div v-if=" activePlayerBox?.onBasePosition === 'point'">
-              <select class="rbi-button" v-model="activePlayerBox.rbiBy">
-                <option :value="null">NO RBI</option>
-                <option v-for="player in players" :value="player.id" :key="player.id"><span v-html="player.name"></span></option>
-              </select>
+            <div class="row">
+              <div class="col-12">
+                <div class="d-flex justify-content-center mt-5 mb-5">
+                  <button :disabled="!hasHit" :class="{'btn-warning': playerAt('second')}" @click="setAtBase('second')"
+                    class="base second-base btn btn-outline-warning"><span>2</span></button>
+                </div>
+                <div class="d-flex justify-content-between my-5">
+                  <button :disabled="!hasHit" :class="{ 'btn-warning': playerAt('third') }" @click="setAtBase('third')"
+                    class="base third-base btn btn-outline-warning"><span>3</span></button>
+                  <div :class="[{ 'out': activePlayerBox?.putOut }]" class="outcome-rbi-out">{{ activePlayerBox?.putOut
+                    ?
+                    "O" :
+                    rbiPlayer(activePlayerBox?.rbiBy) ?? "" }}<span v-if="activePlayerBox?.countAsHR">*</span>
+                  </div>
+
+                  <button :disabled="!hasHit" :class="{ 'btn-warning': playerAt('first') }" @click="setAtBase('first')"
+                    class="base first-base btn btn-outline-warning"><span>1</span></button>
+                </div>
+                <div class="d-flex justify-content-center mt-5 mb-5">
+                  <button :disabled="!hasHit" :class="{'btn-warning': playerAt('point')}" @click="setAtBase('point')"
+                    class="base home-plate btn btn-outline-warning"><span>H</span></button>
+                </div>
+              </div>
             </div>
-            <div v-if=" activePlayerBox?.countAsHR">
-              <div class="count-as-hr">*</div>
-            </div>
+
+
+          </div>
+          <div v-if="activePlayerBox?.onBasePosition === 'point'">
+            <select class="rbi-button form-select" v-model="activePlayerBox.rbiBy">
+              <option :value="null">NO RBI</option>
+              <option v-for="player in players" :value="player.id" :key="player.id"><span v-html="player.name"></span>
+              </option>
+            </select>
           </div>
         </div>
       </div>
@@ -111,13 +135,13 @@ export default {
     display: flex;
     flex-direction: row;
   }
-  button {
-    min-width: 5rem;
-    padding: 1rem;
+ /* button {
+
     &.active {
       background: lightgreen;
     }
   }
+  */
   .baseball-field {
     position: relative;
     left: 1rem;
@@ -129,19 +153,25 @@ export default {
   }
 
   .base {
-    position: absolute;
-    border-radius: 50%;
+    height:2.5rem;
+    width:2.5rem;
     text-align: center;
     line-height: 2px;
     font-weight: bold;
+    rotate: 45deg;
+    color:#000;
     cursor: pointer;
     &.active {
       background: lightgreen;
     }
+    span {
+      display: block;
+      rotate:-45deg;
+    }
   }
 
   .third-base {
-    top: 5.25rem;
+    top: 7rem;
     left: 0;
   }
 
@@ -151,31 +181,22 @@ export default {
   }
 
   .first-base {
-    top: 5.25rem;
+    top: 7rem;
     left: 10.5rem;
   }
 
   .home-plate {
-    top: 9.25rem;
+    top: 12.75rem;
     left: 5.25rem;
   }
   .outcome-rbi-out {
-    position: absolute;
-    top: 5.5rem;
-    left: 5rem;
+
     font-weight: bold;
     font-size: 2rem;
     text-align: center;
-    width: 5.5rem;
     &.out {
       color: red;
     }
-  }
-  .rbi-button {
-    position: absolute;
-    top: 12.5rem;
-    left: 1rem;
-    padding: 0.5rem 0.25rem;
   }
   .count-as-hr {
     font-size: 6rem;
