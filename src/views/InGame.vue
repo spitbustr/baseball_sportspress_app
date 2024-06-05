@@ -581,14 +581,8 @@ export default {
       const playerIndex = list.findIndex(p => p.id === player.id)
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
-        await this.updateData()
       }
-      this.$toast.warning(
-      `<b>${player?.title?.rendered}</b> a été retiré`,
-        {
-          position: "top-right",
-        }
-      )
+      this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
@@ -610,19 +604,9 @@ export default {
     async sendDataToWebsite() {
       this.loading = true
       this.gameEvent.prepareData(this.scoresheet).then(result => {
-        this.$toast.success(
-        `Les données ont été envoyées`,
-          {
-            position: "top-right",
-          }
-        )
+        this.$toast.success(`Les données ont été envoyées`)
       }, (erro) => {
-        this.$toast.error(
-        `L'envoie a échoué`,
-          {
-            position: "top-right",
-          }
-        )
+        this.$toast.error(`L'envoie a échoué`)
       }).finally(() => {
         this.loading = false
       })
@@ -682,12 +666,7 @@ export default {
           })
           this.scoresheet.players.away.splice(awayIndex, 1, this.replacementPlayer)
         }
-        this.$toast.success(
-        `<b>${this.replacementPlayer?.title?.rendered}</b> a remplacé ${this.selectedPlayer?.title?.rendered}`,
-          {
-            position: "top-right",
-          }
-        )
+        this.$toast.success(`<b>${this.replacementPlayer?.title?.rendered}</b> a remplacé ${this.selectedPlayer?.title?.rendered}`)
         this.replacementPlayer = { id: null }
         this.inputSearchPlayer = ""
         this.selectedPlayer = { name: null }
@@ -713,12 +692,7 @@ export default {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
       this.scoresheet.players[homeAway].push(player)
-      this.$toast.success(
-        `${player?.title?.rendered} a été ajouté`,
-        {
-          position: "top-right",
-        }
-      )
+      this.$toast.success(`${player?.title?.rendered} a été ajouté`)
     },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
@@ -741,12 +715,7 @@ export default {
     undoAddPlayer(list) {
       const player = clone(list[list.length-1])
       list = list.pop()
-      this.$toast.warning(
-        `<b>${player?.title?.rendered}</b> a été retiré`,
-        {
-          position: "top-right",
-        }
-      )
+      this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
     }
 
 

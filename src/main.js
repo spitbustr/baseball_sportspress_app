@@ -18,7 +18,9 @@ const app = createApp(App)
   .use(store)
   .use(router)
   .use(EventBusPlugin)
-  .use(Toaster)
+  .use(Toaster, {
+    position: "top-right"
+  })
 
 // Components
 app.component('OutcomeBox', OutcomeBox)

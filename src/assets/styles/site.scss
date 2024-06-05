@@ -2,3 +2,22 @@
     user-select: none;
 }
 
+.c-toast-container.v--default-css {
+    .c-toast {
+        &.c-toast--warning {
+            background: orange;
+        }
+        &.c-toast--success {
+            background: green;
+        }
+        &.c-toast--error {
+            background: red;
+        }
+        &.c-toast--info {
+            background: blue;
+        }
+        &.c-toast--show {
+            background: lightgray;
+        }
+    }
+}
