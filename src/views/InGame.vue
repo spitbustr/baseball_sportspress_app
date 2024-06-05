@@ -33,10 +33,8 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th class="large-cell">Player</th>
-                <template v-for="inning in displayedInnings" :key="inning">
+                <template v-for="inning in numberOfInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
-                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'away' )" class="header-innings"
-                    :key="$$index">{{ extraInning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -96,10 +94,8 @@
                 <th v-if="editMode"></th>
                 <th>#</th>
                 <th>Player</th>
-                <template v-for="inning in displayedInnings" :key="inning">
+                <template v-for="inning in numberOfInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
-                  <th v-for="(extraInning, $$index) in extraBlocks(inning,'home' )" class="header-innings"
-                    :key="$$index">{{ extraInning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -320,7 +316,7 @@
   </div>
 </template>
 <script>
-import {PlayerInGame} from "@/models/PlayerInGame"
+import {PlayerInGame,InGameResults} from "@/models/PlayerInGame"
 import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
 import { removeAccents } from "@/scripts/utilities"
@@ -331,6 +327,7 @@ import { VueDraggableNext } from 'vue-draggable-next'
 import OutcomeMixin from "@/mixins/OutcomeMixin"
 import KeyHandlerMixin from "@/mixins/KeyHandlerMixin"
 import {debounce} from "lodash"
+
 
 export default {
   components: {
@@ -377,16 +374,11 @@ export default {
     defaultImage() {
       return require(`@/assets/images/defaults/team_home.png`)
     },
-    displayedInnings() {
-      if(this.getAllFullInnings("away")) {
-      }
-      return this.numberOfInnings
-    },
     media() {
       return this.$store.state.data.media
     },
     numberOfInnings() {
-      return $settings.playballConfig.innings
+      return this.scoresheet.innings || $settings.playballConfig.innings
     },
     selectedInning() {
       return this.currentActiveBox?.[3]
@@ -496,6 +488,15 @@ export default {
         }
       }
     },
+    addExtraInning() {
+      this.scoresheet.innings++
+      this.scoresheet.players.away.forEach(p => {
+        p.outcomes.push(new InGameResults())
+      })
+      this.scoresheet.players.away.forEach(p => {
+        p.outcomes.push(new InGameResults())
+      })
+    },
     addInningBlock(inning,homeAway) {
       const allInnings = this.getAllFullInnings(homeAway)
       const inningIsFull = allInnings.find(i => inning === i.inning && i.res)
@@ -507,7 +508,7 @@ export default {
     },
     async addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
-      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer }))
+      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.probablyRightPlayer = false
       await this.updateData()
     },
@@ -527,24 +528,8 @@ export default {
     },
     editPlayer(player, list) {
       this.isPlayerModalVisible = true
-      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer })
+      this.selectedPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings })
       this.probablyRightPlayer = false
-    },
-    extraBlocks(inning) {
-      return []
-    },
-    getAllFullInnings(homeAway) {
-      let index = 1;
-      const inningsArray = Array.from({ length: this.numberOfInnings  }, () => index++);
-      let allInnings = []
-      inningsArray?.forEach((inning,index) => {
-        allInnings.push({
-          inning: inning,
-          res: this.isInningFull(inning,homeAway)
-        })
-      })
-      console.log(allInnings)
-      return this.numberOfInnings
     },
     getDateTime(event) {
       return moment(event.date).locale("fr").format("dddd DD MMM YYYY HH:mm")
@@ -555,6 +540,20 @@ export default {
         .filter(t => t)
         .join(",")
       return teams
+    },
+    getPlayedInnings(players) {
+      const outcomes = [...players.away.map(p => p.outcome),...players.home.map(p => p.outcome)]
+      const innings = $settings.playballConfig.innings
+      let lastInningPlayed = 0
+      outcomes.forEach((outcome,$index) => {
+        outcome.forEach((o,inning) => {
+          const out = new InGameResults(o)
+          if(out.wentAtBat) {
+            lastInningPlayed = inning
+          }
+        })
+      })
+      return innings < lastInningPlayed ? lastInningPlayed : innings
     },
     handleKeys(event) {
       this.handleShortcutKeys(event, this.active.outcomeBox,this.allModalToggle)
@@ -576,6 +575,24 @@ export default {
       if(arrow === "right" && col < this.numberOfInnings){
         this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col+1}`)
       }
+    },
+    removeExtraInning() {
+      this.scoresheet.players.away.forEach(p => {
+        p.outcomes.pop()
+      })
+      this.scoresheet.players.home.forEach(p => {
+        p.outcomes.pop()
+      })
+      this.scoresheet.innings--
+    },
+    removeExtraInningModalHandler() {
+      this.scoresheet.innings++
+      this.scoresheet.players.away.forEach(p => {
+        p.outcomes.push(new InGameResults())
+      })
+      this.scoresheet.players.away.forEach(p => {
+        p.outcomes.push(new InGameResults())
+      })
     },
     async removePlayer(player, list) {
       const playerIndex = list.findIndex(p => p.id === player.id)
@@ -627,7 +644,7 @@ export default {
         this.replacementPlayer = null
       }
       else {
-        this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer })
+        this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings })
       }
     },
     probablyPlayer() {
@@ -730,16 +747,15 @@ export default {
     this.scoresheet.seasonId = $settings.playballConfig.season
     if (this.scoresheet.gameId) {
       this.game = this.$store.getters.getGame(this.scoresheet.gameId)
-      let index = 0
-      this.scoresheet.innings = Array.from({ length: $settings.playballConfig.innings }, () => ++index)
+      this.scoresheet.innings = $settings.playballConfig.innings
       this.scoresheet.teams.away = this.$store.getters.getTeam(this.game?.teams[0])
       this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
       this.teams.away = this.scoresheet.teams.away
       this.teams.home = this.scoresheet.teams.home
       this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer }))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer }))
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
     }
     await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
       this.hasContentInDB = result?.data?.id
@@ -750,10 +766,10 @@ export default {
         obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
         obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
         this.scoresheet.players = obj.players
+        this.scoresheet.innings = this.getPlayedInnings(this.scoresheet.players)
+      }, (error) => {
+        console.error(error)
       })
-        .catch(error => {
-          console.error(error)
-        })
     }
     else {
       await ScoresheetAPIService.createData(this.scoresheet)

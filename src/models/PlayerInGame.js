@@ -6,7 +6,7 @@ import { relativeTimeThreshold } from "moment"
 export class PlayerInGame {
   constructor(properties) {
     const outcomes = properties?.outcome?.map(outcome => {return new InGameResults(outcome)})
-    this.outcome = outcomes ?? clone(Array($settings.playballConfig.innings+1).fill(clone(new InGameResults())))
+    this.outcome = outcomes ?? clone(Array(+properties?.innings+1 || $settings.playballConfig.innings+1).fill(clone(new InGameResults())))
     Object.assign(this, clone(properties))
   }
 
