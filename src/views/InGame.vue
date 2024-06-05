@@ -692,7 +692,7 @@ export default {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
       this.scoresheet.players[homeAway].push(player)
-      this.$toast.success(`${player?.title?.rendered} a été ajouté`)
+      this.$toast.success(`<b>${player?.title?.rendered}</b> a été ajouté`)
     },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
