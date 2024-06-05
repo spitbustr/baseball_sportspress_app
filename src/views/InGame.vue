@@ -209,7 +209,7 @@
           </div>
           <div>
             <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+              <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player, 'replace')"
                 class="player-replace-list">
                 <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
                 </div>
@@ -249,7 +249,7 @@
           </div>
           <div>
             <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer.id === player.id }" @click="selectReplacementPlayer(player)"
+              <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player,'setlineup')"
                 class="player-replace-list">
                 <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
                 </div>
@@ -347,6 +347,14 @@ export default {
     },
     allPlayers() {
       return this.$store.getters.getAllPlayers
+        .slice()
+        .sort((a, b) => {
+          const titleA = a.title?.rendered?.toLowerCase();
+          const titleB = b.title?.rendered?.toLowerCase();
+          if (titleA < titleB) return -1;
+          if (titleA > titleB) return 1;
+          return 0;
+        })
     },
     allAvailablePlayers() {
       if(this.inputSearchPlayer?.length) {
@@ -575,6 +583,12 @@ export default {
         list.splice(playerIndex, 1)
         await this.updateData()
       }
+      this.$toast.warning(
+      `<b>${player?.title?.rendered}</b> a été retiré`,
+        {
+          position: "top-right",
+        }
+      )
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
@@ -596,6 +610,19 @@ export default {
     async sendDataToWebsite() {
       this.loading = true
       this.gameEvent.prepareData(this.scoresheet).then(result => {
+        this.$toast.success(
+        `Les données ont été envoyées`,
+          {
+            position: "top-right",
+          }
+        )
+      }, (erro) => {
+        this.$toast.error(
+        `L'envoie a échoué`,
+          {
+            position: "top-right",
+          }
+        )
       }).finally(() => {
         this.loading = false
       })
@@ -605,8 +632,19 @@ export default {
       this.inputSearchPlayer = event.target.value
     },
 
-    selectReplacementPlayer(player) {
-      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer })
+    async selectReplacementPlayer(player, action) {
+      if(player?.id && player?.id === this.replacementPlayer?.id) {
+        if(action === "setlineup") {
+          await this.setLineupAddPlayer()
+        }
+        else if (action === "replace") {
+          await this.replacePlayer()
+        }
+        this.replacementPlayer = null
+      }
+      else {
+        this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer })
+      }
     },
     probablyPlayer() {
       this.probablyRightPlayer = !this.probablyRightPlayer
@@ -644,6 +682,12 @@ export default {
           })
           this.scoresheet.players.away.splice(awayIndex, 1, this.replacementPlayer)
         }
+        this.$toast.success(
+        `<b>${this.replacementPlayer?.title?.rendered}</b> a remplacé ${this.selectedPlayer?.title?.rendered}`,
+          {
+            position: "top-right",
+          }
+        )
         this.replacementPlayer = { id: null }
         this.inputSearchPlayer = ""
         this.selectedPlayer = { name: null }
@@ -665,10 +709,16 @@ export default {
         },
       }
     },
-    setLineupAddPlayer() {
+    async setLineupAddPlayer() {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
       this.scoresheet.players[homeAway].push(player)
+      this.$toast.success(
+        `${player?.title?.rendered} a été ajouté`,
+        {
+          position: "top-right",
+        }
+      )
     },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
@@ -689,7 +739,14 @@ export default {
       this.working_selectedOutcomeBox = value
     },
     undoAddPlayer(list) {
+      const player = clone(list[list.length-1])
       list = list.pop()
+      this.$toast.warning(
+        `<b>${player?.title?.rendered}</b> a été retiré`,
+        {
+          position: "top-right",
+        }
+      )
     }
 
 

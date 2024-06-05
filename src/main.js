@@ -12,8 +12,14 @@ import RbiOutcomeBoxModal from '@/components/overlays/modals/RbiOutcomeBoxModal'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import EventBusPlugin from '@/scripts/eventBus'
+import Toaster from "@meforma/vue-toaster";
 
-const app = createApp(App).use(store).use(router).use(EventBusPlugin)
+const app = createApp(App)
+  .use(store)
+  .use(router)
+  .use(EventBusPlugin)
+  .use(Toaster)
+
 // Components
 app.component('OutcomeBox', OutcomeBox)
 app.component('OutcomeBoxModal', OutcomeBoxModal)
