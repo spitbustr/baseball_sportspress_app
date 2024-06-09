@@ -26,40 +26,41 @@ export default class GameEvent {
             payload.scores.home?.runs?.[0]
         ]
         this.generatePerformanceData(payload)
-        await SportspressAPIService.sendData(this)
+        console.log(payload)
+        // await SportspressAPIService.sendData(this)
     }
     gernerateTeamPerformance(teamId, stance,payload) {
         this.performance[teamId] = {}
         payload.players[stance].forEach(player => {
             this.performance[teamId][player.id] = {
                 number: player?.number?.toString(),
-                ab: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                ab: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (this.isConsideredAtBat(res) ? 1 : 0)
                 }, 0)).toString(),
-                oneb: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                oneb: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (res === "1B" ? 1 : 0)
                 }, 0)).toString(),
-                twob: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                twob: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (res === "2B" ? 1 : 0)
                 }, 0)).toString(),
-                threeb: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                threeb: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (res === "3B" ? 1 : 0)
                 }, 0)).toString(),
-                cc: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                cc: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (res === "4B" || res === "HR" ? 1 : 0)
                 }, 0)).toString(),
-                cs: (player.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                cs: (player.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (this.isConsideredHit(res) ? 1 : 0)
                 }, 0)).toString(),
-                p: (player.outcome.map(o => o.rbiBy).reduce((total, res) => {
+                p: (player.allOutcomes.map(o => o.rbiBy).reduce((total, res) => {
                     return total + (res ? 1 : 0)
                 }, 0)).toString(),
                 pp: (payload?.players?.[stance]
-                    .map(p => p.outcome)
+                    .map(p => p.allOutcomes)
                     .flat()
                     .map(o => o.rbiBy)
                     .filter(o => o === player.id)?.length).toString(),
-                rab: (player?.outcome.map(o => o.atBatResult).reduce((total, res) => {
+                rab: (player?.allOutcomes.map(o => o.atBatResult).reduce((total, res) => {
                     return total + (res === "K" ? 1 : 0)
                 }, 0)).toString(),
                 status: "lineup",
@@ -177,11 +178,11 @@ export default class GameEvent {
                     score.away.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })
-            player.extraOutcome.forEach((outcome,index)=> {
-                score.away.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
-                score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
-                score.away.runs[outcome.inning] = score.away.runs?.[outcome.inning] ? score.away.runs[outcome.inning] : 0
-                if(index !== 0) {
+            player?.extraOutcome?.forEach((outcome,index)=> {
+                if(outcome) {
+                    score.away.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                    score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
+                    score.away.runs[outcome.inning] = score.away.runs?.[outcome.inning] ? score.away.runs[outcome.inning] : 0
                     score.away.runs[outcome.inning] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })
@@ -198,11 +199,11 @@ export default class GameEvent {
                     score.home.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })
-            player.extraOutcome.forEach((outcome,index)=> {
-                score.home.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
-                score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
-                score.home.runs[outcome.inning] = score.home.runs?.[outcome.inning] ? score.home.runs[outcome.inning] : 0
-                if(index !== 0) {
+            player?.extraOutcome?.forEach((outcome,index)=> {
+                if(outcome) {
+                    score.home.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                    score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
+                    score.home.runs[outcome.inning] = score.home.runs?.[outcome.inning] ? score.home.runs[outcome.inning] : 0
                     score.home.runs[outcome.inning] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })

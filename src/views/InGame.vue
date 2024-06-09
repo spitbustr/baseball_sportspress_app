@@ -271,11 +271,6 @@
           </div>
         </div>
       </template>
-      <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="setLineupAddPlayer">ACCEPTER</button>
-        </div>
-      </template>
     </Modal>
 
     <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
@@ -520,10 +515,10 @@ export default {
   methods: {
     allPlayersWentAtBat(inning, players) {
       const allPlayersOutcome = players.map(p => new InGameResults(p.outcome?.[inning]))
-      return !!(!!(allPlayersOutcome?.length) && allPlayersOutcome.every(o => o.wentAtBat))
+      return !!(!!(allPlayersOutcome?.length) && allPlayersOutcome.every(o => o?.wentAtBat))
     },
     displayExtraBlocks(inning, homeAway) {
-      return this.scoresheet.players[homeAway]?.[0]?.extraOutcome.filter(o => o.inning == inning).length + 1
+      return this.scoresheet.players?.[homeAway]?.[0]?.extraOutcome.filter(o => o?.inning == inning).length + 1
     },
     saveConfigChanges() {
       this.scoresheet.innings = this.configChanges.innings
@@ -594,7 +589,9 @@ export default {
     },
     async addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
-      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
+      const extraOutcome = teamPlayers?.[0]?.extraOutcome.map(o => new InGameResults({inning: o?.inning, extraId: o?.extraId}))
+      console.log("EXTRAOUT",extraOutcome )
+      teamPlayers.push(new PlayerInGame({ ...player, extraOutcome, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.probablyRightPlayer = false
       await this.updateData()
     },
@@ -715,14 +712,14 @@ export default {
       }
     },
     async removePlayer(player, list) {
-      const playerIndex = list.findIndex(p => p.id === player.id)
+      const playerIndex = list.findIndex(p => p?.id === player?.id)
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
       }
       this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
     },
     playersExtraBlocks(inning,player) {
-      return player?.extraOutcome?.filter(o => o.inning == inning)
+      return player?.extraOutcome?.filter(o => o?.inning == inning)
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
@@ -749,7 +746,7 @@ export default {
       this.loading = true
       this.gameEvent.prepareData(this.scoresheet).then(result => {
         this.$toast.success(`Les données ont été envoyées`)
-      }, (erro) => {
+      }, (error) => {
         this.$toast.error(`L'envoie a échoué`)
       }).finally(() => {
         this.loading = false
@@ -841,8 +838,20 @@ export default {
     async setLineupAddPlayer() {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
+      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway).map(o => 
+      {
+        return {
+          ...o,
+          inning: o.inning,
+          extraId: o.extraId
+        }
+      })
+      const newPlayer = new PlayerInGame({...player, extraOutcome})
       this.scoresheet.players[homeAway].push(player)
       this.$toast.success(`<b>${player?.title?.rendered}</b> a été ajouté`)
+    },
+    getExtraOutcomes(homeAway) {
+      return this.players?.[homeAway]?.[0].extraOutcome
     },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")

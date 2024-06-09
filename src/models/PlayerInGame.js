@@ -13,6 +13,10 @@ export class PlayerInGame {
   get name() {
     return this.title?.rendered || ""
   }
+
+  get allOutcomes() {
+    return [...this.outcome, ...this.extraOutcome]
+  }
 }
 const defaultInGameResults = {
   onBasePosition: null,
