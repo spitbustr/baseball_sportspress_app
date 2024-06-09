@@ -177,6 +177,14 @@ export default class GameEvent {
                     score.away.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })
+            player.extraOutcome.forEach((outcome,index)=> {
+                score.away.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                score.home.errors += (outcome.atBatResult ==="E" ? 1:0)
+                score.away.runs[outcome.inning] = score.away.runs?.[outcome.inning] ? score.away.runs[outcome.inning] : 0
+                if(index !== 0) {
+                    score.away.runs[outcome.inning] += outcome?.onBasePosition === "point" ? 1 : 0
+                }
+            })
         })
         score.away.runs[0] = score.away.runs.reduce((total,current) => {
             return total + current
@@ -188,6 +196,14 @@ export default class GameEvent {
                 score.home.runs[index] = score.home.runs?.[index] ? score.home.runs[index] : 0
                 if(index !== 0) {
                     score.home.runs[index] += outcome?.onBasePosition === "point" ? 1 : 0
+                }
+            })
+            player.extraOutcome.forEach((outcome,index)=> {
+                score.home.hits += (this.isConsideredHit(outcome.atBatResult) ? 1:0)
+                score.away.errors += (outcome.atBatResult ==="E" ? 1:0)
+                score.home.runs[outcome.inning] = score.home.runs?.[outcome.inning] ? score.home.runs[outcome.inning] : 0
+                if(index !== 0) {
+                    score.home.runs[outcome.inning] += outcome?.onBasePosition === "point" ? 1 : 0
                 }
             })
         })

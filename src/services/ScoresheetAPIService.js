@@ -60,6 +60,7 @@ export default class ScoresheetAPIService {
             return {
                 id: p.id,
                 outcome: p.outcome,
+                extraOutcome: p.extraOutcome,
                 assignedNumber: p.assignedNumber,
                 featured_media: p.featured_media,
                 number: p.number,
@@ -74,6 +75,7 @@ export default class ScoresheetAPIService {
             return {
                 id: p.id,
                 outcome: p.outcome,
+                extraOutcome: p.extraOutcome,
                 assignedNumber: p.assignedNumber,
                 featured_media: p?.featured_media,
                 number: p.number,
