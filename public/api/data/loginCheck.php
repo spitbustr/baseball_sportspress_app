@@ -7,7 +7,23 @@
 
     $database = new Database();
     $db = $database->getConnection();
-    $config = parse_ini_file('../config/config.ini');
+$configPath = __DIR__ . '/config.ini';
+if (file_exists($configPath)) {
+    $configData = file_get_contents($configPath);
+    if ($configData === false) {
+        error_log("Error: Unable to read the config.ini file");
+        exit("Error: Unable to read the config.ini file");
+    } else {
+        echo $configData;
+    }
+    $config = parse_ini_string($configData);
+    if ($config === false) {
+        error_log("Error: Unable to parse the config.ini data");
+        exit("Error: Unable to parse the config.ini data");
+    } else {
+        print_r($config);
+    }
+}
     $user = new User($db);
 
     // Check the request method

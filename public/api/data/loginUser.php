@@ -7,7 +7,24 @@
 
     $database = new Database();
     $db = $database->getConnection();
-    $config = parse_ini_file('../config/config.ini');
+    $configPath = __DIR__ . '/config.ini';
+    if (file_exists($configPath)) {
+    $configData = file_get_contents($configPath);
+    if ($configData === false) {
+        error_log("Error: Unable to read the config.ini file");
+        exit("Error: Unable to read the config.ini file");
+    } else {
+        echo $configData;
+    }
+    $config = parse_ini_string($configData);
+    if ($config === false) {
+        error_log("Error: Unable to parse the config.ini data");
+        exit("Error: Unable to parse the config.ini data");
+    } else {
+        print_r($config);
+    }
+    }
+
     $user = new User($db);
 
     // Check the request method
@@ -24,11 +41,14 @@
         if (!empty($data->username)) {
             $stmt = $user->loginUser($data);
             $num = $stmt->rowCount();
+            print($num);
             if ($num > 0) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 http_response_code(200);
                 echo json_encode($row);
             } else {
+                echo $data->username;
+                echo $data->password;
                 http_response_code(401);
                 echo json_encode(array("error" => "Not logged in" ));
             }
@@ -39,6 +59,4 @@
     } else {
         echo "WRONG METHOD";
     }
-
-
 ?>

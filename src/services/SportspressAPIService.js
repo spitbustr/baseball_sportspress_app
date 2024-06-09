@@ -1,6 +1,6 @@
 import axios from "axios"
 import $settings from "@/data/settings.json"
-const configUrl = "/api/config/config.ini"
+const configUrl = "https://app.lbaoutaouais.com/api/config/config.ini"
 
 
 export default class SportspressAPIService {

@@ -22,7 +22,7 @@
     },
 
     "scoresheetAPI": {
-        "url": "http://shawnboivin.com/baseballAPI/api/data"
+        "url": "https://app.lbaoutaouais.com/api/data"
     },
     "stats": {
         "hits":  [
