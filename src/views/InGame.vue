@@ -400,20 +400,16 @@ export default {
       }
     },
     currentActiveBox() {
-      console.log(this.active?.outcomeBox?.split("_"))
       return this.active?.outcomeBox?.split("_")
     },
     currentActivePlayer() {
       return this.scoresheet.players?.[this.currentActiveBox?.[1]]?.[this.currentActiveBox?.[2]] || null
     },
     currentActivePlayerBox() {
-      console.log()
       if(this.currentActiveBox?.[4]) {
         const activeBlock = this.currentActivePlayer?.extraOutcome.find(o => {
           return o.inning == this.currentActiveBox?.[3] && o.extraId == this.currentActiveBox?.[4]
         })
-        console.log("ACTIVE DUED",this.currentActivePlayer.extraOutcome )
-        console.log("ACTIVE",activeBlock)
         return activeBlock || null
       }
       return this.currentActivePlayer?.outcome?.[this.currentActiveBox?.[3]] || null
@@ -590,7 +586,6 @@ export default {
     async addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
       const extraOutcome = teamPlayers?.[0]?.extraOutcome.map(o => new InGameResults({inning: o?.inning, extraId: o?.extraId}))
-      console.log("EXTRAOUT",extraOutcome )
       teamPlayers.push(new PlayerInGame({ ...player, extraOutcome, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.probablyRightPlayer = false
       await this.updateData()
@@ -650,10 +645,8 @@ export default {
     },
     haveExtrablocksForInning(inning,players,extraId) {
       if(players?.[0]?.extraOutcome.filter(o => o.inning == inning)?.length) {
-        console.log("YES", inning)
         return true
       }
-      console.log("NO",inning)
       return false
     },
     handleExtraBlocks(players) {
@@ -661,33 +654,25 @@ export default {
       let enoughExtras = true
       for(let i=1; i <= this.scoresheet.innings;i++) {
         enoughExtras = true
-        console.log("HANDLED", i, this.allPlayersWentAtBat(i,players))
         if(this.allPlayersWentAtBat(i,players)) {
           while(enoughExtras) {
-            console.log("ALL Players WENT" ,this.allPlayersWentAtBat(i,players), i )
             if(!this.haveExtrablocksForInning(i,players,extraId)) {
-              console.log("NO EXTRA BLOCK FOR INNING ", i)
               this.addExtraBlocks(i, extraId, players)
               enoughExtras = false
             }
             else {
               enoughExtras = false
             }
-            console.log("ALL EXTRE WENT" ,this.allExtraBlocksWentAtBat(i,players,extraId), i ,extraId)
             if(this.allExtraBlocksWentAtBat(i,players,extraId)) {
-              console.log("ALL EXTRAS WENT ", i)
-              console.log("ADD EXTRA FOR", i)
               extraId++
               this.addExtraBlocks(i, extraId, players)
             }
             else {
-              console.log("DONE", i)
               enoughExtras = false
             }
           }
         }
       }
-      console.log(players)
     },
     handleKeys(event) {
       this.handleShortcutKeys(event, this.active.outcomeBox,this.allModalToggle)
@@ -723,7 +708,6 @@ export default {
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
-        console.log(id)
         this.active.outcomeBox = id
       }
       else if (!this.editMode) {

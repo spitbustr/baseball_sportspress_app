@@ -26,8 +26,7 @@ export default class GameEvent {
             payload.scores.home?.runs?.[0]
         ]
         this.generatePerformanceData(payload)
-        console.log(payload)
-        // await SportspressAPIService.sendData(this)
+        await SportspressAPIService.sendData(this)
     }
     gernerateTeamPerformance(teamId, stance,payload) {
         this.performance[teamId] = {}
