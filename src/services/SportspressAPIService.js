@@ -87,7 +87,6 @@ export default class SportspressAPIService {
     const headers = {
       "Authorization": `Basic ${token}`,
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}`, playerInfo, {headers})
       .then(result => {
@@ -104,7 +103,6 @@ export default class SportspressAPIService {
     const headers = {
       "Authorization": `Basic ${token}`,
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     }
     await axios.delete(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.players}/${playerId}`, {headers})
       .then(result => {

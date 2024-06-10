@@ -1,10 +1,10 @@
 <template>
     <div class="text-center">
-        <h1>Grosse page de login</h1>
+        <h1>Grosse  page de login</h1>
         <div class="mt-3">
             <div>
                 <label for="username">Username</label><br>
-                <input id="username" v-model="payload.username" />
+                <input id="username" v-model="payload.username"/>
             </div>
             <div class="mt-3">
                 <label for="password">Password</label><br>
@@ -29,9 +29,9 @@ export default {
     methods: {
         async login() {
             const result = await UserService.loginUser(this.payload)
-            if (result.data.id && result.status === 200) {
-                this.$store.dispatch("user/setUser", result.data)
-                this.$store.dispatch("user/setLoggedIn", true)
+            if(result.data.id && result.status === 200) {
+                this.$store.dispatch("user/setUser",result.data)
+                this.$store.dispatch("user/setLoggedIn",true)
                 this.$router.push({ name: 'home' })
             }
         }
