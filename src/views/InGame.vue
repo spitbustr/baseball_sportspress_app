@@ -860,10 +860,6 @@ export default {
 
 }
 
-.outcome-save-button {
-
-}
-
 .editMode {
   table {
     tr {
