@@ -10,41 +10,42 @@
       <div id="main-navigation" v-if="authenticated">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
           <div class="container-fluid">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03"
-              aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+            <a class="navbar-brand" href="/">LBAO/MRK</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+              aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
-            <a class="navbar-brand" href="/">LBAO/MRK</a>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
-              <ul class="navbar-nav mr-auto">
+              <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                  <router-link class="nav-link" to="/games">Games</router-link>
+                  <router-link class="nav-link" to="/games">Parties</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link class="nav-link" to="/teams">Teams</router-link>
+                  <router-link class="nav-link" to="/teams">Équipes</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link class="nav-link" to="/players">Players</router-link>
+                  <router-link class="nav-link" to="/players">Joueurs</router-link>
                 </li>
                 <li class="nav-item">
-                  <router-link class="nav-link" to="/data">Data</router-link>
+                  <router-link class="nav-link" to="/data">Données</router-link>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" @click="openCast()">CAST</a>
+                  <a class="nav-link" @click="openCast()">Cast</a>
                 </li>
               </ul>
+              <span class="navbar-text">
+                <button class="btn btn-outline-light" @click="logout">Déconnexion</button>
+              </span>
+            </div>
 
-            </div>
-            <div class="d-flex">
-              <button class="btn btn-outline-light" @click="logout">Déconnexion</button>
-            </div>
           </div>
 
         </nav>
       </div>
-        <router-view />
-      </div>
+      <router-view />
     </div>
+  </div>
 </template>
 <script>
 

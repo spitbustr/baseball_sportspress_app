@@ -21,9 +21,8 @@
                 {{ teams.away.title.rendered }}</span>
               <div class="d-flex btn-group" role="group" aria-label="Basic example">
                 <button class="btn btn-outline-primary btn-sm" v-if="editMode"
-                  @click="setLineup(teams?.away, 'away')">Set Lineup</button>
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('away')">CLEAR
-                  LINEUP</button>
+                  @click="setLineup(teams?.away, 'away')">Remplir l'alignement</button>
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('away')">Vider l'alignement</button>
               </div>
             </div>
           </nav>
@@ -32,7 +31,7 @@
               <tr>
                 <th v-if="editMode"></th>
                 <th>#</th>
-                <th class="large-cell">Player</th>
+                <th class="large-cell">Joueur</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
                 </template>
@@ -82,9 +81,8 @@
                 {{ teams.home.title.rendered }}</span>
               <div class="d-flex btn-group" role="group" aria-label="Basic example">
                 <button class="btn btn-outline-primary btn-sm" v-if="editMode"
-                  @click="setLineup(teams?.home, 'home')">Set Lineup</button>
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('home')">CLEAR
-                  LINEUP</button>
+                  @click="setLineup(teams?.home, 'home')">Remplir l'alignement</button>
+                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('home')">Vider l'alignement</button>
               </div>
             </div>
           </nav>
@@ -93,7 +91,7 @@
               <tr>
                 <th v-if="editMode"></th>
                 <th>#</th>
-                <th>Player</th>
+                <th>Joueur</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
                   <th class="header-innings">{{ inning }}</th>
                 </template>
@@ -144,7 +142,7 @@
           <table class="table table-bordered table-hover">
             <thead class="table-light">
               <tr>
-                <th>Teams</th>
+                <th>Équipes</th>
                 <th v-for="inning in scoresheet.innings" :key="inning"><span>{{ inning }}</span></th>
                 <th>Total</th>
               </tr>
@@ -200,7 +198,7 @@
           <div>
             <div class="search-section">
               SEARCH:
-              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+              <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
             </div>
           </div>
           <div>
@@ -240,7 +238,7 @@
           <div>
             <div class="search-section">
               SEARCH:
-              <input ype="text" @input="inputUpdate" :value="inputSearchPlayer" />
+              <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
             </div>
           </div>
           <div>
