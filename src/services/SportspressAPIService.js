@@ -1,6 +1,6 @@
 import axios from "axios"
 import $settings from "@/data/settings.json"
-const configUrl = "https://app.lbaoutaouais.com/api/config/config.ini"
+const configUrl = "/api/config/config.ini"
 
 
 export default class SportspressAPIService {
@@ -73,7 +73,6 @@ export default class SportspressAPIService {
     const headers = {
       "Authorization": `Basic ${token}`,
       "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*",
     }
     await axios.post(`${$settings.playballConfig.baseUrl}${$settings.sportspressApi.events}/${payload.id}`,payload, {headers})
       .then(res => {

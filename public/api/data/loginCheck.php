@@ -7,22 +7,19 @@
 
     $database = new Database();
     $db = $database->getConnection();
-$configPath = __DIR__ . '/config.ini';
+    $path = substr(__DIR__, 0, 38);
+    $configPath = $path . '/api/config/config.ini';
 if (file_exists($configPath)) {
     $configData = file_get_contents($configPath);
     if ($configData === false) {
         error_log("Error: Unable to read the config.ini file");
         exit("Error: Unable to read the config.ini file");
-    } else {
-        echo $configData;
-    }
+    } 
     $config = parse_ini_string($configData);
     if ($config === false) {
         error_log("Error: Unable to parse the config.ini data");
         exit("Error: Unable to parse the config.ini data");
-    } else {
-        print_r($config);
-    }
+    } 
 }
     $user = new User($db);
 
@@ -40,7 +37,6 @@ if (file_exists($configPath)) {
         $data->password = !empty($json_data->password) ? $json_data->password : "";
         $data->secret = !empty($json_data->secret) ? $json_data->secret  : "";
         if (!empty($data->secret)) {
-
             $stmt = $user->loginCheck($data);
             $num = $stmt->rowCount();
             if ($num > 0) {
@@ -48,6 +44,8 @@ if (file_exists($configPath)) {
                 http_response_code(200);
                 echo json_encode($num);
             } else {
+                echo $data->username . "check";
+                echo $data->password;
                 http_response_code(401);
                 echo json_encode(array("error" => "Not logged in" ));
             }

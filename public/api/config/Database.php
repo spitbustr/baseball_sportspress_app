@@ -8,15 +8,11 @@
             if ($configData === false) {
                 error_log("Error: Unable to read the config.ini file");
                 exit("Error: Unable to read the config.ini file");
-            } else {
-                echo $configData;
             }
             $config = parse_ini_string($configData);
             if ($config === false) {
                 error_log("Error: Unable to parse the config.ini data");
                 exit("Error: Unable to parse the config.ini data");
-            } else {
-                print_r($config);
             }
         } else {
             error_log("Error: config.ini file not found");
