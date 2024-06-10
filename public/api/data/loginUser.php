@@ -41,7 +41,6 @@
         if (!empty($data->username)) {
             $stmt = $user->loginUser($data);
             $num = $stmt->rowCount();
-            print($num);
             if ($num > 0) {
                 $row = $stmt->fetch(PDO::FETCH_ASSOC);
                 http_response_code(200);
