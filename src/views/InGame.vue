@@ -687,7 +687,7 @@ export default {
       const col = +this.currentActiveBox?.[3]
       const extraBlock = +this.currentActiveBox?.[4]
       if(arrow === "up" && row > 0){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}${extraBlock}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}`)
       }
       if(arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1){
         this.setActiveOutcome(`${prop}_${homeAway}_${row+1}_${col}`)
