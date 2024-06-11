@@ -3,16 +3,16 @@
     <div class="row py-4">
       <div class="col-md-6">
         <div class="btn-group" role="group" aria-label="Game Filter">
-          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('past')">PAST GAMES</button>
-          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('today')">TODAY'S GAMES</button>
-          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('upcoming')">UPCOMING GAMES</button>
+          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('past')">Parties jouées</button>
+          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('today')">Parties d'aujourd'hui</button>
+          <button type="button" class="btn btn-outline-secondary" @click="changeFilter('upcoming')">Parties à venir</button>
         </div>
       </div>
       <div class="col-md-6 text-md-end">
       <div class="btn-group" role="group" aria-label="Week Filter">
-        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',-1)">LAST WEEK'S GAMES</button>
-        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',0)">THIS WEEK'S GAMES</button>
-        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',1)">NEXT WEEK'S GAMES</button>
+        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',-1)">Semaine dernière</button>
+        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',0)">Cette semaine</button>
+        <button type="button" class="btn btn-outline-secondary" @click="changeFilter('week',1)">Semaine prochaine</button>
       </div>
     </div>
   </div>
@@ -21,10 +21,10 @@
       <table class="table table-striped table-hover text-star align-middle">
         <thead>
           <tr>
-            <th>Game ID</th>
-            <th>Away Team</th>
-            <th>Home Team</th>
-            <th>Date and Time</th>
+            <th>ID</th>
+            <th>Visiteurs</th>
+            <th>Locaux</th>
+            <th>Date et heure</th>
             <th>Actions</th>
           </tr>
         </thead>

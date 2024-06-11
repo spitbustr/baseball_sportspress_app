@@ -7,7 +7,21 @@
 
     $database = new Database();
     $db = $database->getConnection();
-    $config = parse_ini_file('../config/config.ini');
+    $path = substr(__DIR__, 0, 38);
+    $configPath = $path . '/api/config/config.ini';
+    if (file_exists($configPath)) {
+    $configData = file_get_contents($configPath);
+    if ($configData === false) {
+        error_log("Error: Unable to read the config.ini file");
+        exit("Error: Unable to read the config.ini file");
+    } 
+    $config = parse_ini_string($configData);
+    if ($config === false) {
+        error_log("Error: Unable to parse the config.ini data");
+        exit("Error: Unable to parse the config.ini data");
+        }
+    }
+
     $user = new User($db);
 
     // Check the request method
@@ -29,6 +43,8 @@
                 http_response_code(200);
                 echo json_encode($row);
             } else {
+                echo $data->username;
+                echo $data->password;
                 http_response_code(401);
                 echo json_encode(array("error" => "Not logged in" ));
             }
@@ -39,6 +55,4 @@
     } else {
         echo "WRONG METHOD";
     }
-
-
 ?>

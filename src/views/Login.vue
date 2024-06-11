@@ -1,18 +1,30 @@
 <template>
-    <div class="text-center">
-        <h1>Grosse  page de login</h1>
-        <div class="mt-3">
-            <div>
-                <label for="username">Username</label><br>
-                <input id="username" v-model="payload.username"/>
+    <div class="container my-5">
+        <div class="d-flex justify-content-center">
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-header">
+                        Connexion
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Username</label>
+                            <input type="text" id="username" class="form-control" v-model="payload.username" />
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input id="password" class="form-control" type="password" v-model="payload.password">
+                        </div>
+                    </div>
+
+                    <div class="card-footer text-muted">
+                        <button @click="login()" class="btn btn-primary">Connexion</button>
+                    </div>
+                </div>
             </div>
-            <div class="mt-3">
-                <label for="password">Password</label><br>
-                <input id="password" type="password" v-model="payload.password">
-            </div>
-            <button @click="login()" class="mt-3">LOGIN</button>
         </div>
     </div>
+
 </template>
 <script>
 import UserService from '@/services/UserService'
