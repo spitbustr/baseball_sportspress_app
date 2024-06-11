@@ -331,6 +331,9 @@
             Number of Innings
             <input type="number" v-model="configChanges.innings" >
           </div>
+          <div>
+            <button @click="pullLocalData">Pull Local Data</button>
+          </div>
         </div>
       </template>
       <template v-slot:footer>
@@ -728,6 +731,7 @@ export default {
 
     async sendDataToWebsite() {
       this.loading = true
+      await this.updateData()
       this.gameEvent.prepareData(this.scoresheet).then(result => {
         this.$toast.success(`Les données ont été envoyées`)
       }, (error) => {
@@ -837,6 +841,18 @@ export default {
     getExtraOutcomes(homeAway) {
       return this.players?.[homeAway]?.[0].extraOutcome
     },
+    pullLocalData() {
+      const data = localStorage.getItem(`current-matchup-${this.game?.id}`)
+      let obj = JSON.parse(data)
+      if(obj.gameId) {
+        obj = {
+          players: {
+            home: obj.players.home.map(p => new PlayerInGame(p)) || [],
+            away: obj.players.away.map(p => new PlayerInGame(p)) || [],
+          },
+        }
+      }
+    },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
     },
@@ -847,18 +863,19 @@ export default {
         await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
           this.hasContentInDB = result?.data?.id
         }, (error) => {
-          this.$toast.error("Errur de connexion")
+          this.$toast.error("Erreur de connexion")
         })
         if(!this.hasContentInDB) {
           await ScoresheetAPIService.createData(this.scoresheet).then(() => {
 
           },(error) => {
-            this.$toast.error("Errur de connexion")
+            this.$toast.error("Erreur de connexion")
           })
         }
       }
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       localStorage.setItem("cast-matchup", JSON.stringify(this.scoresheet))
+      localStorage.setItem(`current-matchup-${this.game?.id}`, JSON.stringify(this.scoresheet))
       await ScoresheetAPIService.saveData(this.scoresheet).then(()=>{},(error) => {
         this.$toast.error("Erreur de connexion à la Base de Données")
       })
@@ -895,8 +912,10 @@ export default {
       this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
     }
+ 
     await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
       this.hasContentInDB = result?.data?.id
+    }, () => {
     })
     if (this.hasContentInDB) {
       await ScoresheetAPIService.loadData(this.$route?.params?.gameId).then(result => {
