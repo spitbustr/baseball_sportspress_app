@@ -40,9 +40,10 @@
               </tr>
             </thead>
             <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
-              :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
+              :options="{ animation: 150, group: 'players' }" handle=".drag-handler" ghost-class="ghost" :disabled="!editMode">
               <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
-                <td v-if="editMode"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                <td v-if="editMode" class="drag-handler">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                     <path
                       d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
@@ -108,9 +109,10 @@
               </tr>
             </thead>
             <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.home"
-              :options="{ animation: 150, group: 'players' }" ghost-class="ghost" :disabled="!editMode">
+              :options="{ animation: 150, group: 'players'}" handle=".drag-handler" ghost-class="ghost" :disabled="!editMode">
               <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
-                <td v-if="editMode"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                <td v-if="editMode" class="drag-handler">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                     class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
                     <path
                       d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
@@ -603,7 +605,7 @@ export default {
     clearLineup(team) {
       this.scoresheet.players[team] = []
     },
-    async dragged() {
+    async dragged(event) {
       await this.updateData()
     },
     editPlayer(player, list) {
@@ -1141,5 +1143,8 @@ export default {
   .ingame-outcome-box, .header-innings {
     display:none;
   }
+}
+.drag-handler {
+  cursor: pointer;
 }
 </style>
