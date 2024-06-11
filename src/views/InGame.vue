@@ -1,6 +1,7 @@
 <template>
   <nav class="navbar navbar-light bg-light py-4">
     <div class="container-fluid">
+      <button type="button editButton" class="btn btn-outline-primary" @click="openGameEditModal">Edit Game</button>
       <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
       <div class="d-flex btn-group" role="group" aria-label="Basic example">
         <button type="button editButton" class="btn btn-outline-primary" @click="toggleEditMode">{{ this.editMode
@@ -34,7 +35,7 @@
                 <th>#</th>
                 <th class="large-cell">Player</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
-                  <th class="header-innings">{{ inning }}</th>
+                  <th :colspan="displayExtraBlocks(inning,'away')" class="header-innings">{{ inning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -52,12 +53,20 @@
                   <span class="probably" v-if="player.probably">*</span>
                   <span v-html="player.name"></span>
                 </td>
-                <td v-for="inning in scoresheet.innings" :key="inning"
-                  @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
-                  :class="{ active: active.outcomeBox === `outcome_away_${$index}_${inning}` }"
-                  class="ingame-outcome-box">
-                  <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
-                </td>
+                <template v-for="inning in scoresheet.innings" :key="inning" >
+                  <td
+                    @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
+                    :class="{ 'active': active.outcomeBox === `outcome_away_${$index}_${inning}` }"
+                    class="ingame-outcome-box">
+                    <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
+                  </td>
+                  <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" :key="`block-away-{$index}_${$$index}`"
+                    @click="setActiveOutcome(`outcome_away_${$index}_${inning}_${extraBlock.extraId}`)"
+                    :class="{ 'active': active.outcomeBox === `outcome_away_${$index}_${inning}_${extraBlock.extraId}` }"
+                    class="ingame-outcome-box">
+                    <OutcomeBox :players="scoresheet.players.away" :outcome="extraBlock"></OutcomeBox>
+                  </td>
+                </template>
                 <td v-if="editMode">
                   <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
                     @click="removePlayer(player, scoresheet.players.away)">Supprimer</button>&nbsp;
@@ -95,7 +104,7 @@
                 <th>#</th>
                 <th>Player</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
-                  <th class="header-innings">{{ inning }}</th>
+                  <th :colspan="displayExtraBlocks(inning,'home')" class="header-innings">{{ inning }}</th>
                 </template>
                 <th v-if="editMode">Actions</th>
               </tr>
@@ -113,12 +122,20 @@
                   <span class="probably" v-if="player.probably">*</span>
                   <span v-html="player.name"></span>
                 </td>
-                <td v-for="inning in scoresheet.innings" :key="inning"
-                  @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
-                  :class="{ active: active.outcomeBox === `outcome_home_${$index}_${inning}` }"
-                  class="ingame-outcome-box">
-                  <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
-                </td>
+                <template v-for="inning in scoresheet.innings" :key="inning" >
+                  <td
+                    @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
+                    :class="{ 'active': active.outcomeBox === `outcome_home_${$index}_${inning}` }"
+                    class="ingame-outcome-box">
+                    <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
+                  </td>
+                  <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" style="background: red;" :key="`block-home-{$index}_${$$index}`"
+                    @click="setActiveOutcome(`outcome_home_${$index}_${inning}_${extraBlock.extraId}`)"
+                    :class="{ 'active': active.outcomeBox === `outcome_home_${$index}_${inning}_${extraBlock.extraId}` }"
+                    class="ingame-outcome-box">
+                    <OutcomeBox :players="scoresheet.players.home" :outcome="extraBlock"></OutcomeBox>
+                  </td>
+                </template>
                 <td v-if="editMode">
                   <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
                     @click="removePlayer(player, scoresheet.players.home)">Supprimer</button>&nbsp;
@@ -254,11 +271,6 @@
           </div>
         </div>
       </template>
-      <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="setLineupAddPlayer">ACCEPTER</button>
-        </div>
-      </template>
     </Modal>
 
     <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
@@ -307,6 +319,32 @@
       </template>
     </Modal>
 
+
+    <!-- GAME SETTINGS MODAL -->
+    <Modal v-show="gameEditModal" @close="closeModal">
+      <template v-slot:header>
+        <h5>Game settings</h5>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div>
+            Number of Innings
+            <input type="number" v-model="configChanges.innings" >
+          </div>
+          <div>
+            <button @click="pullLocalData">Pull Local Data</button>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="saveConfigChanges">ACCEPTER</button>
+        </div>
+      </template>
+    </Modal>
+
+
+
     <!-- Loading Modal -->
     <Modal type="loading" v-show="loading">
       <template v-slot:body>
@@ -316,6 +354,7 @@
   </div>
 </template>
 <script>
+import Vue from "vue"
 import {PlayerInGame,InGameResults} from "@/models/PlayerInGame"
 import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
@@ -341,6 +380,7 @@ export default {
       || this.settingLineup.open
       || this.probablyRightPlayer
       || this.openRbiModal
+      || this.gameEditModal
     },
     allPlayers() {
       return this.$store.getters.getAllPlayers
@@ -369,6 +409,12 @@ export default {
       return this.scoresheet.players?.[this.currentActiveBox?.[1]]?.[this.currentActiveBox?.[2]] || null
     },
     currentActivePlayerBox() {
+      if(this.currentActiveBox?.[4]) {
+        const activeBlock = this.currentActivePlayer?.extraOutcome.find(o => {
+          return o.inning == this.currentActiveBox?.[3] && o.extraId == this.currentActiveBox?.[4]
+        })
+        return activeBlock || null
+      }
       return this.currentActivePlayer?.outcome?.[this.currentActiveBox?.[3]] || null
     },
     defaultImage() {
@@ -426,6 +472,8 @@ export default {
       game: null,
       gameEvent: new GameEvent(),
       id: 0,
+
+      gameEditModal: false,
       editMode: false,
       inputSearchPlayer: [],
 
@@ -452,9 +500,30 @@ export default {
       probablyRightPlayer: false,
       hasContentInDB: false,
       loading: false,
+
+      configChanges: {
+        innings: 0,
+      },
+
+      extraBlocks: {
+        away: [],
+        home: [],
+      }
     }
   },
   methods: {
+    allPlayersWentAtBat(inning, players) {
+      const allPlayersOutcome = players.map(p => new InGameResults(p.outcome?.[inning]))
+      return !!(!!(allPlayersOutcome?.length) && allPlayersOutcome.every(o => o?.wentAtBat))
+    },
+    displayExtraBlocks(inning, homeAway) {
+      return this.scoresheet.players?.[homeAway]?.[0]?.extraOutcome.filter(o => o?.inning == inning).length + 1
+    },
+    saveConfigChanges() {
+      this.scoresheet.innings = this.configChanges.innings
+      this.addExtraInning()
+      this.closeModal()
+    },
     advancePlayer() {
       if(this.activePlayerBox?.atBatResult) {
         if(this.activePlayerBox?.onBasePosition === "third") {
@@ -489,26 +558,38 @@ export default {
       }
     },
     addExtraInning() {
-      this.scoresheet.innings++
       this.scoresheet.players.away.forEach(p => {
-        p.outcomes.push(new InGameResults())
+        for(let i=p?.outcome?.length || 0;i > this.scoresheet.innings+1; i--) {
+            p.outcome.pop()
+        }
+        for(let i=0;i <= this.scoresheet.innings; i++) {
+          if(p.outcome?.[i]) {
+          }
+          else {
+            p.outcome.push(new InGameResults())
+          }
+        }
       })
       this.scoresheet.players.away.forEach(p => {
-        p.outcomes.push(new InGameResults())
+        for(let i=p?.outcome?.length || 0;i > this.scoresheet.innings+1; i--) {
+            p.outcome.pop()
+        }
+        for(let i=0;i <= this.scoresheet.innings; i++) {
+          if(p.outcome?.[i]) {
+          }
+          else {
+            p.outcome.push(new InGameResults())
+          }
+        }
       })
-    },
-    addInningBlock(inning,homeAway) {
-      const allInnings = this.getAllFullInnings(homeAway)
-      const inningIsFull = allInnings.find(i => inning === i.inning && i.res)
-      console.log(inningIsFull, inning,homeAway)
-      return inningIsFull
     },
     addNewPlayer() {
       this.isAddNewPlayerModalVisible = true
     },
     async addPlayer(teamPlayers) {
       const player = this.allAvailablePlayers[0]
-      teamPlayers.push(new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
+      const extraOutcome = teamPlayers?.[0]?.extraOutcome.map(o => new InGameResults({inning: o?.inning, extraId: o?.extraId}))
+      teamPlayers.push(new PlayerInGame({ ...player, extraOutcome, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.probablyRightPlayer = false
       await this.updateData()
     },
@@ -519,6 +600,7 @@ export default {
       this.settingLineup.open = false
       this.probablyRightPlayer = false
       this.openRbiModal = false
+      this.gameEditModal = false
     },
     clearLineup(team) {
       this.scoresheet.players[team] = []
@@ -555,6 +637,46 @@ export default {
       })
       return innings < lastInningPlayed ? lastInningPlayed : innings
     },
+    allExtraBlocksWentAtBat(inning,players,extraId) {
+      const allPlayersOutcome = players.map(p=>p.extraOutcome).flat()
+      return !!(!!(allPlayersOutcome?.length) && allPlayersOutcome.every(o => new InGameResults(o)?.wentAtBat))
+    },
+    addExtraBlocks(inning, extraId, players) {
+      players.forEach(p =>{
+        p.extraOutcome.push(new InGameResults({extraId:extraId,inning:inning}))
+      })
+    },
+    haveExtrablocksForInning(inning,players,extraId) {
+      if(players?.[0]?.extraOutcome.filter(o => o.inning == inning)?.length) {
+        return true
+      }
+      return false
+    },
+    handleExtraBlocks(players) {
+      let extraId = 1
+      let enoughExtras = true
+      for(let i=1; i <= this.scoresheet.innings;i++) {
+        enoughExtras = true
+        if(this.allPlayersWentAtBat(i,players)) {
+          while(enoughExtras) {
+            if(!this.haveExtrablocksForInning(i,players,extraId)) {
+              this.addExtraBlocks(i, extraId, players)
+              enoughExtras = false
+            }
+            else {
+              enoughExtras = false
+            }
+            if(this.allExtraBlocksWentAtBat(i,players,extraId)) {
+              extraId++
+              this.addExtraBlocks(i, extraId, players)
+            }
+            else {
+              enoughExtras = false
+            }
+          }
+        }
+      }
+    },
     handleKeys(event) {
       this.handleShortcutKeys(event, this.active.outcomeBox,this.allModalToggle)
     },
@@ -563,8 +685,9 @@ export default {
       const homeAway = this.currentActiveBox?.[1]
       const row = +this.currentActiveBox?.[2]
       const col = +this.currentActiveBox?.[3]
+      const extraBlock = +this.currentActiveBox?.[4]
       if(arrow === "up" && row > 0){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}`)
+        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}${extraBlock}`)
       }
       if(arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1){
         this.setActiveOutcome(`${prop}_${homeAway}_${row+1}_${col}`)
@@ -576,30 +699,15 @@ export default {
         this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col+1}`)
       }
     },
-    removeExtraInning() {
-      this.scoresheet.players.away.forEach(p => {
-        p.outcomes.pop()
-      })
-      this.scoresheet.players.home.forEach(p => {
-        p.outcomes.pop()
-      })
-      this.scoresheet.innings--
-    },
-    removeExtraInningModalHandler() {
-      this.scoresheet.innings++
-      this.scoresheet.players.away.forEach(p => {
-        p.outcomes.push(new InGameResults())
-      })
-      this.scoresheet.players.away.forEach(p => {
-        p.outcomes.push(new InGameResults())
-      })
-    },
     async removePlayer(player, list) {
-      const playerIndex = list.findIndex(p => p.id === player.id)
+      const playerIndex = list.findIndex(p => p?.id === player?.id)
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
       }
       this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
+    },
+    playersExtraBlocks(inning,player) {
+      return player?.extraOutcome?.filter(o => o?.inning == inning)
     },
     setActiveOutcome(id) {
       if (this.active.outcomeBox !== id && !this.editMode) {
@@ -617,12 +725,16 @@ export default {
         await this.updateData()
       }
     },
+    async openGameEditModal() {
+      this.gameEditModal = true
+    },
 
     async sendDataToWebsite() {
       this.loading = true
+      await this.updateData()
       this.gameEvent.prepareData(this.scoresheet).then(result => {
         this.$toast.success(`Les données ont été envoyées`)
-      }, (erro) => {
+      }, (error) => {
         this.$toast.error(`L'envoie a échoué`)
       }).finally(() => {
         this.loading = false
@@ -653,6 +765,7 @@ export default {
     async replacePlayer() {
       if (this.replacementPlayer?.id) {
         this.replacementPlayer.outcome = this.selectedPlayer.outcome
+        this.replacementPlayer.extraOutcome = this.selectedPlayer.extraOutcome
         this.replacementPlayer.probably = this.probablyRightPlayer
         this.isPlayerModalVisible = false
         const homeIndex = this.scoresheet.players.home.findIndex(p => {
@@ -691,7 +804,12 @@ export default {
       }
     },
     async saveOutcome() {
-      this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].outcome[this.currentActiveBox[3]] = this.working_selectedOutcomeBox
+      if(this.currentActiveBox[4]) {
+        this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].extraOutcome.find(o => o.id === this.currentActiveBox[4])
+      }
+      else {
+        this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].outcome[this.currentActiveBox[3]] = this.working_selectedOutcomeBox
+      }
       this.closeModal()
       await this.updateData()
     },
@@ -708,22 +826,59 @@ export default {
     async setLineupAddPlayer() {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
+      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway).map(o => 
+      {
+        return {
+          ...o,
+          inning: o.inning,
+          extraId: o.extraId
+        }
+      })
+      const newPlayer = new PlayerInGame({...player, extraOutcome})
       this.scoresheet.players[homeAway].push(player)
       this.$toast.success(`<b>${player?.title?.rendered}</b> a été ajouté`)
+    },
+    getExtraOutcomes(homeAway) {
+      return this.players?.[homeAway]?.[0].extraOutcome
+    },
+    pullLocalData() {
+      const data = localStorage.getItem(`current-matchup-${this.game?.id}`)
+      let obj = JSON.parse(data)
+      if(obj.gameId) {
+        obj = {
+          players: {
+            home: obj.players.home.map(p => new PlayerInGame(p)) || [],
+            away: obj.players.away.map(p => new PlayerInGame(p)) || [],
+          },
+        }
+      }
     },
     sendPostMessage() {
       this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
     },
     async updateData() {
+      this.handleExtraBlocks(this.scoresheet.players.away)
+      this.handleExtraBlocks(this.scoresheet.players.home)
       if(!this.hasContentInDB) {
         await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
           this.hasContentInDB = result?.data?.id
+        }, (error) => {
+          this.$toast.error("Erreur de connexion")
         })
-        await ScoresheetAPIService.createData(this.scoresheet)
+        if(!this.hasContentInDB) {
+          await ScoresheetAPIService.createData(this.scoresheet).then(() => {
+
+          },(error) => {
+            this.$toast.error("Erreur de connexion")
+          })
+        }
       }
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       localStorage.setItem("cast-matchup", JSON.stringify(this.scoresheet))
-      await ScoresheetAPIService.saveData(this.scoresheet)
+      localStorage.setItem(`current-matchup-${this.game?.id}`, JSON.stringify(this.scoresheet))
+      await ScoresheetAPIService.saveData(this.scoresheet).then(()=>{},(error) => {
+        this.$toast.error("Erreur de connexion à la Base de Données")
+      })
       this.sendPostMessage()
     },
     updateOutcomeBox(value) {
@@ -757,8 +912,10 @@ export default {
       this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
         .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
     }
+ 
     await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
       this.hasContentInDB = result?.data?.id
+    }, () => {
     })
     if (this.hasContentInDB) {
       await ScoresheetAPIService.loadData(this.$route?.params?.gameId).then(result => {
@@ -775,6 +932,9 @@ export default {
       await ScoresheetAPIService.createData(this.scoresheet)
     }
     this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
+    this.configChanges = {
+      innings: this.scoresheet.innings
+    }
   },
   mounted() {
     window.addEventListener('keydown', this.handleKeys)
