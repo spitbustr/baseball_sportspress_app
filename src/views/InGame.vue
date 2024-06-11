@@ -846,11 +846,13 @@ export default {
       let obj = JSON.parse(data)
       if(obj.gameId) {
         obj = {
+          ...obj,
           players: {
             home: obj.players.home.map(p => new PlayerInGame(p)) || [],
             away: obj.players.away.map(p => new PlayerInGame(p)) || [],
           },
         }
+        this.scoresheet = obj
       }
     },
     sendPostMessage() {
