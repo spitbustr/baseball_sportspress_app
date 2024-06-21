@@ -271,6 +271,11 @@
           </div>
         </div>
       </template>
+      <template v-slot:footer>
+        <div class="player-replace-footer">
+          <button @click="setLineupAddPlayer">AJOUTER</button>
+        </div>
+      </template>
     </Modal>
 
     <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
@@ -826,7 +831,7 @@ export default {
     async setLineupAddPlayer() {
       const player = this.replacementPlayer
       const homeAway = this.settingLineup.team.homeAway
-      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway).map(o => 
+      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway)?.map(o => 
       {
         return {
           ...o,
@@ -1046,7 +1051,7 @@ export default {
 }
 
 .player-replace-list {
-  padding: 0.35rem;
+  padding: 0.5rem;
   cursor: pointer;
 
   &.selected {
