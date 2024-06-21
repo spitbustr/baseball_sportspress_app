@@ -202,24 +202,26 @@
     </div>
 
     <!-- REPLACE PLAYER MODAL -->
-    <Modal v-show="isPlayerModalVisible" @close="closeModal">
+    <Modal v-show="isPlayerModalVisible" @close="closeModal" bodystyle="max-height: 60vh;">
       <template v-slot:header>
         <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
       </template>
       <template v-slot:subheader>
-        <div class="">
-          <button @click="addNewPlayer()">NEW PLAYER</button>
-          <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
+        <div>
+          <div class="">
+            <button @click="addNewPlayer()">NEW PLAYER</button>
+            <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
+          </div>
+        </div>
+        <div>
+          <div class="search-section">
+            SEARCH:
+            <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
+          </div>
         </div>
       </template>
       <template v-slot:body>
         <div>
-          <div>
-            <div class="search-section">
-              SEARCH:
-              <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
-            </div>
-          </div>
           <div>
             <div v-for="player in allAvailablePlayers" :key="player.id">
               <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player, 'replace')"
@@ -240,27 +242,29 @@
     </Modal>
 
     <!-- SETTING LINE UP MODAL -->
-    <Modal v-show="settingLineup.open" @close="closeModal">
+    <Modal v-show="settingLineup.open" @close="closeModal" bodystyle="max-height: 60vh;">
       <template v-slot:header>
         <h5>Lineup {{ settingLineup.team.name }}</h5>
       </template>
       <template v-slot:subheader>
-        <div class="">
-          <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
-            @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
-          <button @click="addNewPlayer()">NEW PLAYER</button>
-          <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
-        </div>
-      </template>
-      <template v-slot:body>
         <div>
+          <div class="">
+            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
+              @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+            <button @click="addNewPlayer()">NEW PLAYER</button>
+            <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
+          </div>
           <div>
             <div class="search-section">
               SEARCH:
               <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
             </div>
           </div>
-          <div>
+        </div>
+      </template>
+      <template v-slot:body>
+        <div>
+          <div class="scrollable-section">
             <div v-for="player in allAvailablePlayers" :key="player.id">
               <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player,'setlineup')"
                 class="player-replace-list">
@@ -1016,7 +1020,11 @@ export default {
   color: #4AAE9B;
   justify-content: space-between;
   align-items: center;
+  padding: 1.5rem 0;
   top: 0;
+  input {
+    padding: 0.5rem 0.25rem;
+  }
 }
 
 .scoresheet-results-scores {

@@ -7,25 +7,21 @@
           <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
               <header class="modal-header" id="modalTitle" v-if="$slots.header">
-                <slot name="header">
-                </slot>
+                <slot name="header"></slot>
                 <button type="button" class="btn-close" @click="close" aria-label="Close modal"></button>
               </header>
               <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
-                <slot name="subheader">
-                </slot>
+                <slot name="subheader"></slot>
               </div>
               <section class="modal-body-container" id="modalDescription">
                 <div class="modal-body-content">
-                  <div class="modal-body">
-                    <slot name="body">
-                    </slot>
+                  <div class="modal-body" :style="bodystyle">
+                    <slot name="body"></slot>
                   </div>
                 </div>
               </section>
               <footer class="modal-footer" v-if="$slots.footer">
-                <slot name="footer">
-                </slot>
+                <slot name="footer"></slot>
               </footer>
             </div>
           </div>
@@ -34,6 +30,7 @@
     </transition>
   </div>
 </template>
+
 <script>
 
 export default {
@@ -56,6 +53,7 @@ export default {
   },
   props: {
     type: String,
+    bodystyle: String,
   }
 };
 </script>
@@ -67,7 +65,7 @@ export default {
   display: block;
 }
 .modal-body {
-  max-height: 70vh;
-  overflow: hidden;
+  max-height: 90vh;
+  overflow: auto;
 }
 </style>
