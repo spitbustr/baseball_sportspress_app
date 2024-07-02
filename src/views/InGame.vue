@@ -63,7 +63,7 @@
                   <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" :key="`block-away-{$index}_${$$index}`"
                     @click="setActiveOutcome(`outcome_away_${$index}_${inning}_${extraBlock.extraId}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_away_${$index}_${inning}_${extraBlock.extraId}` }"
-                    class="ingame-outcome-box">
+                    class="ingame-outcome-box extra">
                     <OutcomeBox :players="scoresheet.players.away" :outcome="extraBlock"></OutcomeBox>
                   </td>
                 </template>
@@ -993,6 +993,9 @@ export default {
 
     .ingame-outcome-box {
       padding: 2px;
+      &.extra {
+        background: #f6fafd;
+      }
     }
 
     .action-buttons {
