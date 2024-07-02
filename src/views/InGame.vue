@@ -132,7 +132,7 @@
                   <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" style="background: red;" :key="`block-home-{$index}_${$$index}`"
                     @click="setActiveOutcome(`outcome_home_${$index}_${inning}_${extraBlock.extraId}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_home_${$index}_${inning}_${extraBlock.extraId}` }"
-                    class="ingame-outcome-box">
+                    class="ingame-outcome-box extra">
                     <OutcomeBox :players="scoresheet.players.home" :outcome="extraBlock"></OutcomeBox>
                   </td>
                 </template>
