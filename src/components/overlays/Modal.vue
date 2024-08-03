@@ -4,25 +4,27 @@
       <div class="modal-backdrop" @click="handleBackdropClick">
         <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle"
           aria-describedby="modalDescription">
-          <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content">
-              <header class="modal-header" id="modalTitle" v-if="$slots.header">
-                <slot name="header"></slot>
-                <button type="button" class="btn-close" @click="close" aria-label="Close modal"></button>
-              </header>
-              <div class="modal-subheader" id="modalSubTitle" v-if="$slots.subheader">
-                <slot name="subheader"></slot>
-              </div>
-              <section class="modal-body-container" id="modalDescription">
-                <div class="modal-body-content">
-                  <div class="modal-body" :style="bodystyle">
-                    <slot name="body"></slot>
-                  </div>
+              <div class="modal-header flex-column" id="modalTitle" v-if="$slots.header">
+                <div class="container-fluid d-flex mx-0 px-0">
+                  <slot name="header"></slot>
+                  <button type="button" class="btn-close" @click="close" aria-label="Close modal"></button>
                 </div>
-              </section>
-              <footer class="modal-footer" v-if="$slots.footer">
+                <div class="container-fluid pt-3 mx-0 px-0" id="modalSubTitle" v-if="$slots.subheader">
+                  <slot name="subheader"></slot>
+                </div>
+              </div>
+
+              <div class="modal-body" :style="bodystyle">
+
+                <slot name="body"></slot>
+              </div>
+              <div class="modal-footer" v-if="$slots.footer">
                 <slot name="footer"></slot>
-              </footer>
+                <button class="btn btn-secondary d-flex align-items-center" @click="close"><span>Annuler</span></button>
+
+              </div>
             </div>
           </div>
         </div>
@@ -64,8 +66,5 @@ export default {
 .modal {
   display: block;
 }
-.modal-body {
-  max-height: 90vh;
-  overflow: auto;
-}
+
 </style>

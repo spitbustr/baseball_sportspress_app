@@ -4,7 +4,12 @@
     <div>
       <Modal type="loading" v-show="progressing || loading">
         <template v-slot:body>
-          {{progress.loading}}
+          <div class="d-flex align-items-center gap-2">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div> 
+          <div>{{progress.loading}}</div>
+        </div>
         </template>
       </Modal>
       <div id="main-navigation" v-if="authenticated">

@@ -69,6 +69,7 @@ export default class ScoresheetAPIService {
                     rendered: p?.title?.rendered
                 },
                 team: teamHome,
+                season: $settings.playballConfig.season,
             }
         })
         payload.players.away = payload.players.away.map(p => {
@@ -83,7 +84,8 @@ export default class ScoresheetAPIService {
                 title: {
                     rendered: p?.title?.rendered
                 },
-                team: teamHome,
+                team: teamAway,
+                season: $settings.playballConfig.season,
             }
         })
         return payload

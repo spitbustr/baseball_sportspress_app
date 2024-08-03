@@ -12,14 +12,17 @@ import RbiOutcomeBoxModal from '@/components/overlays/modals/RbiOutcomeBoxModal'
 import "bootstrap/dist/css/bootstrap.min.css"
 import "bootstrap"
 import EventBusPlugin from '@/scripts/eventBus'
-import Toaster from "@meforma/vue-toaster";
+import Toaster from "@meforma/vue-toaster"
+import settings from "@/data/settings.json"
+
 
 const app = createApp(App)
   .use(store)
   .use(router)
   .use(EventBusPlugin)
   .use(Toaster, {
-    position: "top-right"
+    position: "bottom-right",
+    duration: 6000,
   })
 
 // Components
@@ -52,3 +55,5 @@ router.beforeEach (async (to, from, next) => {
     }
     next()
 })
+
+app.config.globalProperties.$settings = settings;

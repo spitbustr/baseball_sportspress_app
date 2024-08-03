@@ -1,155 +1,186 @@
 <template>
   <nav class="navbar navbar-light bg-light py-4">
-    <div class="container-fluid">
-      <button type="button editButton" class="btn btn-outline-primary" @click="openGameEditModal">Edit Game</button>
-      <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
-      <div class="d-flex btn-group" role="group" aria-label="Basic example">
-        <button type="button editButton" class="btn btn-outline-primary" @click="toggleEditMode">{{ this.editMode
-          ? "Sauvegarder" : "Éditer alignements"}}</button>
-        <button class="btn btn-outline-primary" type="button" @click="sendDataToWebsite">Envoyer</button>
-
+    <div class="container-fluid justify-content-between">
+      <div class="game-date">
+        <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
+      </div>
+      <div class="game-settings d-flex gap-2">
+        <button type="button editButton" class="btn btn-outline-primary d-flex align-items-center"
+          @click="openGameEditModal"><span v-html="$settings.icons.settings"
+            class="d-flex align-items-center pe-1"></span><span>Configuration</span></button>
+        <button type="button editButton" class="btn btn-outline-primary d-flex align-items-center"
+          @click="toggleEditMode"><span v-if="!editMode" v-html="$settings.icons.edit"
+            class="d-flex align-items-center pe-1"></span><span v-if="editMode" v-html="$settings.icons.save"
+            class="d-flex align-items-center pe-1"></span><span>{{ this.editMode ? "Sauvegarder" : "Éditer alignements"
+            }}</span></button>
+        <button class="btn btn-outline-primary d-flex align-items-center" type="button" @click="sendDataToWebsite"><span
+            v-html="$settings.icons.publish" class="d-flex align-items-center pe-1"></span><span>Publier</span></button>
       </div>
     </div>
   </nav>
   <div class="container-fluid">
     <div :class="{ 'editMode': editMode }" class="scoresheet">
       <div class="row">
+        <!-- AWAY TEAM -->
+
         <div class="col-md-6">
-          <nav class="navbar navbar-light" style="background-color:#Fff">
-            <div class="container-fluid">
+          <nav class="navbar navbar-light">
+            <div class="container-fluid me-0 pe-0">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.away?.featured_media] || defaultImage">
                 {{ teams.away.title.rendered }}</span>
               <div class="d-flex btn-group" role="group" aria-label="Basic example">
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode"
-                  @click="setLineup(teams?.away, 'away')">Remplir l'alignement</button>
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('away')">Vider l'alignement</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="setLineup(teams?.away, 'away')"><span v-html="$settings.icons.addPlayer"
+                    class="d-flex align-items-center pe-1"></span> Ajouter régulier</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="addSpare(teams?.away, 'away')">
+                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Ajouter
+                  remplaçant</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="clearLineup('away')"><span v-html="$settings.icons.deleteLine"
+                    class="d-flex align-items-center pe-1"></span> Supprimer tous</button>
               </div>
             </div>
           </nav>
           <table class="table table-bordered table-hover align-middle">
             <thead class="table-light">
               <tr>
-                <th v-if="editMode"></th>
-                <th>#</th>
+                <th v-if="editMode" class="player-drag-col"></th>
+                <th class="player-number-col">#</th>
                 <th class="large-cell">Joueur</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
-                  <th :colspan="displayExtraBlocks(inning,'away')" class="header-innings">{{ inning }}</th>
+                  <th :colspan="displayExtraBlocks(inning, 'away')" class="header-innings">{{ inning }}</th>
                 </template>
-                <th v-if="editMode">Actions</th>
               </tr>
             </thead>
             <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.away"
-              :options="{ animation: 150, group: 'players' }" handle=".drag-handler" ghost-class="ghost" :disabled="!editMode">
+              :options="{ animation: 150, group: 'players' }" handle=".drag-handler" ghost-class="ghost"
+              :disabled="!editMode">
               <tr v-for="(player, $index) in scoresheet.players.away" :key="$index">
                 <td v-if="editMode" class="drag-handler">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                    <path
-                      d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                  </svg></td>
+                  <span v-html="$settings.icons.dragLine"></span>
+                </td>
                 <td>{{ player.assignedNumber }}</td>
                 <td class="player-button-container">
-                  <span class="probably" v-if="player.probably">*</span>
+                  <span class="probably" v-if="player.probably">*</span>&nbsp;
                   <span v-html="player.name"></span>
+                  <span class="d-flex align-items-center float-end">
+                    <button v-if="editMode" class="btn btn-outline-secondary btn-sm d-flex align-items-center me-1"
+                      @click="editPlayer(player, scoresheet.players.away)"><span v-html="$settings.icons.swap"
+                        class="d-flex align-items-center pe-1"></span><span>Remplacer</span>
+                    </button>
+                    <button v-if="editMode"
+                      class="btn btn-outline-danger btn-sm player-remove-button  d-flex align-items-center float-end"
+                      @click="removePlayer(player, scoresheet.players.away)"><span v-html="$settings.icons.deleteLine"
+                        class="d-flex align-items-center pe-1"></span><span>Supprimer</span></button>
+                  </span>
                 </td>
-                <template v-for="inning in scoresheet.innings" :key="inning" >
-                  <td
-                    @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
+                <template v-for="inning in scoresheet.innings" :key="inning">
+                  <td @click="setActiveOutcome(`outcome_away_${$index}_${inning}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_away_${$index}_${inning}` }"
                     class="ingame-outcome-box">
                     <OutcomeBox :players="scoresheet.players.away" :outcome="player.outcome[inning]"></OutcomeBox>
                   </td>
-                  <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" :key="`block-away-{$index}_${$$index}`"
+                  <td v-for="(extraBlock, $$index) in playersExtraBlocks(inning, player)"
+                    :key="`block-away-{$index}_${$$index}`"
                     @click="setActiveOutcome(`outcome_away_${$index}_${inning}_${extraBlock.extraId}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_away_${$index}_${inning}_${extraBlock.extraId}` }"
                     class="ingame-outcome-box extra">
                     <OutcomeBox :players="scoresheet.players.away" :outcome="extraBlock"></OutcomeBox>
                   </td>
                 </template>
-                <td v-if="editMode">
-                  <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
-                    @click="removePlayer(player, scoresheet.players.away)">Supprimer</button>&nbsp;
-                  <button v-if="editMode" class="btn btn-primary btn-sm player-swap-button"
-                    @click="editPlayer(player, scoresheet.players.away)">Remplacer
-                  </button>
-                </td>
               </tr>
             </draggable>
 
           </table>
+          <!--
           <div class="d-grid gap-2">
             <button class="btn btn-outline-primary btn-lg" v-if="editMode"
               @click="addPlayer(scoresheet.players.away)">Ajouter</button>
           </div>
+          -->
         </div>
+
+        <!-- HOME TEAM -->
         <div class="col-md-6">
-          <nav class="navbar navbar-light" style="background-color:#Fff">
-            <div class="container-fluid">
+          <nav class="navbar navbar-light">
+            <div class="container-fluid me-0 pe-0">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.home?.featured_media] || defaultImage">
                 {{ teams.home.title.rendered }}</span>
               <div class="d-flex btn-group" role="group" aria-label="Basic example">
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode"
-                  @click="setLineup(teams?.home, 'home')">Remplir l'alignement</button>
-                <button class="btn btn-outline-primary btn-sm" v-if="editMode" @click="clearLineup('home')">Vider l'alignement</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="setLineup(teams?.home, 'home')"><span v-html="$settings.icons.addPlayer"
+                    class="d-flex align-items-center pe-1"></span> Ajouter régulier</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="addSpare(teams?.home, 'home')">
+                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Ajouter
+                  remplaçant</button>
+                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  @click="clearLineup('home')"><span v-html="$settings.icons.deleteLine"
+                    class="d-flex align-items-center pe-1"></span> Supprimer tous</button>
               </div>
+
             </div>
           </nav>
           <table class="table table-bordered table-hover align-middle">
             <thead class="table-light">
               <tr>
-                <th v-if="editMode"></th>
-                <th>#</th>
-                <th>Joueur</th>
+                <th v-if="editMode" class="player-drag-col"></th>
+                <th class="player-number-col">#</th>
+                <th class="large-cell">Joueur</th>
                 <template v-for="inning in numberOfInnings" :key="inning">
-                  <th :colspan="displayExtraBlocks(inning,'home')" class="header-innings">{{ inning }}</th>
+                  <th :colspan="displayExtraBlocks(inning, 'home')" class="header-innings">{{ inning }}</th>
                 </template>
-                <th v-if="editMode">Actions</th>
               </tr>
             </thead>
             <draggable @dragend="dragged" tag="tbody" :list="scoresheet.players.home"
-              :options="{ animation: 150, group: 'players'}" handle=".drag-handler" ghost-class="ghost" :disabled="!editMode">
+              :options="{ animation: 150, group: 'players' }" handle=".drag-handler" ghost-class="ghost"
+              :disabled="!editMode">
               <tr v-for="(player, $index) in scoresheet.players.home" :key="$index">
                 <td v-if="editMode" class="drag-handler">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-three-dots-vertical" viewBox="0 0 16 16">
-                    <path
-                      d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                  </svg></td>
+                  <span v-html="$settings.icons.dragLine"></span>
+                </td>
                 <td>{{ player.assignedNumber }}</td>
                 <td class="player-button-container">
                   <span class="probably" v-if="player.probably">*</span>
                   <span v-html="player.name"></span>
+                  <span class="d-flex align-items-center float-end">
+                    <button v-if="editMode" class="btn btn-outline-secondary btn-sm d-flex align-items-center me-1"
+                      @click="editPlayer(player, scoresheet.players.home)"><span v-html="$settings.icons.swap"
+                        class="d-flex align-items-center pe-1"></span><span>Remplacer</span>
+                    </button>
+                    <button v-if="editMode"
+                      class="btn btn-outline-danger btn-sm player-remove-button d-flex align-items-center"
+                      @click="removePlayer(player, scoresheet.players.home)"><span v-html="$settings.icons.deleteLine"
+                        class="d-flex align-items-center pe-1"></span><span>Supprimer</span></button>
+
+                  </span>
                 </td>
-                <template v-for="inning in scoresheet.innings" :key="inning" >
-                  <td
-                    @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
+                <template v-for="inning in scoresheet.innings" :key="inning">
+                  <td @click="setActiveOutcome(`outcome_home_${$index}_${inning}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_home_${$index}_${inning}` }"
                     class="ingame-outcome-box">
                     <OutcomeBox :players="scoresheet.players.home" :outcome="player.outcome[inning]"></OutcomeBox>
                   </td>
-                  <td v-for="(extraBlock,$$index) in playersExtraBlocks(inning, player)" style="background: red;" :key="`block-home-{$index}_${$$index}`"
+                  <td v-for="(extraBlock, $$index) in playersExtraBlocks(inning, player)" style="background: red;"
+                    :key="`block-home-{$index}_${$$index}`"
                     @click="setActiveOutcome(`outcome_home_${$index}_${inning}_${extraBlock.extraId}`)"
                     :class="{ 'active': active.outcomeBox === `outcome_home_${$index}_${inning}_${extraBlock.extraId}` }"
                     class="ingame-outcome-box extra">
                     <OutcomeBox :players="scoresheet.players.home" :outcome="extraBlock"></OutcomeBox>
                   </td>
                 </template>
-                <td v-if="editMode">
-                  <button v-if="editMode" class="btn btn-primary btn-sm player-remove-button"
-                    @click="removePlayer(player, scoresheet.players.home)">Supprimer</button>&nbsp;
-                  <button v-if="editMode" class="btn btn-primary btn-sm player-swap-button"
-                    @click="editPlayer(player, scoresheet.players.home)">Remplacer
-                  </button>
-                </td>
               </tr>
             </draggable>
           </table>
+          <!--
           <div class="d-grid gap-2">
             <button class="btn btn-outline-primary btn-lg" v-if="editMode"
               @click="addPlayer(scoresheet.players.home)">Ajouter</button>
           </div>
+          -->
         </div>
       </div>
     </div>
@@ -202,91 +233,132 @@
     </div>
 
     <!-- REPLACE PLAYER MODAL -->
-    <Modal v-show="isPlayerModalVisible" @close="closeModal" bodystyle="max-height: 60vh;">
+    <Modal v-show="isPlayerModalVisible" @close="closeModal">
       <template v-slot:header>
-        <h5>Replace <b><span v-html="selectedPlayer.name"></span></b> by</h5>
+        <h5 class="modal-title">Remplacer <b><span v-html="selectedPlayer.name"></span></b></h5>
       </template>
       <template v-slot:subheader>
-        <div>
-          <div class="">
-            <button @click="addNewPlayer()">NEW PLAYER</button>
-            <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
+        <div class="search-section">
+          <div class="input-group flex-nowrap">
+            <span class="input-group-text" id="addon-wrapping"><span v-html="$settings.icons.search"
+                class="d-flex align-items-center pe-1"></span></span>
+            <input type="text" class="form-control" @input="inputUpdate" :value="inputSearchPlayer"
+              placeholder="Rechercher un joueur..." aria-label="Username" aria-describedby="addon-wrapping">
           </div>
         </div>
-        <div>
-          <div class="search-section">
-            SEARCH:
-            <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
-          </div>
-        </div>
+        <!-- <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button> -->
       </template>
       <template v-slot:body>
-        <div>
-          <div>
-            <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player, 'replace')"
-                class="player-replace-list">
-                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
-                </div>
-              </div>
+        <div class="scrollable-section">
+          <div v-for="player in allAvailablePlayers" :key="player.id">
+            <div class="d-flex align-items-center justify-content-between py-2"><span
+                v-html="player.title.rendered"></span>
+              <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                @click="selectReplacementPlayer(player, 'replace')"><span v-html="$settings.icons.add"
+                  class="d-flex align-items-center pe-1"></span><span>Choisir</span></button>
+
             </div>
           </div>
 
         </div>
       </template>
       <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="replacePlayer">ACCEPTER</button>
-        </div>
+        <button class="btn btn-primary d-flex align-items-center" @click="addNewPlayer()"><span
+            v-html="$settings.icons.add" class="d-flex align-items-center pe-1"></span><span>Nouveau
+            joueur</span></button>
       </template>
     </Modal>
 
     <!-- SETTING LINE UP MODAL -->
-    <Modal v-show="settingLineup.open" @close="closeModal" bodystyle="max-height: 60vh;">
+    <Modal v-show="settingLineup.open" @close="closeModal">
       <template v-slot:header>
-        <h5>Lineup {{ settingLineup.team.name }}</h5>
+        <h5 class="modal-title">Joueurs R&eacute;guliers - {{ settingLineup.team.name }}</h5>
       </template>
       <template v-slot:subheader>
-        <div>
-          <div class="">
-            <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
-              @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
-            <button @click="addNewPlayer()">NEW PLAYER</button>
-            <button @click="probablyPlayer()">PROBABLY<span class="probably" v-if="probablyRightPlayer">*</span></button>
-          </div>
-          <div>
-            <div class="search-section">
-              SEARCH:
-              <input type="text" @input="inputUpdate" :value="inputSearchPlayer" />
-            </div>
+        <div class="search-section">
+          <div class="input-group flex-nowrap">
+            <span class="input-group-text" id="addon-wrapping"><span v-html="$settings.icons.search"
+                class="d-flex align-items-center pe-1"></span></span>
+            <input type="text" class="form-control" @input="inputUpdate" :value="inputSearchPlayer"
+              placeholder="Rechercher un joueur..." aria-label="Username" aria-describedby="addon-wrapping">
           </div>
         </div>
+        <!--  <button v-if="scoresheet.players?.[settingLineup.team.homeAway]?.length"
+              @click="undoAddPlayer(scoresheet.players?.[settingLineup.team.homeAway])">UNDO</button>
+           <button @click="addNewPlayer()">NEW PLAYER</button>
+            <button @click="probablyPlayer()">PROBABLY<span class="probably"
+                v-if="probablyRightPlayer">*</span></button> -->
+
       </template>
       <template v-slot:body>
-        <div>
-          <div class="scrollable-section">
-            <div v-for="player in allAvailablePlayers" :key="player.id">
-              <div :class="{ 'selected': replacementPlayer?.id === player?.id }" @click="selectReplacementPlayer(player,'setlineup')"
-                class="player-replace-list">
-                <div><span v-html="player.title.rendered "></span> - <span v-html="getPlayerTeams(player)"></span>
-                </div>
-              </div>
+        <div class="scrollable-section">
+          <div v-for="player in teamPlayers(settingLineup.team.id)" :key="player.id">
+            <!--<div v-for="player in allAvailablePlayers" :key="player.id">-->
+            <div class="d-flex align-items-center justify-content-between py-2"><span
+                v-html="player.title.rendered"></span>
+              <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                @click="selectReplacementPlayer(player, 'setlineup')"><span v-html="$settings.icons.add"
+                  class="d-flex align-items-center pe-1"></span><span>Ajouter</span></button>
             </div>
           </div>
         </div>
       </template>
       <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="setLineupAddPlayer">AJOUTER</button>
-        </div>
+        <button class="btn btn-primary d-flex align-items-center" @click="addNewPlayer()"><span
+            v-html="$settings.icons.add" class="d-flex align-items-center pe-1"></span><span>Nouveau
+            joueur</span></button>
       </template>
     </Modal>
+
+    <!-- ADD SPARE UP MODAL -->
+    <Modal v-show="addSpares.open" @close="closeModal">
+      <template v-slot:header>
+        <h5 class="modal-title">Ajouter un remplaçant - {{ addSpares.team.name }}</h5>
+      </template>
+      <template v-slot:subheader>
+        <div class="search-section">
+          <div class="input-group flex-nowrap">
+            <span class="input-group-text" id="addon-wrapping"><span v-html="$settings.icons.search"
+                class="d-flex align-items-center pe-1"></span></span>
+            <input type="text" class="form-control" @input="inputUpdate" :value="inputSearchPlayer"
+              placeholder="Rechercher un joueur..." aria-label="Username" aria-describedby="addon-wrapping">
+          </div>
+        </div>
+        <!--
+            <button v-if="scoresheet.players?.[addSpares.team.homeAway]?.length"
+              @click="undoAddPlayer(scoresheet.players?.[addSpares.team.homeAway])">UNDO</button>
+            <button @click="addNewPlayer()">NEW PLAYER</button>
+            <button @click="probablyPlayer()">PROBABLY<span class="probably"
+                v-if="probablyRightPlayer">*</span></button>
+            -->
+      </template>
+      <template v-slot:body>
+        <div class="scrollable-section">
+          <div v-for="player in sparePlayers" :key="player.id">
+            <!--<div v-for="player in allAvailablePlayers" :key="player.id">-->
+            <div class="d-flex align-items-center justify-content-between py-2"><span
+                v-html="player.title.rendered"></span>
+              <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
+                @click="selectReplacementPlayer(player, 'addspare')"><span v-html="$settings.icons.add"
+                  class="d-flex align-items-center pe-1"></span><span>Ajouter</span></button>
+            </div>
+          </div>
+        </div>
+      </template>
+      <template v-slot:footer>
+        <button class="btn btn-primary d-flex align-items-center" @click="addNewPlayer()"><span
+            v-html="$settings.icons.add" class="d-flex align-items-center pe-1"></span><span>Nouveau
+            joueur</span></button>
+      </template>
+    </Modal>
+
+
 
     <AddPlayer @closeModal="closeModal()" :show="isAddNewPlayerModalVisible"></AddPlayer>
     <!-- AT-BAT OUTCOME MODAL -->
     <Modal v-show="isOutcomeModalVisible" @close="closeModal">
       <template v-slot:header>
-        <span v-html="selectedBatterOrder"></span> - Inning {{ selectedInning }}
+        <h5 class="modal-title"><b><span v-html="selectedBatterOrder"></span></b> - Manche {{ selectedInning }}</h5>
       </template>
       <template v-slot:body>
         <div>
@@ -298,8 +370,7 @@
       </template>
       <template v-slot:footer>
         <div class="outcome-save-button d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn btn-primary btn-lg" @click="saveOutcome">Sauvegarder</button>
-          <button class="btn btn-secondary btn-lg" @click="closeModal">Fermer</button>
+        <button class="btn btn-primary" @click="saveOutcome">Accepter</button>
         </div>
       </template>
     </Modal>
@@ -321,10 +392,7 @@
         </div>
       </template>
       <template v-slot:footer>
-        <div class="outcome-save-button d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn btn-primary btn-lg" @click="saveOutcome">Sauvegarder</button>
-          <button class="btn btn-secondary btn-lg" @click="closeModal">Fermer</button>
-        </div>
+        <button class="btn btn-primary" @click="saveOutcome">Accepter</button>
       </template>
     </Modal>
 
@@ -332,23 +400,19 @@
     <!-- GAME SETTINGS MODAL -->
     <Modal v-show="gameEditModal" @close="closeModal">
       <template v-slot:header>
-        <h5>Game settings</h5>
+        <h5 class="modal-title">Configuration</h5>
       </template>
       <template v-slot:body>
-        <div>
-          <div>
-            Number of Innings
-            <input type="number" v-model="configChanges.innings" >
+        <div class="mb-3">
+        <label for="inningNumber" class="form-label">Nombre de manches</label>
+        <input type="number" class="form-control" v-model="configChanges.innings" id="inningNumber">
+      </div>
+          <div class="mb-3">
           </div>
-          <div>
-            <button @click="pullLocalData">Pull Local Data</button>
-          </div>
-        </div>
       </template>
       <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="saveConfigChanges">ACCEPTER</button>
-        </div>
+          <button class="btn btn-info me-auto" @click="pullLocalData">Pull Local Data</button>
+          <button class="btn btn-primary" @click="saveConfigChanges">Accepter</button>
       </template>
     </Modal>
 
@@ -357,14 +421,19 @@
     <!-- Loading Modal -->
     <Modal type="loading" v-show="loading">
       <template v-slot:body>
-        Sending data...
+        <div class="d-flex align-items-center gap-2">
+          <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+          <div>Publication de la partie</div>
+        </div>
       </template>
     </Modal>
   </div>
 </template>
 <script>
 import Vue from "vue"
-import {PlayerInGame,InGameResults} from "@/models/PlayerInGame"
+import { PlayerInGame, InGameResults } from "@/models/PlayerInGame"
 import GameEvent from "@/models/GameEvent"
 import $settings from "@/data/settings.json"
 import { removeAccents } from "@/scripts/utilities"
@@ -374,7 +443,7 @@ import moment from "moment"
 import { VueDraggableNext } from 'vue-draggable-next'
 import OutcomeMixin from "@/mixins/OutcomeMixin"
 import KeyHandlerMixin from "@/mixins/KeyHandlerMixin"
-import {debounce} from "lodash"
+import { debounce } from "lodash"
 
 
 export default {
@@ -384,12 +453,13 @@ export default {
   computed: {
     allModalToggle() {
       return this.isAddNewPlayerModalVisible
-      || this.isPlayerModalVisible
-      || this.isOutcomeModalVisible
-      || this.settingLineup.open
-      || this.probablyRightPlayer
-      || this.openRbiModal
-      || this.gameEditModal
+        || this.isPlayerModalVisible
+        || this.isOutcomeModalVisible
+        || this.settingLineup.open
+        || this.addSpares.open
+        || this.probablyRightPlayer
+        || this.openRbiModal
+        || this.gameEditModal
     },
     allPlayers() {
       return this.$store.getters.getAllPlayers
@@ -403,13 +473,23 @@ export default {
         })
     },
     allAvailablePlayers() {
-      if(this.inputSearchPlayer?.length) {
+      if (this.inputSearchPlayer?.length) {
         return this.allPlayers
-        .filter(player => this.inputSearchPlayer?.length ? removeAccents(player.title?.rendered.toLowerCase())?.indexOf(removeAccents(this.inputSearchPlayer.toLowerCase())) !== -1 : true)
+          .filter(player => this.inputSearchPlayer?.length ? removeAccents(player.title?.rendered.toLowerCase())?.indexOf(removeAccents(this.inputSearchPlayer.toLowerCase())) !== -1 : true)
       }
       else {
         return this.allPlayers
       }
+    },
+    teamPlayers() {
+      return (filter) => {
+        return this.allAvailablePlayers
+          .filter(player => player.current_teams.flat().indexOf(+filter) !== -1 && player?.title?.rendered.indexOf("(R)") === -1 && player.seasons.flat().indexOf($settings.playballConfig.season) !== -1)
+      }
+    },
+    sparePlayers() {
+      return this.allAvailablePlayers
+        .filter(player => player?.title?.rendered.indexOf("(R)") !== -1)
     },
     currentActiveBox() {
       return this.active?.outcomeBox?.split("_")
@@ -418,7 +498,7 @@ export default {
       return this.scoresheet.players?.[this.currentActiveBox?.[1]]?.[this.currentActiveBox?.[2]] || null
     },
     currentActivePlayerBox() {
-      if(this.currentActiveBox?.[4]) {
+      if (this.currentActiveBox?.[4]) {
         const activeBlock = this.currentActivePlayer?.extraOutcome.find(o => {
           return o.inning == this.currentActiveBox?.[3] && o.extraId == this.currentActiveBox?.[4]
         })
@@ -459,14 +539,14 @@ export default {
         gameId: null,
         scores: {
           away: {
-            runs: new Array($settings.playballConfig.innings+1).fill(0),
+            runs: new Array($settings.playballConfig.innings + 1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
             outcome: "",
           },
           home: {
-            runs: new Array($settings.playballConfig.innings+1).fill(0),
+            runs: new Array($settings.playballConfig.innings + 1).fill(0),
             errors: 0,
             estwo: 0,
             hits: 0,
@@ -484,7 +564,7 @@ export default {
 
       gameEditModal: false,
       editMode: false,
-      inputSearchPlayer: [],
+      inputSearchPlayer: "",
 
       isOutcomeModalVisible: false,
       isPlayerModalVisible: false,
@@ -504,6 +584,14 @@ export default {
         team: {
           id: null,
           name: "",
+        }
+      },
+      addSpares: {
+        open: false,
+        team: {
+          id: null,
+          name: "",
+          playerType: "spare",
         }
       },
       probablyRightPlayer: false,
@@ -534,33 +622,33 @@ export default {
       this.closeModal()
     },
     advancePlayer() {
-      if(this.activePlayerBox?.atBatResult) {
-        if(this.activePlayerBox?.onBasePosition === "third") {
+      if (this.activePlayerBox?.atBatResult) {
+        if (this.activePlayerBox?.onBasePosition === "third") {
           this.setAtBase("point")
           this.activePlayerBox.rbiBy = this.currentActivePlayer?.id
           this.openRbiModal = true
         }
-        else if(this.activePlayerBox?.onBasePosition === "second") {
+        else if (this.activePlayerBox?.onBasePosition === "second") {
           this.setAtBase("third")
           this.activePlayerBox.rbiBy = null
         }
-        else if(this.activePlayerBox?.onBasePosition === "first") {
+        else if (this.activePlayerBox?.onBasePosition === "first") {
           this.setAtBase("second")
           this.activePlayerBox.rbiBy = null
         }
       }
     },
     returnPlayer() {
-      if(this.activePlayerBox?.atBatResult) {
-        if(this.activePlayerBox?.onBasePosition === "second") {
+      if (this.activePlayerBox?.atBatResult) {
+        if (this.activePlayerBox?.onBasePosition === "second") {
           this.activePlayerBox.rbiBy = null
           this.setAtBase("first")
         }
-        else if(this.activePlayerBox?.onBasePosition === "third") {
+        else if (this.activePlayerBox?.onBasePosition === "third") {
           this.activePlayerBox.rbiBy = null
           this.setAtBase("second")
         }
-        else if(this.activePlayerBox?.onBasePosition === "point") {
+        else if (this.activePlayerBox?.onBasePosition === "point") {
           this.activePlayerBox.rbiBy = null
           this.setAtBase("third")
         }
@@ -568,11 +656,11 @@ export default {
     },
     addExtraInning() {
       this.scoresheet.players.away.forEach(p => {
-        for(let i=p?.outcome?.length || 0;i > this.scoresheet.innings+1; i--) {
-            p.outcome.pop()
+        for (let i = p?.outcome?.length || 0; i > this.scoresheet.innings + 1; i--) {
+          p.outcome.pop()
         }
-        for(let i=0;i <= this.scoresheet.innings; i++) {
-          if(p.outcome?.[i]) {
+        for (let i = 0; i <= this.scoresheet.innings; i++) {
+          if (p.outcome?.[i]) {
           }
           else {
             p.outcome.push(new InGameResults())
@@ -580,11 +668,11 @@ export default {
         }
       })
       this.scoresheet.players.away.forEach(p => {
-        for(let i=p?.outcome?.length || 0;i > this.scoresheet.innings+1; i--) {
-            p.outcome.pop()
+        for (let i = p?.outcome?.length || 0; i > this.scoresheet.innings + 1; i--) {
+          p.outcome.pop()
         }
-        for(let i=0;i <= this.scoresheet.innings; i++) {
-          if(p.outcome?.[i]) {
+        for (let i = 0; i <= this.scoresheet.innings; i++) {
+          if (p.outcome?.[i]) {
           }
           else {
             p.outcome.push(new InGameResults())
@@ -595,9 +683,11 @@ export default {
     addNewPlayer() {
       this.isAddNewPlayerModalVisible = true
     },
+
     async addPlayer(teamPlayers) {
+      console.log(teamPlayers)
       const player = this.allAvailablePlayers[0]
-      const extraOutcome = teamPlayers?.[0]?.extraOutcome.map(o => new InGameResults({inning: o?.inning, extraId: o?.extraId}))
+      const extraOutcome = teamPlayers?.[0]?.extraOutcome.map(o => new InGameResults({ inning: o?.inning, extraId: o?.extraId }))
       teamPlayers.push(new PlayerInGame({ ...player, extraOutcome, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
       this.probablyRightPlayer = false
       await this.updateData()
@@ -607,6 +697,7 @@ export default {
       this.isPlayerModalVisible = false
       this.isOutcomeModalVisible = false
       this.settingLineup.open = false
+      this.addSpares.open = false
       this.probablyRightPlayer = false
       this.openRbiModal = false
       this.gameEditModal = false
@@ -633,30 +724,30 @@ export default {
       return teams
     },
     getPlayedInnings(players) {
-      const outcomes = [...players.away.map(p => p.outcome),...players.home.map(p => p.outcome)]
+      const outcomes = [...players.away.map(p => p.outcome), ...players.home.map(p => p.outcome)]
       const innings = $settings.playballConfig.innings
       let lastInningPlayed = 0
-      outcomes.forEach((outcome,$index) => {
-        outcome.forEach((o,inning) => {
+      outcomes.forEach((outcome, $index) => {
+        outcome.forEach((o, inning) => {
           const out = new InGameResults(o)
-          if(out.wentAtBat) {
+          if (out.wentAtBat) {
             lastInningPlayed = inning
           }
         })
       })
       return innings < lastInningPlayed ? lastInningPlayed : innings
     },
-    allExtraBlocksWentAtBat(inning,players,extraId) {
-      const allPlayersOutcome = players.map(p=>p.extraOutcome).flat()
+    allExtraBlocksWentAtBat(inning, players, extraId) {
+      const allPlayersOutcome = players.map(p => p.extraOutcome).flat()
       return !!(!!(allPlayersOutcome?.length) && allPlayersOutcome.every(o => new InGameResults(o)?.wentAtBat))
     },
     addExtraBlocks(inning, extraId, players) {
-      players.forEach(p =>{
-        p.extraOutcome.push(new InGameResults({extraId:extraId,inning:inning}))
+      players.forEach(p => {
+        p.extraOutcome.push(new InGameResults({ extraId: extraId, inning: inning }))
       })
     },
-    haveExtrablocksForInning(inning,players,extraId) {
-      if(players?.[0]?.extraOutcome.filter(o => o.inning == inning)?.length) {
+    haveExtrablocksForInning(inning, players, extraId) {
+      if (players?.[0]?.extraOutcome.filter(o => o.inning == inning)?.length) {
         return true
       }
       return false
@@ -664,18 +755,18 @@ export default {
     handleExtraBlocks(players) {
       let extraId = 1
       let enoughExtras = true
-      for(let i=1; i <= this.scoresheet.innings;i++) {
+      for (let i = 1; i <= this.scoresheet.innings; i++) {
         enoughExtras = true
-        if(this.allPlayersWentAtBat(i,players)) {
-          while(enoughExtras) {
-            if(!this.haveExtrablocksForInning(i,players,extraId)) {
+        if (this.allPlayersWentAtBat(i, players)) {
+          while (enoughExtras) {
+            if (!this.haveExtrablocksForInning(i, players, extraId)) {
               this.addExtraBlocks(i, extraId, players)
               enoughExtras = false
             }
             else {
               enoughExtras = false
             }
-            if(this.allExtraBlocksWentAtBat(i,players,extraId)) {
+            if (this.allExtraBlocksWentAtBat(i, players, extraId)) {
               extraId++
               this.addExtraBlocks(i, extraId, players)
             }
@@ -687,7 +778,7 @@ export default {
       }
     },
     handleKeys(event) {
-      this.handleShortcutKeys(event, this.active.outcomeBox,this.allModalToggle)
+      this.handleShortcutKeys(event, this.active.outcomeBox, this.allModalToggle)
     },
     moveThroughBoxes(arrow) {
       const prop = this.currentActiveBox?.[0]
@@ -695,17 +786,17 @@ export default {
       const row = +this.currentActiveBox?.[2]
       const col = +this.currentActiveBox?.[3]
       const extraBlock = +this.currentActiveBox?.[4]
-      if(arrow === "up" && row > 0){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row-1}_${col}`)
+      if (arrow === "up" && row > 0) {
+        this.setActiveOutcome(`${prop}_${homeAway}_${row - 1}_${col}`)
       }
-      if(arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row+1}_${col}`)
+      if (arrow === "down" && row < this.scoresheet.players?.[homeAway]?.length - 1) {
+        this.setActiveOutcome(`${prop}_${homeAway}_${row + 1}_${col}`)
       }
-      if(arrow === "left" && col > 1){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col-1}`)
+      if (arrow === "left" && col > 1) {
+        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col - 1}`)
       }
-      if(arrow === "right" && col < this.numberOfInnings){
-        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col+1}`)
+      if (arrow === "right" && col < this.numberOfInnings) {
+        this.setActiveOutcome(`${prop}_${homeAway}_${row}_${col + 1}`)
       }
     },
     async removePlayer(player, list) {
@@ -713,9 +804,9 @@ export default {
       if (playerIndex !== -1) {
         list.splice(playerIndex, 1)
       }
-      this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
+      this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div><b>${player?.title?.rendered}</b> a été supprimé</div></div>`)
     },
-    playersExtraBlocks(inning,player) {
+    playersExtraBlocks(inning, player) {
       return player?.extraOutcome?.filter(o => o?.inning == inning)
     },
     setActiveOutcome(id) {
@@ -730,7 +821,7 @@ export default {
     },
     async toggleEditMode() {
       this.editMode = !this.editMode
-      if(!this.editMode) {
+      if (!this.editMode) {
         await this.updateData()
       }
     },
@@ -742,9 +833,9 @@ export default {
       this.loading = true
       await this.updateData()
       this.gameEvent.prepareData(this.scoresheet).then(result => {
-        this.$toast.success(`Les données ont été envoyées`)
+        this.$toast.success(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.success}</div><div>Les données ont été envoyées</div>`)
       }, (error) => {
-        this.$toast.error(`L'envoie a échoué`)
+        this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div>L'envoie a échoué</div>`)
       }).finally(() => {
         this.loading = false
       })
@@ -755,17 +846,23 @@ export default {
     },
 
     async selectReplacementPlayer(player, action) {
-      if(player?.id && player?.id === this.replacementPlayer?.id) {
-        if(action === "setlineup") {
-          await this.setLineupAddPlayer()
+      this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings })
+      if (player?.id && player?.id === this.replacementPlayer?.id) {
+        if (action === "setlineup") {
+          const homeAway = this.settingLineup.team.homeAway
+          this.setLineupAddPlayer(homeAway)
+        }
+        else if (action === "addspare") {
+          const homeAway = this.addSpares.team.homeAway
+          this.setLineupAddPlayer(homeAway)
         }
         else if (action === "replace") {
-          await this.replacePlayer()
+          this.replacePlayer()
+
         }
         this.replacementPlayer = null
-      }
-      else {
-        this.replacementPlayer = new PlayerInGame({ ...player, assignedNumber: player.number.length !== 0 ? player.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings })
+        this.homeAway = null;
+
       }
     },
     probablyPlayer() {
@@ -788,7 +885,7 @@ export default {
         if (homeIndex !== -1) {
           this.scoresheet.players.home.forEach(p => {
             p.outcome.forEach(o => {
-              if(o.rbiBy === this.selectedPlayer.id) {
+              if (o.rbiBy === this.selectedPlayer.id) {
                 o.rbiBy = this.replacementPlayer.id
               }
             })
@@ -798,14 +895,14 @@ export default {
         if (awayIndex !== -1) {
           this.scoresheet.players.away.forEach(p => {
             p.outcome.forEach(o => {
-              if(o.rbiBy === this.selectedPlayer.id) {
+              if (o.rbiBy === this.selectedPlayer.id) {
                 o.rbiBy = this.replacementPlayer.id
               }
             })
           })
           this.scoresheet.players.away.splice(awayIndex, 1, this.replacementPlayer)
         }
-        this.$toast.success(`<b>${this.replacementPlayer?.title?.rendered}</b> a remplacé ${this.selectedPlayer?.title?.rendered}`)
+        this.$toast.success(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.success}</div><div><b>${this.replacementPlayer?.title?.rendered}</b> a remplacé ${this.selectedPlayer?.title?.rendered}</div>`)
         this.replacementPlayer = { id: null }
         this.inputSearchPlayer = ""
         this.selectedPlayer = { name: null }
@@ -813,7 +910,7 @@ export default {
       }
     },
     async saveOutcome() {
-      if(this.currentActiveBox[4]) {
+      if (this.currentActiveBox[4]) {
         this.scoresheet.players[this.currentActiveBox[1]][this.currentActiveBox[2]].extraOutcome.find(o => o.id === this.currentActiveBox[4])
       }
       else {
@@ -822,30 +919,41 @@ export default {
       this.closeModal()
       await this.updateData()
     },
-    setLineup(team,homeAway) {
+    setLineup(team, homeAway) {
       this.settingLineup = {
         open: true,
         team: {
-          id: team,
+          id: team.id,
           name: team?.title?.rendered || homeAway,
           homeAway: homeAway,
         },
       }
     },
-    async setLineupAddPlayer() {
+    addSpare(team, homeAway) {
+      this.addSpares = {
+        open: true,
+        team: {
+          id: team.id,
+          name: team?.title?.rendered || homeAway,
+          homeAway: homeAway,
+          playerType: "spare",
+        },
+      }
+
+    },
+    async setLineupAddPlayer(location) {
       const player = this.replacementPlayer
-      const homeAway = this.settingLineup.team.homeAway
-      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway)?.map(o => 
-      {
+      const homeAway = location
+      const extraOutcome = this.getExtraOutcomes(this.settingLineup.team.homeAway)?.map(o => {
         return {
           ...o,
           inning: o.inning,
           extraId: o.extraId
         }
       })
-      const newPlayer = new PlayerInGame({...player, extraOutcome})
+      const newPlayer = new PlayerInGame({ ...player, extraOutcome })
       this.scoresheet.players[homeAway].push(player)
-      this.$toast.success(`<b>${player?.title?.rendered}</b> a été ajouté`)
+      this.$toast.success(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.success}</div><div><b>${player?.title?.rendered}</b> a été ajouté</div>`)
     },
     getExtraOutcomes(homeAway) {
       return this.players?.[homeAway]?.[0].extraOutcome
@@ -853,11 +961,12 @@ export default {
     pullLocalData() {
       const data = localStorage.getItem(`current-matchup-${this.game?.id}`)
       let obj = JSON.parse(data)
-      if(obj.gameId) {
+      if (obj.gameId) {
         obj = {
           ...obj,
           players: {
-            home: obj.players.home.map(p => new PlayerInGame(p)) || [],
+            home: obj.players.home
+              .map(p => new PlayerInGame(p)) || [],
             away: obj.players.away.map(p => new PlayerInGame(p)) || [],
           },
         }
@@ -865,30 +974,30 @@ export default {
       }
     },
     sendPostMessage() {
-      this.broadcastChannel.postMessage(clone(this.scoresheet),"*")
+      this.broadcastChannel.postMessage(clone(this.scoresheet), "*")
     },
     async updateData() {
       this.handleExtraBlocks(this.scoresheet.players.away)
       this.handleExtraBlocks(this.scoresheet.players.home)
-      if(!this.hasContentInDB) {
+      if (!this.hasContentInDB) {
         await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
           this.hasContentInDB = result?.data?.id
         }, (error) => {
-          this.$toast.error("Erreur de connexion")
+          this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div>Erreur de connexion</div>`)
         })
-        if(!this.hasContentInDB) {
+        if (!this.hasContentInDB) {
           await ScoresheetAPIService.createData(this.scoresheet).then(() => {
 
-          },(error) => {
-            this.$toast.error("Erreur de connexion")
+          }, (error) => {
+            this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div>Erreur de connexion</div>`)
           })
         }
       }
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       localStorage.setItem("cast-matchup", JSON.stringify(this.scoresheet))
       localStorage.setItem(`current-matchup-${this.game?.id}`, JSON.stringify(this.scoresheet))
-      await ScoresheetAPIService.saveData(this.scoresheet).then(()=>{},(error) => {
-        this.$toast.error("Erreur de connexion à la Base de Données")
+      await ScoresheetAPIService.saveData(this.scoresheet).then(() => { }, (error) => {
+          this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div>Erreur de connexion à la base de données</div>`)
       })
       this.sendPostMessage()
     },
@@ -896,9 +1005,9 @@ export default {
       this.working_selectedOutcomeBox = value
     },
     undoAddPlayer(list) {
-      const player = clone(list[list.length-1])
+      const player = clone(list[list.length - 1])
       list = list.pop()
-      this.$toast.warning(`<b>${player?.title?.rendered}</b> a été retiré`)
+      this.$toast.error(`<div class="d-inline-flex align-items-cente p-2"><div class="d-flex align-items-center pe-1">${$settings.icons.error}</div><div><b>${player?.title?.rendered}</b> a été supprimé</div>`)
     }
 
 
@@ -918,12 +1027,11 @@ export default {
       this.scoresheet.teams.home = this.$store.getters.getTeam(this.game?.teams[1])
       this.teams.away = this.scoresheet.teams.away
       this.teams.home = this.scoresheet.teams.home
-      this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
-      this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id)
-        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}` ,probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
+      this.scoresheet.players.away = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.away.id, $settings.playballConfig.season)
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
+      this.scoresheet.players.home = this.$store.getters.getPlayersInTeam(this.scoresheet.teams.home.id, $settings.playballConfig.season)
+        .map(p => new PlayerInGame({ ...p, assignedNumber: p.number.length !== 0 ? p.number : `P${++this.id}`, probably: this.probablyRightPlayer, innings: this.scoresheet.innings }))
     }
- 
     await ScoresheetAPIService.checkData(this.$route?.params?.gameId).then(result => {
       this.hasContentInDB = result?.data?.id
     }, () => {
@@ -931,10 +1039,17 @@ export default {
     if (this.hasContentInDB) {
       await ScoresheetAPIService.loadData(this.$route?.params?.gameId).then(result => {
         const obj = JSON.parse(result.jsonObject)
-        obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
-        obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
-        this.scoresheet.players = obj.players
-        this.scoresheet.innings = this.getPlayedInnings(this.scoresheet.players)
+
+        /// ADDED CONDITION TO CHECK IF GAME IS OVER
+        if (this.game.status === "future" || (this.game.status === "publish" && (obj.scores.away.outcome === "" && obj.scores.home.outcome === ""))) {
+        } else {
+          obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
+          obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
+          console.log(this.game.status);
+          this.scoresheet.players = obj.players
+          this.scoresheet.innings = this.getPlayedInnings(this.scoresheet.players)
+        }
+
       }, (error) => {
         console.error(error)
       })
@@ -950,7 +1065,7 @@ export default {
   mounted() {
     window.addEventListener('keydown', this.handleKeys)
     this.broadcastChannel = new BroadcastChannel("gamecastChannel")
-    this.broadcastChannel.onmessage = event => {}
+    this.broadcastChannel.onmessage = event => { }
     this.events.$on("escapePressed", this.closeModal)
     this.events.$on("enterPressed", this.saveOutcome)
     this.events.$on("advancePlayer", this.advancePlayer)
@@ -959,7 +1074,7 @@ export default {
   },
   watch: {
     openRbiModal(value, oldVal) {
-      if(value !== oldVal)
+      if (value !== oldVal)
         this.working_selectedOutcomeBox = this.activePlayerBox
     }
   }
@@ -967,72 +1082,70 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+table {
+  width: 100%;
+  text-align: center;
 
-    table {
-      width:100%;
-      text-align:center;
-      tr {
-        td {
-          &.active {
-            background: lightgreen;
-          }
-        }
+  tr {
+    th.player-drag-col {
+      width: 36px;
+    }
 
-        &.unclickable {
-          td {
-            background: lightgray;
-          }
-        }
+    th.player-number-col {
+      width: 48px;
+    }
+
+    td {
+      &.active {
+        background: lightgreen;
       }
     }
 
-    .add-player-button {
-      background:white !important;
-      padding:0 0 !important;
-    }
-
-    .ingame-outcome-box {
-      padding: 2px;
-      &.extra {
-        background: #f6fafd;
+    &.unclickable {
+      td {
+        background: lightgray;
       }
     }
-
-    .action-buttons {
-      margin: 0;
-      background: lime;
-      position: fixed;
-      bottom: 0;
-      width: 100%;
-      left: 0;
-      display: flex;
-    }
-
-    .editButton {
-      padding: 1rem;
-    }
-
-    .rbi-input {
-      display: flex;
-    }
-
-.search-section {
-  background: white;
-  position: relative;
-  border-bottom: 2px solid #eeeeee;
-  color: #4AAE9B;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem 0;
-  top: 0;
-  input {
-    padding: 0.5rem 0.25rem;
   }
 }
+
+.add-player-button {
+  background: white !important;
+  padding: 0 0 !important;
+}
+
+.ingame-outcome-box {
+  padding: 2px;
+
+  &.extra {
+    background: #f6fafd;
+  }
+}
+
+.action-buttons {
+  margin: 0;
+  background: lime;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  left: 0;
+  display: flex;
+}
+
+.editButton {
+  padding: 1rem;
+}
+
+.rbi-input {
+  display: flex;
+}
+
+
 
 .scoresheet-results-scores {
   table {
     margin: 1rem auto;
+
     td {
       vertical-align: middle;
     }
@@ -1048,6 +1161,7 @@ export default {
           background: pink;
         }
       }
+
       &.unclickable {
         td {
           background: lightgray;
@@ -1061,14 +1175,6 @@ export default {
   margin-bottom: 8rem;
 }
 
-.player-replace-list {
-  padding: 0.5rem;
-  cursor: pointer;
-
-  &.selected {
-    background: lime;
-  }
-}
 
 .player-replace-footer {
   min-height: 2.5rem;
@@ -1082,55 +1188,44 @@ export default {
 .player-button-container {
   position: relative;
   text-align: left;
-  .player-remove-button {
-    padding: 0.25rem;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 30px;
-    width: 30px;
-    opacity: 0.75;
-    cursor: pointer;
-  }
 
-  .player-swap-button {
-    padding: 0.25rem;
-    position: absolute;
-    right: 0;
-    top: 0;
-    height: 30px;
-    width: 60px;
-    opacity: 0.75;
-    cursor: pointer;
-  }
+
+
   .probably {
     font-size: 1.2rem;
   }
 }
+
 .team-image-container {
   align-items: center;
   display: flex;
 
 }
+
 .team-image {
   border-radius: 50%;
   height: 40px;
   margin-right: 8px;
   width: 40px;
   overflow: hidden;
+
   img {
     height: 100%;
     width: auto;
   }
 }
+
 .score-table {
   border-collapse: collapse;
 
   tr {
-    td,th {
+
+    td,
+    th {
       border: 1px solid black;
       padding: 0.25rem 0.5rem;
     }
+
     td {
       &:nth-child(even) {
         color: black;
@@ -1138,29 +1233,35 @@ export default {
     }
   }
 }
+
 .date-time {
   text-transform: capitalize;
 }
+
 .editMode {
   table {
     td {
       &:nth-child(1) {
         max-width: 0.5rem;
       }
+
       &:nth-child(2) {
         min-width: 0rem;
       }
 
       &:last-child {
-        max-width:  auto;
+        max-width: auto;
       }
     }
   }
-  .ingame-outcome-box, .header-innings {
-    display:none;
+
+  .ingame-outcome-box,
+  .header-innings {
+    display: none;
   }
 }
+
 .drag-handler {
-  cursor: pointer;
+  cursor: grabbing;
 }
 </style>

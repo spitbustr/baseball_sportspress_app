@@ -6,9 +6,10 @@ export default {
   methods: {
     handleShortcutKeys(event, activePlayer, modalOpened) {
       if(modalOpened) {
-        if(event.keyCode === 32) {
+       /* if(event.keyCode === 32) {
           event.preventDefault()
         }
+          */
         if(event.key === "Escape") {
           this.events.$emit("escapePressed")
         }

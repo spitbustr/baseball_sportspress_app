@@ -97,7 +97,7 @@ export default class GameEvent {
                 payload.scores.away?.runs?.[0] > payload.scores.home?.runs?.[0]
                 ? "win"
                 : payload.scores.away?.runs?.[0] === payload.scores.home?.runs?.[0]
-                 ? "tie"
+                 ? "nulle"
                  : "loss"
             ]
         }
@@ -125,7 +125,7 @@ export default class GameEvent {
                 payload.scores.away?.runs?.[0] < payload.scores.home?.runs?.[0]
                     ? "win"
                     : payload.scores.away?.runs?.[0] === payload.scores.home?.runs?.[0]
-                        ? "tie"
+                        ? "nulle"
                         : "loss"
             ]
         }

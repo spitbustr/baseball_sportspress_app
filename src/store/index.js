@@ -193,15 +193,18 @@ export default createStore({
   },
 
   getters: {
-    getPlayersInTeam: (state) => (teamId) => {
+    //// ADDED CURRENT SEASON TO FILTER PLAYERS
+    getPlayersInTeam: (state) => (teamId, seasonId) => {
       return state.data.players
-        .filter(p => p.current_teams.flat().indexOf(+teamId) !== -1 && p?.title?.rendered.indexOf("(R)") === -1 && p.number)
+        .filter(p => p.current_teams.flat().indexOf(+teamId) !== -1 && p?.title?.rendered.indexOf("(R)") === -1 && p.seasons.flat().indexOf(seasonId) !==- 1)
     },
+    //// ADDED CURRENT SEASON TO FILTER PLAYERS
+
     getPlayersInTeamWithSpares: (state) => (teamId) => {
       return state.data.players
-        .filter(p => p.current_teams.flat().indexOf(+teamId) !== -1 && p?.title?.rendered.indexOf("(R)") === -1)
+        .filter(p => p.current_teams.flat().indexOf(+teamId) !== -1 && p.seasons.flat().indexOf($settings.playballConfig.season) !== -1)
     },
-    getAllPlayers: (state) => {
+  getAllPlayers: (state) => {
       return state.data.players
     },
     getAllMedia: (state) => {
@@ -241,12 +244,20 @@ export default createStore({
     },
     [SET_PROGRESS]: (state, progress) => {
       state.data.progress = progress
+    },
+    addToast(state, toast) {
+      state.toasts.push(toast);
+    },
+    clearToast(state, title) {
+      const index = state.toasts.findIndex((toast) => toast.title === title); // find toast
+      state.toasts.splice(index, 1); // remove toast from array
     }
   },
   modules: {
     user,
   },
   state: {
+    toasts: [], // NEW
     data: {
       progress: {},
       media: [],

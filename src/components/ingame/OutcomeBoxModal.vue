@@ -33,7 +33,7 @@
             </div>
 
             <div class="row">
-              <div class="col-12">
+              <div class="col-8 offset-2">
                 <div class="d-flex justify-content-center mt-5 mb-5">
                   <button :disabled="!hasHit" :class="{'btn-warning': playerAt('second')}" @click="setAtBase('second')"
                     class="base second-base btn btn-outline-warning"><span>2</span></button>

@@ -1,48 +1,101 @@
 <template>
-    <Modal v-show="show" @close="closeModal">
-      <template v-slot:header>
-        <h5>Add a new player</h5>
-      </template>
-      <template v-slot:body>
-        <div>
-          <div>
-            <div>
-              Name:
-            </div>
-            <div>
-              <input type="text" v-model="playerName">
-            </div>
-            <div class="team-selection-container">
-              <div>
-                <table>
-                  <tr v-for="team in firstHalfTeams" :key="team.id">
-                    <td align=right><label :for="`team_select_${team.id}`" >{{team.title.rendered}}</label></td>
-                    <td> <input type="checkbox" v-model="selectedTeams" :id="`team_select_${team.id}`" :value="team.id"></td>
-                  </tr>
-                </table>
+  <Modal v-show="show" @close="closeModal">
+    <template v-slot:header>
+      <h5 class="modal-title">Ajouter un nouveau joueur</h5>
+    </template>
+    <template v-slot:body>
+      <form>
+        <div class="alert alert-info mb-3">
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" v-model="spare" name="flexRadioDefault" id="femme"
+              value="Femme">
+            <label class="form-check-label" for="flexRadioDefault2">
+              Joueur Remplaçant
+            </label>
+          </div>
+        </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Prénom</label>
+            <input type="text" v-model="prenom" class="form-control" id="prenom" aria-describedby="emailHelp">
+          </div>
+          <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Nom</label>
+            <input type="email" v-model="nomFamille" class="form-control" id="nomFamille" aria-describedby="emailHelp">
+          </div>
+          <div class="mb-3">
+            <div class="row">
+              <div class="col-md-6">
+                <label for="exampleInputEmail1" class="form-label">&Eacute;quipe</label>
+                <select class="form-select" v-model="equipe" aria-label="Default select example">
+                  <option v-for="team in teams" :key="team.id" :value="team.id">{{team.title.rendered}}</option>
+                </select>
               </div>
-              <div>
-                <table>
-                  <tr v-for="team in secondHalfTeams" :key="team.id">
-                    <td align=right><label :for="`team_select_${team.id}`" >{{team.title.rendered}}</label></td>
-                    <td> <input type="checkbox" v-model="selectedTeams" :id="`team_select_${team.id}`" :value="team.id"></td>
-                  </tr>
-                </table>
+              <div class="col-md-6">
+                <label for="exampleInputEmail1" class="form-label">Sexe</label>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" v-model="sexe" name="flexRadioDefault" id="homme"
+                    value="Homme">
+                  <label class="form-check-label" for="flexRadioDefault1">
+                    Homme
+                  </label>
+                </div>
+                <div class="form-check">
+                  <input class="form-check-input" type="radio" v-model="sexe" name="flexRadioDefault" id="femme"
+                    value="Femme">
+                  <label class="form-check-label" for="flexRadioDefault2">
+                    Femme
+                  </label>
+                </div>
               </div>
             </div>
           </div>
+
+      </form>
+      <!--
+      <div>
+        <div>
+          <div>
+            Name:
+          </div>
+          <div>
+            <input type="text" v-model="playerName">
+          </div>
+          <div class="team-selection-container">
+            <div>
+              <table>
+                <tr v-for="team in firstHalfTeams" :key="team.id">
+                  <td align=right><label :for="`team_select_${team.id}`">{{team.title.rendered}}</label></td>
+                  <td> <input type="checkbox" v-model="selectedTeams" :id="`team_select_${team.id}`" :value="team.id">
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div>
+              <table>
+                <tr v-for="team in secondHalfTeams" :key="team.id">
+                  <td align=right><label :for="`team_select_${team.id}`">{{team.title.rendered}}</label></td>
+                  <td> <input type="checkbox" v-model="selectedTeams" :id="`team_select_${team.id}`" :value="team.id">
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
         </div>
-      </template>
-      <template v-slot:footer>
-        <div class="player-replace-footer">
-          <button @click="addPlayer" :disabled="loading">ADD PLAYER</button>
-        </div>
-      </template>
-    </Modal>
+      </div>
+    -->
+    </template>
+    <template v-slot:footer>
+      <div class="player-replace-footer">
+        <button class="btn btn-primary" @click="addPlayer" :disabled="loading">Ajouter</button>
+      </div>
+    </template>
+  </Modal>
 </template>
 <script>
 
 import SportspressAPIService from '@/services/SportspressAPIService'
+import $settings from "@/data/settings.json"
+
 export default {
   computed: {
     firstHalfTeams() {
@@ -60,17 +113,33 @@ export default {
   },
   data() {
     return {
-      playerName: "",
+      prenom: "",
+      nomFamille: "",
+      sexe: "",
+      equipe: "",
+      pName: "",
       selectedTeams: [],
       loading: false,
+      spare: false,
     }
   },
   methods: {
     async addPlayer() {
       this.loading = true
+      let pName = "";
+      if (this.spare) {
+       pName = this.prenom + " " + this.nomFamille + " (R)"
+      } else {
+        pName = this.prenom + " " + this.nomFamille
+      }
       const payload = {
-        title: this.playerName,
-        current_teams: this.selectedTeams.join(","),
+        title: pName,
+        leagues: $settings.playballConfig.leagues,
+        seasons: $settings.playballConfig.season,
+        metrics: {
+          sexe: this.sexe,
+        },
+        current_teams: this.equipe,
         status: "publish",
       }
       await SportspressAPIService.addPlayer(payload, this.$store)

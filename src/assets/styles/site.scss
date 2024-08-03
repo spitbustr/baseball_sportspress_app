@@ -3,7 +3,9 @@
 }
 
 .c-toast-container.v--default-css {
+    width:100%;
     .c-toast {
+        display: inline-flex;
         &.c-toast--warning {
             background: orange;
         }
@@ -21,3 +23,4 @@
         }
     }
 }
+
