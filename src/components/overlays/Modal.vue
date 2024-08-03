@@ -4,7 +4,7 @@
       <div class="modal-backdrop" @click="handleBackdropClick">
         <div class="modal" :class="getClass" role="dialog" aria-labelledby="modalTitle"
           aria-describedby="modalDescription">
-          <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+          <div class="modal-dialog modal-lg modal-dialog-scrollable">
             <div class="modal-content">
               <div class="modal-header flex-column" id="modalTitle" v-if="$slots.header">
                 <div class="container-fluid d-flex mx-0 px-0">

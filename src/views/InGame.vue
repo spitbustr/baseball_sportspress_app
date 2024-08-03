@@ -2,18 +2,18 @@
   <nav class="navbar navbar-light bg-light py-4">
     <div class="container-fluid justify-content-between">
       <div class="game-date">
-        <span class="navbar-brand mb-0 h1">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
+        <span class="mb-0 fw-bold">{{ game.id }} - <span class="date-time">{{ getDateTime(game) }}</span></span>
       </div>
       <div class="game-settings d-flex gap-2">
-        <button type="button editButton" class="btn btn-outline-primary d-flex align-items-center"
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
           @click="openGameEditModal"><span v-html="$settings.icons.settings"
             class="d-flex align-items-center pe-1"></span><span>Configuration</span></button>
-        <button type="button editButton" class="btn btn-outline-primary d-flex align-items-center"
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center"
           @click="toggleEditMode"><span v-if="!editMode" v-html="$settings.icons.edit"
             class="d-flex align-items-center pe-1"></span><span v-if="editMode" v-html="$settings.icons.save"
             class="d-flex align-items-center pe-1"></span><span>{{ this.editMode ? "Sauvegarder" : "Éditer alignements"
             }}</span></button>
-        <button class="btn btn-outline-primary d-flex align-items-center" type="button" @click="sendDataToWebsite"><span
+        <button class="btn btn-outline-primary btn-sm d-flex align-items-center" type="button" @click="sendDataToWebsite"><span
             v-html="$settings.icons.publish" class="d-flex align-items-center pe-1"></span><span>Publier</span></button>
       </div>
     </div>
@@ -23,21 +23,20 @@
       <div class="row">
         <!-- AWAY TEAM -->
 
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <nav class="navbar navbar-light">
             <div class="container-fluid me-0 pe-0">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.away?.featured_media] || defaultImage">
                 {{ teams.away.title.rendered }}</span>
-              <div class="d-flex btn-group" role="group" aria-label="Basic example">
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+              <div class="d-flex float-end">
+                <button class="btn btn-secondary btn-sm d-flex align-items-center me-1" v-if="editMode"
                   @click="setLineup(teams?.away, 'away')"><span v-html="$settings.icons.addPlayer"
-                    class="d-flex align-items-center pe-1"></span> Ajouter régulier</button>
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                    class="d-flex align-items-center pe-1"></span> Régulier</button>
+                <button class="btn btn-secondary btn-sm d-flex align-items-center me-1" v-if="editMode"
                   @click="addSpare(teams?.away, 'away')">
-                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Ajouter
-                  remplaçant</button>
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Remplaçant</button>
+                <button class="btn btn-secondary btn-sm d-flex align-items-center" v-if="editMode"
                   @click="clearLineup('away')"><span v-html="$settings.icons.deleteLine"
                     class="d-flex align-items-center pe-1"></span> Supprimer tous</button>
               </div>
@@ -103,21 +102,20 @@
         </div>
 
         <!-- HOME TEAM -->
-        <div class="col-md-6">
+        <div class="col-lg-6">
           <nav class="navbar navbar-light">
             <div class="container-fluid me-0 pe-0">
               <span class="navbar-brand mb-0 h1"> <img class="team-image"
                   :src="media[teams?.home?.featured_media] || defaultImage">
                 {{ teams.home.title.rendered }}</span>
-              <div class="d-flex btn-group" role="group" aria-label="Basic example">
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+              <div class="d-flex float-end">
+                <button class="btn btn-secondary btn-sm d-flex align-items-center me-1" v-if="editMode"
                   @click="setLineup(teams?.home, 'home')"><span v-html="$settings.icons.addPlayer"
-                    class="d-flex align-items-center pe-1"></span> Ajouter régulier</button>
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                    class="d-flex align-items-center pe-1"></span> Régulier</button>
+                <button class="btn btn-secondary btn-sm d-flex align-items-center me-1" v-if="editMode"
                   @click="addSpare(teams?.home, 'home')">
-                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Ajouter
-                  remplaçant</button>
-                <button class="btn btn-outline-primary btn-sm d-flex align-items-center" v-if="editMode"
+                  <span v-html="$settings.icons.addPlayer" class="d-flex align-items-center pe-1"></span> Remplaçant</button>
+                <button class="btn btn-secondary btn-sm d-flex align-items-center" v-if="editMode"
                   @click="clearLineup('home')"><span v-html="$settings.icons.deleteLine"
                     class="d-flex align-items-center pe-1"></span> Supprimer tous</button>
               </div>
@@ -862,6 +860,7 @@ export default {
         }
         this.replacementPlayer = null
         this.homeAway = null;
+        this.inputSearchPlayer = ""
 
       }
     },
@@ -1130,10 +1129,6 @@ table {
   width: 100%;
   left: 0;
   display: flex;
-}
-
-.editButton {
-  padding: 1rem;
 }
 
 .rbi-input {

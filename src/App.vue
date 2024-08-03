@@ -5,11 +5,11 @@
       <Modal type="loading" v-show="progressing || loading">
         <template v-slot:body>
           <div class="d-flex align-items-center gap-2">
-          <div class="spinner-border text-secondary" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div> 
-          <div>{{progress.loading}}</div>
-        </div>
+            <div class="spinner-border text-secondary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+            <div>{{progress.loading}}</div>
+          </div>
         </template>
       </Modal>
       <div id="main-navigation" v-if="authenticated">
@@ -32,14 +32,13 @@
                 <li class="nav-item">
                   <router-link class="nav-link" to="/players">Joueurs</router-link>
                 </li>
-                <li class="nav-item">
-                  <router-link class="nav-link" to="/data">Données</router-link>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" @click="openCast()">Cast</a>
-                </li>
               </ul>
-              <span class="navbar-text">
+              <span class="navbar-text d-flex align-items-center">
+                <a class="nav-link" @click="openCast()"><span class="d-flex align-items-center fs-4 me-4"
+                    v-html="$settings.icons.cast"></span></a>
+                <router-link class="nav-link" to="/data"><span class="d-flex align-items-center fs-4 me-4"
+                    v-html="$settings.icons.settings"></span></router-link>
+
                 <button class="btn btn-outline-light" @click="logout">Déconnexion</button>
               </span>
             </div>
@@ -131,6 +130,11 @@ nav {
       color: gray;
     }
   }
+
+}
+.bi {
+  width:1em;
+  height:1em;
 
 }
 </style>
