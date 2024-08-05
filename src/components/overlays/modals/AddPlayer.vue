@@ -7,42 +7,42 @@
       <form>
         <div class="alert alert-info mb-3">
           <div class="form-check">
-            <input class="form-check-input" type="checkbox" v-model="spare" name="flexRadioDefault" id="femme"
-              value="Femme">
-            <label class="form-check-label" for="flexRadioDefault2">
+            <input class="form-check-input" type="checkbox" v-model="spare" name="spare" id="spare"
+              value="Spares">
+            <label class="form-check-label" for="spare">
               Joueur Remplaçant
             </label>
           </div>
         </div>
           <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Prénom</label>
+            <label for="prenom" class="form-label">Prénom</label>
             <input type="text" v-model="prenom" class="form-control" id="prenom" aria-describedby="emailHelp">
           </div>
           <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">Nom</label>
+            <label for="nomFamille" class="form-label">Nom</label>
             <input type="email" v-model="nomFamille" class="form-control" id="nomFamille" aria-describedby="emailHelp">
           </div>
           <div class="mb-3">
             <div class="row">
               <div class="col-md-6">
-                <label for="exampleInputEmail1" class="form-label">&Eacute;quipe</label>
-                <select class="form-select" v-model="equipe" aria-label="Default select example">
+                <label for="equipe" class="form-label">&Eacute;quipe</label>
+                <select class="form-select" v-model="equipe" aria-label="Default select example" id="equipe">
                   <option v-for="team in teams" :key="team.id" :value="team.id">{{team.title.rendered}}</option>
                 </select>
               </div>
               <div class="col-md-6">
-                <label for="exampleInputEmail1" class="form-label">Sexe</label>
+                <p>Sexe</p>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" v-model="sexe" name="flexRadioDefault" id="homme"
+                  <input class="form-check-input" type="radio" v-model="sexe" name="sexe" id="homme"
                     value="Homme">
-                  <label class="form-check-label" for="flexRadioDefault1">
+                  <label class="form-check-label" for="homme">
                     Homme
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" v-model="sexe" name="flexRadioDefault" id="femme"
+                  <input class="form-check-input" type="radio" v-model="sexe" name="sexe" id="femme"
                     value="Femme">
-                  <label class="form-check-label" for="flexRadioDefault2">
+                  <label class="form-check-label" for="femme">
                     Femme
                   </label>
                 </div>
