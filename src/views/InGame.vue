@@ -550,7 +550,8 @@ export default {
             hits: 0,
             outcome: "",
           }
-        }
+        },
+        gameUpdated: false,
       },
       teams: {
         home: null,
@@ -992,6 +993,7 @@ export default {
           })
         }
       }
+      this.scoresheet.gameUpdated = true
       this.scoresheet.scores = this.gameEvent.generateScore(this.scoresheet)
       localStorage.setItem("cast-matchup", JSON.stringify(this.scoresheet))
       localStorage.setItem(`current-matchup-${this.game?.id}`, JSON.stringify(this.scoresheet))
@@ -1040,7 +1042,7 @@ export default {
         const obj = JSON.parse(result.jsonObject)
 
         /// ADDED CONDITION TO CHECK IF GAME IS OVER
-        if (this.game.status === "future" || (this.game.status === "publish" && (obj.scores.away.outcome === "" && obj.scores.home.outcome === ""))) {
+        if (this.scoresheet.gameUpdated ) {
         } else {
           obj.players.home = obj.players.home.map(p => new PlayerInGame(p))
           obj.players.away = obj.players.away.map(p => new PlayerInGame(p))
