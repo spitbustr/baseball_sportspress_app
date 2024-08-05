@@ -1,5 +1,7 @@
 {
   "sportspressApi": {
+    "league": "/wp-json/sportspress/v2/leagues",
+    "season": "/wp-json/sportspress/v2/seasons",
     "teams": "/wp-json/sportspress/v2/teams",
     "players": "/wp-json/sportspress/v2/players",
     "games": "/wp-json/sportspress/v2/calendars",

@@ -15,7 +15,7 @@
       <div id="main-navigation" v-if="authenticated">
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
           <div class="container-fluid">
-            <a class="navbar-brand" href="/">LBAO/MRK</a>
+            <a class="navbar-brand" href="/"> <img src="../src/assets/images/monogram-colour.png" class="py-2" style="height:60px;" /></a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
               data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
               aria-label="Toggle navigation">
@@ -96,41 +96,23 @@ export default {
 </script>
 <style lang="scss">
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: #2c3e50;
 }
 
 nav {
-  padding: 1rem;
-
-  a {
-    font-weight: bold;
-    margin: 0 10px;
-    text-decoration: underline;
+  a, a.nav-link {
     cursor: pointer;
-
+        &:hover {
+            opacity:0.5;
+          }
+                            &:active {
+      color: #42b983;
+                                }
     &.router-link-exact-active {
       color: #42b983;
     }
   }
-}
-.navbar-brand {
-  a {
-    color: gray;
-    text-decoration: none;
-    &:active {
-      color: gray;
-    }
-    &:hover {
-      color: gray;
-    }
-    &.router-link-exact-active {
-      color: gray;
-    }
-  }
-
 }
 .bi {
   width:1em;

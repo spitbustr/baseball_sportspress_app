@@ -1,4 +1,4 @@
-# baseball
+# Application Marqueur
 
 ## Project setup
 ```
