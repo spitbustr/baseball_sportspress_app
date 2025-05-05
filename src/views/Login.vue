@@ -23,6 +23,9 @@
                 </div>
             </div>
         </div>
+        <div v-if="error" class="text-center mt-3 error">
+            L'authentification a échoué.
+        </div>
     </div>
 
 </template>
@@ -35,19 +38,39 @@ export default {
             payload: {
                 username: "",
                 password: "",
-            }
+            },
+            error: false,
         }
     },
     methods: {
         async login() {
-            const result = await UserService.loginUser(this.payload)
-            if(result.data.id && result.status === 200) {
-                this.$store.dispatch("user/setUser",result.data)
-                this.$store.dispatch("user/setLoggedIn",true)
-                this.$router.push({ name: 'home' })
-            }
+            await UserService.loginUser(this.payload)
+                .then(result => {
+                    if(result?.data?.id && result?.status === 200) {
+                        this.$store.dispatch("user/setUser",result.data)
+                        this.$store.dispatch("user/setLoggedIn",true)
+                        this.$router.push({ name: 'home' })
+                    }
+                    else {
+                        this.error = true
+                    }
+                })
         }
+    },
+    watch: {
+        payload: {
+            handler(value) {
+                this.error = false
+            },
+            deep: true,
+            immediate: true,
+        },
     }
 
 }
 </script>
+<style lang="scss" scoped>
+    .error {
+        color: red;
+    }
+</style>
